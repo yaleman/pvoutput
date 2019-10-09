@@ -1,5 +1,7 @@
 """ provides an class for uploading to the PVOutput API """
 
+name = "pvoutput"
+
 import requests
 
 URL_ADDSTATUS = 'https://pvoutput.org/service/r2/addstatus.jsp'
