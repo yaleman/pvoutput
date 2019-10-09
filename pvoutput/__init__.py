@@ -109,10 +109,14 @@ class PVOutput(object):
         # TODO: 'v4' can't be higher than 100000
         return True
 
-    def _call(self, endpoint, data, headers=False):
+    def _call(self, endpoint, data, headers=False, method=requests.post):
+        """ makes a call to a URL endpoint with the data/headers/method you require
+        specify headers if you need to set additional ones, otherwise it'll use self._headers() which is the standard API key / systemid set (eg, self.check_rate_limit)
+        specify a method if you want to use something other than requests.post
+        """
         if not headers:
             headers = self._headers()
-        retval = requests.post(endpoint, data=data, headers=headers)
+        retval = method(endpoint, data=data, headers=headers)
 
         if retval.status_code == 200:
             return retval
