@@ -1,6 +1,6 @@
 import pytest
 import pvoutput
-from datetime import datetime
+from datetime import datetime, date, timedelta, time
 
 def test_api_inputs():
     """ tests basic "this should fail" on API init """
@@ -43,3 +43,33 @@ def test_api_validation_types():
     }
     with pytest.raises(TypeError):
         foo.validate_data(data, pvoutput.ADDSTATUS_PARAMETERS)
+
+def test_delete_status_date_too_early():
+    """ it should barf if you're setting it before yesterday """
+    foo = pvoutput.PVOutput(apikey='helloworld', systemid=1)
+
+    with pytest.raises(ValueError):
+        foo.delete_status(date.today()-timedelta(days=2))
+
+def test_delete_status_date_too_late():
+    """ it should barf if you're setting in the future """
+    foo = pvoutput.PVOutput(apikey='helloworld', systemid=1)
+
+    with pytest.raises(ValueError):
+        foo.delete_status(date.today()+timedelta(days=2))
+
+def test_delete_status_date_derp():
+    """ it should barf if you're setting it to tomorrrow """
+    foo = pvoutput.PVOutput(apikey='helloworld', systemid=1)
+
+    with pytest.raises(ValueError):
+        foo.delete_status(date_val=date.today() + timedelta(1))
+
+def test_delete_status_invalid_time_val_type():
+    foo = pvoutput.PVOutput(apikey='helloworld', systemid=1)
+
+    with pytest.raises(ValueError):
+        foo.delete_status(date_val=date.today(), time_val='lol')
+        foo.delete_status(date_val=date.today(), time_val=123)
+        foo.delete_status(date_val=date.today(), time_val=True)
+        foo.delete_status(date_val=date.today(), time_val=time(hour=23,minute=59))
