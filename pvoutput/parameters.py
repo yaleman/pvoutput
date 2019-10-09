@@ -25,6 +25,7 @@ ADDSTATUS_PARAMETERS = {
         "required": False,
         "description": "Energy Generation (Wh)",
         "donation_required": False,
+        "type": int,
     },
     "v2": {
         "required": False,

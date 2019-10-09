@@ -49,7 +49,7 @@ def test_delete_status_date_too_early():
     foo = pvoutput.PVOutput(apikey='helloworld', systemid=1)
 
     with pytest.raises(ValueError):
-        foo.delete_status(date.today()-timedelta(days=2))
+        foo.delete_status(date.today()-timedelta(days=2), testing=True)
 
 def test_delete_status_date_too_late():
     """ it should barf if you're setting in the future """
@@ -73,3 +73,13 @@ def test_delete_status_invalid_time_val_type():
         foo.delete_status(date_val=date.today(), time_val=123)
         foo.delete_status(date_val=date.today(), time_val=True)
         foo.delete_status(date_val=date.today(), time_val=time(hour=23,minute=59))
+
+def test_donation_mode_keys():
+    foo = pvoutput.PVOutput(apikey='helloworld', systemid=1)
+
+    data = {
+        'm1' : 'this will end badly',
+        'v1' : 123
+    }
+    with pytest.raises(pvoutput.DonationRequired):
+        foo.addstatus(data=data,testing=True)

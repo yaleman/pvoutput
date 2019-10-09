@@ -7,8 +7,27 @@ from datetime import datetime, date, timedelta, time
 
 from .parameters import *
 
+
+class DonationRequired(Exception):
+    def __init__(self, message):
+        # Call the base class constructor with the parameters it needs
+        super().__init__(message)
+
+
 class PVOutput(object):
-    def __init__(self, apikey: str, systemid: int, donation_made: bool = False):
+    def __init__(
+        self,
+        apikey: str,
+        systemid: int,
+        donation_made: bool = False,
+        stats_period: int = 5,
+    ):
+        """ interacts with the PVOutput API 
+        apikey: str             API key (read or write)
+        systemid: int           system ID
+        donation_mode: bool     Whether to use the donation-required fields
+        
+        """
         if not isinstance(systemid, int):
             raise TypeError("systemid should be int")
         if not isinstance(apikey, str):
@@ -16,6 +35,7 @@ class PVOutput(object):
         self.apikey = apikey
         self.systemid = systemid
         self.donation_made = donation_made
+        self.stats_period = stats_period
 
     def _headers(self):
         """ returns a base dict of headers for calls to the API 
@@ -27,23 +47,44 @@ class PVOutput(object):
         }
         return headers
 
-    def _call(self, endpoint, data, headers=False, method=requests.post):
+    def _call(
+        self,
+        endpoint,
+        data,
+        headers=False,
+        method=requests.post,
+        testing=False,
+        testing_text="MOCK GET: OK 200",
+        testing_status_code=200,
+    ):
         """ makes a call to a URL endpoint with the data/headers/method you require
         specify headers if you need to set additional ones, otherwise it'll use self._headers() which is the standard API key / systemid set (eg, self.check_rate_limit)
         specify a method if you want to use something other than requests.post
         """
         if not headers:
             headers = self._headers()
-        retval = method(endpoint, data=data, headers=headers)
 
-        if retval.status_code == 200:
-            return retval
-        elif retval.status_code == 400:
+        if testing:
+            # use the requests_mock thingie
+            try:
+                import requests_mock
+                with requests_mock.mock() as mock:
+                    m.get(endpoint, text=testing_text, status_code=testing_status_code)
+                    m.post(endpoint, text=testing_text, status_code=testing_status_code)
+                    response = method(endpoint, data=data, headers=headers)
+            except ImportError:
+                exit("Can't import requests_mock and in testing mode running pvoutput._call(), please check what you are doing.")
+        else:
+            response = method(endpoint, data=data, headers=headers)
+
+        if response.status_code == 200:
+            return response
+        elif response.status_code == 400:
             # TODO: work out how to get the specific response and provide useful answers
-            raise ValueError(f"HTTP400: {retval.text.strip()}")
+            raise ValueError(f"HTTP400: {response.text.strip()}")
             # return False
         else:
-            raise ValueError(f"HTTP{retval.status_code}: {retval.text.strip()}")
+            raise ValueError(f"HTTP{response.status_code}: {response.text.strip()}")
         # other possible errors
         # Method Not Allowed 405: POST or GET only 	 - if we get that, wtf?
         # Data must be sent via the HTTP POST or GET method
@@ -69,34 +110,49 @@ class PVOutput(object):
         # Forbidden 403: Donation Mode
         # Request is only available in donation mode.
 
-    def check_rate_limit(self):
+    def check_rate_limit(self, testing=False):
         headers = self._headers()
         headers["X-Rate-Limit"] = "1"
         url = "https://pvoutput.org/service/r2/getstatus.jsp"
-        response = self._call(url, {}, headers=headers)
+        response = self._call(url, {}, headers=headers, testing=testing)
         retval = {}
         for key in response.headers.keys():
             if key.startswith("X-Rate-Limit"):
                 retval[key] = response.headers[key]
         return retval
 
-    def addstatus(self, data: dict):
+    def addstatus(self, data: dict, testing=False):
         """ The Add Status service accepts live output data at the status interval (5 to 15 minutes) configured for the system.
         API Spec: https://pvoutput.org/help.html#api-addstatus
         """
+        if not data.get("d", False):
+            # if you don't set a date, make it now
+            data["d"] = date.today().strftime("%Y%m%d")
+        if not data.get("t", False):
+            # if you don't set a time, set it to now
+            hour = int(datetime.now().strftime("%H"))
+            minute = int(
+                self.stats_period
+                * round(int(datetime.now().strftime("%M")) / self.stats_period)
+            )
+            data["t"] = time(hour=hour, minute=minute).strftime("%H:%M")
         self.validate_data(data, ADDSTATUS_PARAMETERS)
 
-        return NotImplementedError("haven't got addstatus() working yet")
-        self._call(endpoint="https://pvoutput.org/service/r2/addstatus.jsp", data)
+        # return NotImplementedError("haven't got addstatus() working yet")
+        return self._call(
+            endpoint="https://pvoutput.org/service/r2/addstatus.jsp",
+            data=data,
+            testing=testing,
+        )
 
-    def addoutput(self, data):
+    def addoutput(self, data : dict, testing=False):
         """ The Add Output service uploads end of day output information. It allows all of the information provided on the Add Output page to be uploaded. 
         API Spec: https://pvoutput.org/help.html#api-addoutput """
-        self.validate_data(data, ADDOUTPUT_PARAMETERS)
-        return NotImplementedError("haven't got this addoutput() yet")
-        self._call(endpoint="https://pvoutput.org/service/r2/addoutput.jsp", data=data)
+        return NotImplementedError("Haven't Implemented pvoutput.addoutput() yet.")
+        # self.validate_data(data, ADDOUTPUT_PARAMETERS)
+        # self._call(endpoint="https://pvoutput.org/service/r2/addoutput.jsp", data=data, testing=testing)
 
-    def delete_status(self, date_val: datetime.date, time_val=None):
+    def delete_status(self, date_val: datetime.date, time_val=None, testing=False):
         """ deletes a given status, based on the provided parameters 
             needs a datetime() object
             set the hours/minutes to non-zero to delete a specific time
@@ -127,7 +183,7 @@ class PVOutput(object):
         if time_val:
             data["t"] = time_val.strftime("%H:%M")
         response = self._call(
-            endpoint="https://pvoutput.org/service/r2/deletestatus.jsp", data=data
+            endpoint="https://pvoutput.org/service/r2/deletestatus.jsp", data=data, testing=testing
         )
         return response
 
@@ -162,14 +218,14 @@ class PVOutput(object):
             if apiset[key].get("type", False):
                 if not isinstance(data[key], apiset[key]["type"]):
                     raise TypeError(
-                        f"data[{key}] type ({type(data[key])} is invalid - should be {type(apiset[key]['type'])})"
+                        f"data[{key}] type ({type(data[key])} is invalid - should be {str(type(apiset[key]['type']))})"
                     )
         # TODO: check format, 'format' should be a regex
 
         # TODO: 'd' can't be more than 14 days ago, if a donator, goes out to 90
         # check if donation_mode == True and age of thing
 
-        # TODO: check for donation-only keys
+        # check for donation-only keys
         if not self.donation_made:
             donation_required_keys = [
                 key
@@ -178,7 +234,9 @@ class PVOutput(object):
             ]
             for key in data.keys():
                 if key in donation_required_keys:
-                    raise ValueError(f"key {key} requires an account which has donated")
+                    raise DonationRequired(
+                        f"key {key} requires an account which has donated"
+                    )
 
         # TODO: 'v3' can't be higher than 200000
         # TODO: 'v4' can't be higher than 100000
