@@ -2,7 +2,7 @@
 
 PVOutput.org python API module. Works with the R2 [API version spec here](https://pvoutput.org/help.html#api-spec).
 
-Get your API key from `https://pvoutput.org/account.jsp`
+Get your API key from [the account page on PVOutput](https://pvoutput.org/account.jsp)
 
 # Example usage
 

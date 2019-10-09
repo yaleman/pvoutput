@@ -5,16 +5,17 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pvoutput",
-    version="0.0.1",
+    version="0.0.2",
     author="James Hodgkinson",
     author_email="yaleman@ricetek.net",
-    description="PVOutput.org interface",
+    description="PVOutput.org API interface",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/yaleman/pvoutput",
     packages=setuptools.find_packages(),
+    install_requires=["requests"],
     classifiers=[
-        "Development Status :: 1 - Planning",
+        "Development Status :: 3 - Alpha",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.7",
         "License :: OSI Approved :: MIT License",
