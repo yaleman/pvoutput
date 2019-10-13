@@ -47,44 +47,24 @@ class PVOutput(object):
         }
         return headers
 
-    def _call(
-        self,
-        endpoint,
-        data,
-        headers=False,
-        method=requests.post,
-        testing=False,
-        testing_text="MOCK GET: OK 200",
-        testing_status_code=200,
-    ):
+    def _call(self, endpoint, data=None, headers=False, method=requests.post):
         """ makes a call to a URL endpoint with the data/headers/method you require
         specify headers if you need to set additional ones, otherwise it'll use self._headers() which is the standard API key / systemid set (eg, self.check_rate_limit)
         specify a method if you want to use something other than requests.post
         """
+        # always need the base headers
         if not headers:
             headers = self._headers()
 
-        if testing:
-            # use the requests_mock thingie
-            try:
-                import requests_mock
-                with requests_mock.mock() as mock:
-                    m.get(endpoint, text=testing_text, status_code=testing_status_code)
-                    m.post(endpoint, text=testing_text, status_code=testing_status_code)
-                    response = method(endpoint, data=data, headers=headers)
-            except ImportError:
-                exit("Can't import requests_mock and in testing mode running pvoutput._call(), please check what you are doing.")
-        else:
-            response = method(endpoint, data=data, headers=headers)
+        response = method(endpoint, data=data, headers=headers)
 
         if response.status_code == 200:
             return response
         elif response.status_code == 400:
             # TODO: work out how to get the specific response and provide useful answers
             raise ValueError(f"HTTP400: {response.text.strip()}")
-            # return False
         else:
-            raise ValueError(f"HTTP{response.status_code}: {response.text.strip()}")
+            response.raise_for_status()
         # other possible errors
         # Method Not Allowed 405: POST or GET only 	 - if we get that, wtf?
         # Data must be sent via the HTTP POST or GET method
@@ -110,18 +90,18 @@ class PVOutput(object):
         # Forbidden 403: Donation Mode
         # Request is only available in donation mode.
 
-    def check_rate_limit(self, testing=False):
+    def check_rate_limit(self):
         headers = self._headers()
         headers["X-Rate-Limit"] = "1"
         url = "https://pvoutput.org/service/r2/getstatus.jsp"
-        response = self._call(url, {}, headers=headers, testing=testing)
+        response = self._call(url, {}, headers=headers)
         retval = {}
         for key in response.headers.keys():
             if key.startswith("X-Rate-Limit"):
                 retval[key] = response.headers[key]
         return retval
 
-    def addstatus(self, data: dict, testing=False):
+    def addstatus(self, data: dict):
         """ The Add Status service accepts live output data at the status interval (5 to 15 minutes) configured for the system.
         API Spec: https://pvoutput.org/help.html#api-addstatus
         """
@@ -140,19 +120,17 @@ class PVOutput(object):
 
         # return NotImplementedError("haven't got addstatus() working yet")
         return self._call(
-            endpoint="https://pvoutput.org/service/r2/addstatus.jsp",
-            data=data,
-            testing=testing,
+            endpoint="https://pvoutput.org/service/r2/addstatus.jsp", data=data
         )
 
-    def addoutput(self, data : dict, testing=False):
+    def addoutput(self, data: dict):
         """ The Add Output service uploads end of day output information. It allows all of the information provided on the Add Output page to be uploaded. 
         API Spec: https://pvoutput.org/help.html#api-addoutput """
         return NotImplementedError("Haven't Implemented pvoutput.addoutput() yet.")
         # self.validate_data(data, ADDOUTPUT_PARAMETERS)
-        # self._call(endpoint="https://pvoutput.org/service/r2/addoutput.jsp", data=data, testing=testing)
+        # self._call(endpoint="https://pvoutput.org/service/r2/addoutput.jsp", data=data)
 
-    def delete_status(self, date_val: datetime.date, time_val=None, testing=False):
+    def delete_status(self, date_val: datetime.date, time_val=None):
         """ deletes a given status, based on the provided parameters 
             needs a datetime() object
             set the hours/minutes to non-zero to delete a specific time
@@ -183,9 +161,45 @@ class PVOutput(object):
         if time_val:
             data["t"] = time_val.strftime("%H:%M")
         response = self._call(
-            endpoint="https://pvoutput.org/service/r2/deletestatus.jsp", data=data, testing=testing
+            endpoint="https://pvoutput.org/service/r2/deletestatus.jsp", data=data
         )
         return response
+
+    def getstatus(self):
+        """ returns a dict of the last updated data 
+        TODO: extend this, you can do history searches and all sorts with this endpoint
+        """
+        url = "https://pvoutput.org/service/r2/getstatus.jsp"
+        data = {}
+        if self.donation_made:
+            url = f"{url}?ext=1&sid={self.systemid}"
+        response = self._call(endpoint=url, data=data, method=requests.get)
+        response.raise_for_status()
+        # grab all the things
+        d, t, v1, v2, v3, v4, v5, v6, normalised_output, *extras = response.text.split(
+            ","
+        )
+
+        # if there's no data, you get "NaN". Here we change that to NoneType
+        responsedata = {
+            "d": d,
+            "t": t,
+            "timestamp": datetime.strptime(f"{d} {t}", "%Y%m%d %H:%M"),
+            "v1": None if v1 == "NaN" else float(v1),
+            "v2": None if v2 == "NaN" else float(v2),
+            "v3": None if v3 == "NaN" else float(v3),
+            "v4": None if v4 == "NaN" else float(v4),
+            "v5": None if v5 == "NaN" else float(v5),
+            "v6": None if v6 == "NaN" else float(v6),
+            "normalised_output": float(normalised_output),
+        }
+        # if we're fancy, we get more data
+        if extras:
+            for i in range(1, 7):
+                responsedata[f"v{i+6}"] = (
+                    None if extras[i - 1] == "NaN" else float(extras[i - 1])
+                )
+        return responsedata
 
     def validate_data(self, data, apiset):
         """ does a super-simple validation based on the api def raises errors if it's wrong, returns True if it's OK
@@ -237,7 +251,9 @@ class PVOutput(object):
                     raise DonationRequired(
                         f"key {key} requires an account which has donated"
                     )
+        if int(data.get("v3", 0)) > 200000:
+            raise ValueError(f"v3 cannot be higher than 200000, is {data['v3']}")
+        if int(data.get("v4", 0)) > 100000:
+            raise ValueError(f"v4 cannot be higher than 100000, is {data['v4']}")
 
-        # TODO: 'v3' can't be higher than 200000
-        # TODO: 'v4' can't be higher than 100000
         return True

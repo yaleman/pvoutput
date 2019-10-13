@@ -41,3 +41,9 @@ I'm using `pytest` as best I can. `pipenv install --dev; pipenv run pytest` shou
 # License
 
 MIT License (see `LICENSE`), don't use this for anything you care about - I don't provide a warranty at all, and it'll likely steal your socks and underfeed your dog.
+
+# Changelog
+
+* 0.0.1 Initial version
+* 0.0.2 2019-10-12 Fixed some bugs
+* 0.0.3 2019-10-13 Added PVOutput.getstatus() which returns the current status as a dict.

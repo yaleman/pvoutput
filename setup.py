@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pvoutput",
-    version="0.0.2",
+    version="0.0.3",
     author="James Hodgkinson",
     author_email="yaleman@ricetek.net",
     description="PVOutput.org API interface",
