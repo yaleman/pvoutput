@@ -3,9 +3,12 @@
 name = "pvoutput"
 
 import requests
+import re
 from datetime import datetime, date, timedelta, time
 
 from .parameters import *
+
+# TODO: log? like, at all?
 
 
 class DonationRequired(Exception):
@@ -47,7 +50,9 @@ class PVOutput(object):
         }
         return headers
 
-    def _call(self, endpoint, data=None, headers=False, method=requests.post):
+    def _call(
+        self, endpoint, data=None, params=None, headers=False, method=requests.post
+    ):
         """ makes a call to a URL endpoint with the data/headers/method you require
         specify headers if you need to set additional ones, otherwise it'll use self._headers() which is the standard API key / systemid set (eg, self.check_rate_limit)
         specify a method if you want to use something other than requests.post
@@ -55,14 +60,29 @@ class PVOutput(object):
         # always need the base headers
         if not headers:
             headers = self._headers()
-
-        response = method(endpoint, data=data, headers=headers)
+        # TODO: type checking on call
+        if method == requests.post and data:
+            if type(data) != dict:
+                raise TypeError(f"data should be a dict, got {str(type(data))}")
+        if method == requests.get and params:
+            if type(params) != dict:
+                raise TypeError(f"params should be a dict, got {str(type(params))}")
+        if headers:
+            if type(headers) != dict:
+                raise TypeError(f"headers should be a dict, got {str(type(headers))}")
+        # TODO: learn if I can dynamically send thing, is that **args?
+        if method == requests.get:
+            response = method(endpoint, data=data, headers=headers, params=params)
+        else:
+            response = method(endpoint, data=data, headers=headers)
 
         if response.status_code == 200:
             return response
         elif response.status_code == 400:
             # TODO: work out how to get the specific response and provide useful answers
             raise ValueError(f"HTTP400: {response.text.strip()}")
+        # elif response.status_code == 405:
+        #     raise
         else:
             response.raise_for_status()
         # other possible errors
@@ -118,7 +138,6 @@ class PVOutput(object):
             data["t"] = time(hour=hour, minute=minute).strftime("%H:%M")
         self.validate_data(data, ADDSTATUS_PARAMETERS)
 
-        # return NotImplementedError("haven't got addstatus() working yet")
         return self._call(
             endpoint="https://pvoutput.org/service/r2/addstatus.jsp", data=data
         )
@@ -201,6 +220,55 @@ class PVOutput(object):
                 )
         return responsedata
 
+    def register_notification(self, appid: str, url: str, alerttype: int):
+        """
+        The Register Notification Service allows a third party application to receive PVOutput alert callbacks via a HTTP end point.
+        TODO: Find out if HTTPS is supported
+
+        All parameters are mandator
+        Parameter       Field                   Variable Type           Example
+        appid           Application ID          str                     example.app.id
+        url             Callback URL            str                     http://example.com/api/
+        type            Alert Type              int                     See list below
+
+        type list:
+        0 All Notifications
+        1 Private Message
+        3 Joined Team
+        4 Added Favourite
+        5 High Consumption Alert 6 System Idle Alert
+        8 Low Generation Alert
+        11 Performance Alert
+        14 Standby Cost Alert
+        15 Extended Data V7 Alert 
+        16 Extended Data V8 Alert 
+        17 Extended Data V9 Alert 
+        18 Extended Data V10 Alert 
+        19 Extended Data V11 Alert 
+        20 Extended Data V12 Alert 
+        23 High Net Power Alert
+        24 Low Net Power Alert
+        """
+        # TODO: validation of types, is this the best way?
+        # validation of inputs
+        if type(appid) != str:
+            raise TypeError(f"appid needs to be a string, got: {str(type(appid))}")
+        if type(url) != str:
+            raise TypeError(f"url needs to be a string, got: {str(type(url))}")
+        if len(url) > 150:
+            raise ValueError(
+                f"Length of url can't be longer than 150 chars - was {len(url)}"
+            )
+        if type(alerttype) != int:
+            raise TypeError(
+                f"alerttype needs to be an int, got: {str(type(alerttype))}"
+            )
+        # TODO: urlencode the callback URL
+
+        call_url = f"https://pvoutput.org/service/r2/registernotification.jsp?appid={appid}&type={alerttype}&url={url}"
+        response = self._call(endpoint=url, method=requests.get)
+        return response
+
     def validate_data(self, data, apiset):
         """ does a super-simple validation based on the api def raises errors if it's wrong, returns True if it's OK
             WARNING: will only raise an error on the first error it finds
@@ -235,9 +303,15 @@ class PVOutput(object):
                         f"data[{key}] type ({type(data[key])} is invalid - should be {str(type(apiset[key]['type']))})"
                     )
         # TODO: check format, 'format' should be a regex
+        for format_string in [apiset[key].get("format") for key in apiset.keys()]:
+            print(format_string)
 
         # TODO: 'd' can't be more than 14 days ago, if a donator, goes out to 90
         # check if donation_mode == True and age of thing
+        # if self.donation_made:
+        #     # check if more than 90 days ago
+        # else:
+        #     # check if more than 14 days ago
 
         # check for donation-only keys
         if not self.donation_made:
