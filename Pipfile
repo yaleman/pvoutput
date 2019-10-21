@@ -7,6 +7,9 @@ verify_ssl = true
 pytest = "*"
 requests = "*"
 twine = "*"
+sphinx = "*"
+recommonmark = "*"
+coverage = "*"
 
 [packages]
 requests = "*"
