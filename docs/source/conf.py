@@ -10,9 +10,9 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import os
+import sys
+sys.path.insert(0, os.path.abspath('../../'))
 
 
 # -- Project information -----------------------------------------------------
@@ -20,7 +20,7 @@
 project = 'pvoutput'
 copyright = '2019, James Hodgkinson'
 author = 'James Hodgkinson'
-version = '0.0.3'
+from version import release_version as version
 
 # -- General configuration ---------------------------------------------------
 
