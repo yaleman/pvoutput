@@ -90,7 +90,10 @@
             ],
             "version": "==19.3.0"
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 1f0dcb5218001bc65caa986972009e1412c51fd1
         },
         "babel": {
             "hashes": [
@@ -98,7 +101,10 @@
                 "sha256:e86135ae101e31e2c8ec20a4e0c5220f4eed12487d5cf3f78be7e98d3a57fc28"
             ],
             "version": "==2.7.0"
+<<<<<<< HEAD
 >>>>>>> started working on documentation
+=======
+>>>>>>> 1f0dcb5218001bc65caa986972009e1412c51fd1
         },
         "bleach": {
             "hashes": [
@@ -292,6 +298,13 @@
             ],
             "index": "pypi",
             "version": "==5.2.2"
+        },
+        "pytz": {
+            "hashes": [
+                "sha256:1c557d7d0e871de1f5ccd5833f60fb2550652da6be2693c1e02300743d21500d",
+                "sha256:b02c06db6cf09c12dd25137e563b31700d3b80fcc4ad23abb7a315f2789819be"
+            ],
+            "version": "==2019.3"
         },
         "pytz": {
             "hashes": [
