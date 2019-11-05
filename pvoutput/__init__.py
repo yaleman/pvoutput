@@ -61,15 +61,12 @@ class PVOutput(object):
         if not headers:
             headers = self._headers()
         # TODO: type checking on call
-        if method == requests.post and data:
-            if type(data) != dict:
-                raise TypeError(f"data should be a dict, got {str(type(data))}")
-        if method == requests.get and params:
-            if type(params) != dict:
-                raise TypeError(f"params should be a dict, got {str(type(params))}")
-        if headers:
-            if type(headers) != dict:
-                raise TypeError(f"headers should be a dict, got {str(type(headers))}")
+        if method == requests.post and data and type(data) != dict:
+            raise TypeError(f"data should be a dict, got {str(type(data))}")
+        elif method == requests.get and params and type(params) != dict:
+            raise TypeError(f"params should be a dict, got {str(type(params))}")
+        if headers and type(headers) != dict:
+            raise TypeError(f"headers should be a dict, got {str(type(headers))}")
         # TODO: learn if I can dynamically send thing, is that **args?
         if method == requests.get:
             response = method(endpoint, data=data, headers=headers, params=params)
@@ -81,8 +78,6 @@ class PVOutput(object):
         elif response.status_code == 400:
             # TODO: work out how to get the specific response and provide useful answers
             raise ValueError(f"HTTP400: {response.text.strip()}")
-        # elif response.status_code == 405:
-        #     raise
         else:
             response.raise_for_status()
         # other possible errors
@@ -225,11 +220,13 @@ class PVOutput(object):
         The Register Notification Service allows a third party application to receive PVOutput alert callbacks via a HTTP end point.
         TODO: Find out if HTTPS is supported
 
-        All parameters are mandator
-        Parameter       Field                   Variable Type           Example
-        appid           Application ID          str                     example.app.id
-        url             Callback URL            str                     http://example.com/api/
-        type            Alert Type              int                     See list below
+        All parameters are mandatory
+        Parameter       Field                   Max Length  Variable Type           Example
+        appid           Application ID          100         str                     example.app.id
+        url             Callback URL            150         str                     http://example.com/api/
+        type            Alert Type              n           int                     See list below
+
+        https://pvoutput.org/help.html#api-registernotification
 
         type list:
         0 All Notifications
@@ -259,6 +256,11 @@ class PVOutput(object):
             raise ValueError(
                 f"Length of url can't be longer than 150 chars - was {len(url)}"
             )
+        if len(appid) > 100:
+            raise ValueError(
+                f"Length of appid can't be longer than 150 chars - was {len(appid)}"
+            )
+
         if type(alerttype) != int:
             raise TypeError(
                 f"alerttype needs to be an int, got: {str(type(alerttype))}"
@@ -266,7 +268,7 @@ class PVOutput(object):
         # TODO: urlencode the callback URL
 
         call_url = f"https://pvoutput.org/service/r2/registernotification.jsp?appid={appid}&type={alerttype}&url={url}"
-        response = self._call(endpoint=url, method=requests.get)
+        response = self._call(endpoint=call_url, method=requests.get)
         return response
 
     def validate_data(self, data, apiset):
@@ -275,20 +277,16 @@ class PVOutput(object):
             eg: pvoutput.PVOutput.validate_data(data, pvoutput.ADDSTATUS_PARAMETERS)
         """
         # if you set a 'required_oneof' key in apiset, validation will require at least one of those keys to be set
-        if "required_oneof" in apiset.keys():
-            if (
-                len(
-                    [
-                        key
-                        for key in data.keys()
-                        if key in apiset["required_oneof"]["keys"]
-                    ]
-                )
-                == 0
-            ):
-                raise ValueError(
-                    f"one of {','.join(apiset['required_oneof']['keys'])} MUST be set"
-                )
+        if "required_oneof" in apiset.keys() and (
+            len(
+                [
+                    key
+                    for key in data.keys()
+                    if key in apiset["required_oneof"]["keys"]
+                ]
+            )
+            == 0
+            ): raise ValueError(f"one of {','.join(apiset['required_oneof']['keys'])} MUST be set")
         for key in apiset:
             # check that that required values are set
             if apiset[key].get("required", False) and key not in data.keys():
@@ -297,11 +295,10 @@ class PVOutput(object):
         for key in data.keys():
             if key not in apiset.keys():
                 raise ValueError(f"key {key} isn't valid in the API spec")
-            if apiset[key].get("type", False):
-                if not isinstance(data[key], apiset[key]["type"]):
-                    raise TypeError(
-                        f"data[{key}] type ({type(data[key])} is invalid - should be {str(type(apiset[key]['type']))})"
-                    )
+            if apiset[key].get("type", False) and not isinstance(data[key], apiset[key]["type"]):
+                raise TypeError(
+                    f"data[{key}] type ({type(data[key])} is invalid - should be {str(type(apiset[key]['type']))})"
+                )
         # TODO: check format, 'format' should be a regex
         for format_string in [apiset[key].get("format") for key in apiset.keys()]:
             print(format_string)

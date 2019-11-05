@@ -52,6 +52,7 @@ def test_api_validation_types(pvo=good_pvo()):
     data_faildate = {"d": 1, "t": "1234", "v1": "123"}
     with pytest.raises(TypeError):
         pvo.validate_data(data_failtime, pvoutput.ADDSTATUS_PARAMETERS)
+        pvo.validate_data(data_faildate, pvoutput.ADDSTATUS_PARAMETERS)
 
 
 def test_delete_status_date_too_early(pvo=good_pvo()):
@@ -199,7 +200,16 @@ def test_register_notification_url_validresponse():
         
 def test_register_notification_appid_maxlength(pvo=good_pvo()):
     with pytest.raises(ValueError):
-        pvo.register_notification(appid='#'*1000, url="#"*100, alerttype=1)
+        with requests_mock.mock() as mock:
+            mock.get(
+                url=URLMATCHER,
+                text="OK 200",
+                status_code=200,
+            )
+            pvo.register_notification(appid='#'*10, url="#"*152, alerttype=1)
+            pvo.register_notification(appid='#'*5, url="#"*1000, alerttype=1)
+            pvo.register_notification(appid='#'*1000, url="#"*10, alerttype=1)
+            pvo.register_notification(appid='#'*151, url="#"*100, alerttype=1)
     
     with requests_mock.mock() as mock:
         mock.get(
