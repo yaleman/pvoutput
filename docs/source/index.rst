@@ -1,20 +1,22 @@
-.. pvoutput documentation master file, created by
-   sphinx-quickstart on Sat Oct 19 10:24:51 2019.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to pvoutput's documentation!
 ====================================
+
+This is a quick documentation for the PVOutput module based
+on docs in the code on `github`_.
+
+If you have issues or find bugs, please file an `issue on github`_ or
+if you don't have time, tweet at yaleman43381258_.
+
+.. _github: https://github.com/yaleman/pvoutput
+
+.. _issue on github: https://github.com/yaleman/pvoutput/issues/new
+
+.. _yaleman43381258: http://twitter.com/yaleman43381258
+
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-Um, hi?
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   pvoutput
+   exceptions

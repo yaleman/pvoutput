@@ -12,12 +12,23 @@ from .parameters import *
 
 
 class DonationRequired(Exception):
+    """ A custom exception for when you call a method that requires a donation-enabled account """
     def __init__(self, message):
-        # Call the base class constructor with the parameters it needs
         super().__init__(message)
 
 
 class PVOutput(object):
+    """ This class provides an interface to the pvoutput.org API 
+    
+    :param apikey: API key (read or write)
+    :type apikey: str             
+    :param systemid: system ID 
+    :type systemid: int
+    :param donation_mode: Whether to use the donation-required fields
+    :type donation_mode: bool    
+
+        
+    """
     def __init__(
         self,
         apikey: str,
@@ -25,12 +36,6 @@ class PVOutput(object):
         donation_made: bool = False,
         stats_period: int = 5,
     ):
-        """ interacts with the PVOutput API 
-        apikey: str             API key (read or write)
-        systemid: int           system ID
-        donation_mode: bool     Whether to use the donation-required fields
-        
-        """
         if not isinstance(systemid, int):
             raise TypeError("systemid should be int")
         if not isinstance(apikey, str):
@@ -40,9 +45,12 @@ class PVOutput(object):
         self.donation_made = donation_made
         self.stats_period = stats_period
 
-    def _headers(self):
-        """ returns a base dict of headers for calls to the API 
-        Documentation: https://pvoutput.org/help.html#api-spec
+    def _headers(self) -> dict:
+        """
+        Relevant documentation: https://pvoutput.org/help.html#api-spec
+        
+        :return: headers for calls to the API
+        :rtype: dict
         """
         headers = {
             "X-Pvoutput-Apikey": self.apikey,
@@ -53,9 +61,26 @@ class PVOutput(object):
     def _call(
         self, endpoint, data=None, params=None, headers=False, method=requests.post
     ):
-        """ makes a call to a URL endpoint with the data/headers/method you require
-        specify headers if you need to set additional ones, otherwise it'll use self._headers() which is the standard API key / systemid set (eg, self.check_rate_limit)
-        specify a method if you want to use something other than requests.post
+        """ Makes a call to a URL endpoint with the data/headers/method you require.
+        
+        :param endpoint: The URL to call
+        :type endpoint: str
+        
+        :param data: Data to send 
+        :type data: dict
+        
+        :param headers: Additional headers, if unset it'll use self._headers() which is the standard API key / systemid set (eg, self.check_rate_limit)
+        :type headers: dict
+        
+        :param method: specify a method if you want to use something other than requests.post
+        :type method: requests.request
+
+        :returns: The method.response object
+        :rtype: method.response
+
+        :raises TypeError: if the data you pass is of the wrong format.
+        :raises ValueError: if the call throws a HTTP 400 error.
+        :raises requests.exception: if method throws an exception.
         """
         # always need the base headers
         if not headers:
@@ -106,6 +131,15 @@ class PVOutput(object):
         # Request is only available in donation mode.
 
     def check_rate_limit(self):
+        """
+        Makes a call to the site, checking if you have hit the rate limit. Check the `documentation`_ for details.
+
+        .. _documentation: https://pvoutput.org/help.html#api-ratelimit
+
+        :returns: the headers relating to the rate limit.
+        :rtype: dict
+
+        """
         headers = self._headers()
         headers["X-Rate-Limit"] = "1"
         url = "https://pvoutput.org/service/r2/getstatus.jsp"
@@ -117,8 +151,14 @@ class PVOutput(object):
         return retval
 
     def addstatus(self, data: dict):
-        """ The Add Status service accepts live output data at the status interval (5 to 15 minutes) configured for the system.
+        """ 
+        The Add Status service accepts live output data at the status interval (5 to 15 minutes) configured for the system.
+        
         API Spec: https://pvoutput.org/help.html#api-addstatus
+
+        :param data: The status data
+        :type data: dict
+
         """
         if not data.get("d", False):
             # if you don't set a date, make it now
@@ -139,7 +179,14 @@ class PVOutput(object):
 
     def addoutput(self, data: dict):
         """ The Add Output service uploads end of day output information. It allows all of the information provided on the Add Output page to be uploaded. 
-        API Spec: https://pvoutput.org/help.html#api-addoutput """
+        
+        API Spec: https://pvoutput.org/help.html#api-addoutput 
+        
+        :param data: The output data to upload
+        :type data: dict
+        
+        :raises NotImplementedError: If you use it, because I haven't got to this yet.
+        """
         return NotImplementedError("Haven't Implemented pvoutput.addoutput() yet.")
         # self.validate_data(data, ADDOUTPUT_PARAMETERS)
         # self._call(endpoint="https://pvoutput.org/service/r2/addoutput.jsp", data=data)
@@ -149,7 +196,14 @@ class PVOutput(object):
             needs a datetime() object
             set the hours/minutes to non-zero to delete a specific time
 
-            returns a requests.post response object
+            :param date_val: The date to delete.
+            :type date_val: datetime.date
+
+            :param time_val: The time entry to delete.
+            :type time_val: datetime.time
+
+            :returns: the response object
+            :rtype: requests.post
         """
         if not isinstance(date_val, date):
             raise ValueError(
@@ -179,10 +233,15 @@ class PVOutput(object):
         )
         return response
 
-    def getstatus(self):
-        """ returns a dict of the last updated data 
-        TODO: extend this, you can do history searches and all sorts with this endpoint
+    def getstatus(self) -> dict:
+        """ 
+        Makes a call to the API and gets the last update.
+
+
+        :returns: the last updated data 
+        :rtype: dict
         """
+        # TODO: extend this, you can do history searches and all sorts with this endpoint
         url = "https://pvoutput.org/service/r2/getstatus.jsp"
         data = {}
         if self.donation_made:
@@ -217,35 +276,48 @@ class PVOutput(object):
 
     def register_notification(self, appid: str, url: str, alerttype: int):
         """
-        The Register Notification Service allows a third party application to receive PVOutput alert callbacks via a HTTP end point.
-        TODO: Find out if HTTPS is supported
-
+        The Register Notification Service allows a third party application to receive PVOutput alert callbacks via a HTTP end point. 
+        
+        `API Documentation`_
+        
         All parameters are mandatory
-        Parameter       Field                   Max Length  Variable Type           Example
-        appid           Application ID          100         str                     example.app.id
-        url             Callback URL            150         str                     http://example.com/api/
-        type            Alert Type              n           int                     See list below
+        
+        :param appid: Application ID (eg: example.app.id)
+        :type appid: str (maxlen: 100)
+        
+        :param url: Callback URL (eg: http://example.com/api/)
+        :type url: str (maxlen: 150)
 
-        https://pvoutput.org/help.html#api-registernotification
+        :param type: Alert Type (See list below)
+        :type type: int
 
-        type list:
-        0 All Notifications
-        1 Private Message
-        3 Joined Team
-        4 Added Favourite
-        5 High Consumption Alert 6 System Idle Alert
-        8 Low Generation Alert
-        11 Performance Alert
-        14 Standby Cost Alert
-        15 Extended Data V7 Alert 
-        16 Extended Data V8 Alert 
-        17 Extended Data V9 Alert 
-        18 Extended Data V10 Alert 
-        19 Extended Data V11 Alert 
-        20 Extended Data V12 Alert 
-        23 High Net Power Alert
-        24 Low Net Power Alert
+        .. _API Documentation: https://pvoutput.org/help.html#api-registernotification
+
+        Type list:
+        
+        =====   ====
+        Value   Type
+        =====   ====
+        0       All Notifications
+        1       Private Message
+        1       Private Message
+        3       Joined Team
+        4       Added Favourite
+        5       High Consumption Alert 6 System Idle Alert
+        8       Low Generation Alert
+        11      Performance Alert
+        4       Standby Cost Alert
+        1       Extended Data V7 Alert 
+        16      Extended Data V8 Alert 
+        17      Extended Data V9 Alert 
+        18      Extended Data V10 Alert 
+        19      Extended Data V11 Alert 
+        20      Extended Data V12 Alert 
+        23      High Net Power Alert
+        24      Low Net Power Alert
+        =====   ====
         """
+        # TODO: Find out if HTTPS is supported for Callback URLs
         # TODO: validation of types, is this the best way?
         # validation of inputs
         if type(appid) != str:
@@ -272,9 +344,18 @@ class PVOutput(object):
         return response
 
     def validate_data(self, data, apiset):
-        """ does a super-simple validation based on the api def raises errors if it's wrong, returns True if it's OK
-            WARNING: will only raise an error on the first error it finds
-            eg: pvoutput.PVOutput.validate_data(data, pvoutput.ADDSTATUS_PARAMETERS)
+        """ Does a super-simple validation based on the api def raises errors if it's wrong, returns True if it's OK
+            
+        This'll only raise an error on the first error it finds
+
+        :param data: the data to validate.
+        :type data: dict
+
+        :param apiset: A set of validation rules, eg: pvoutput.ADDSTATUS_PARAMETERS
+        :type apiset: dict
+
+        :raises TypeError: if the type testing fails.
+        :raises ValueError: if you're trying to pass an invalid value.
         """
         # if you set a 'required_oneof' key in apiset, validation will require at least one of those keys to be set
         if "required_oneof" in apiset.keys() and (

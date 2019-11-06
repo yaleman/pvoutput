@@ -111,3 +111,4 @@ PVOutputHelp.pdf
 
 .scannerwork/*
 sonarqube
+.DS_Store
