@@ -1,11 +1,13 @@
 import setuptools
 
+from version import release_version
+
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="pvoutput",
-    version="0.0.3",
+    version=release_version,
     author="James Hodgkinson",
     author_email="yaleman@ricetek.net",
     description="PVOutput.org API interface",

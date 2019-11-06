@@ -8,7 +8,8 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-build/
+./build/
+/docs/build/
 develop-eggs/
 dist/
 downloads/
@@ -107,3 +108,7 @@ venv.bak/
 test.py
 .vscode/*
 PVOutputHelp.pdf
+
+.scannerwork/*
+sonarqube
+.DS_Store
