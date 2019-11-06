@@ -4,6 +4,8 @@ PVOutput.org python API module. Works with the R2 [API version spec here](https:
 
 Get your API key from [the account page on PVOutput](https://pvoutput.org/account.jsp)
 
+![travis-ci build status](https://travis-ci.org/yaleman/pvoutput.svg?branch=master)
+
 # Example usage
 
     > from pvoutput import PVOutput
