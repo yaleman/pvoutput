@@ -89,11 +89,6 @@
                 "sha256:f7b7ce16570fe9965acd6d30101a28f62fb4a7f9e926b3bbc9b61f8b04247e72"
             ],
             "version": "==19.3.0"
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 1f0dcb5218001bc65caa986972009e1412c51fd1
         },
         "babel": {
             "hashes": [
@@ -101,10 +96,6 @@
                 "sha256:e86135ae101e31e2c8ec20a4e0c5220f4eed12487d5cf3f78be7e98d3a57fc28"
             ],
             "version": "==2.7.0"
-<<<<<<< HEAD
->>>>>>> started working on documentation
-=======
->>>>>>> 1f0dcb5218001bc65caa986972009e1412c51fd1
         },
         "bleach": {
             "hashes": [
