@@ -110,5 +110,5 @@ test.py
 PVOutputHelp.pdf
 
 .scannerwork/*
-sonarqube
+sonarqube-test.sh
 .DS_Store
