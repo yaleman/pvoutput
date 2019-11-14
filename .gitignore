@@ -112,3 +112,4 @@ PVOutputHelp.pdf
 .scannerwork/*
 sonarqube-test.sh
 .DS_Store
+.coverage
