@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image '3.7.5-buster:latest'
+            image 'python:3.7.5-buster:latest'
         }
     }
     stages {
