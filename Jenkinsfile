@@ -1,10 +1,11 @@
 pipeline {
-    agent docker {
-        image '3.7.5-buster:latest'
+    agent {
+        docker {
+            image '3.7.5-buster:latest'
+        }
     }
     stages {
         stage ('Test') {
-            agent any
             steps {
                 sh "pip install pipenv"
                 sh "pipenv install --dev && pipenv run pytest"
