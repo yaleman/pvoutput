@@ -8,6 +8,7 @@ steps:
   commands:
   - pip install -r requirements.txt
   - pip install .
+  - pip install pytest
   - pytest
 - name: testbuild
   image: python:3.7
