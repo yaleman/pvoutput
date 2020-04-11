@@ -6,7 +6,7 @@ steps:
 - name: pytest
   image: python:3.7
   commands:
-  - pip install -r requirements.txt
+  - pip install -r requirements-dev.txt
   - pip install .
   - pip install pytest
   - pytest
