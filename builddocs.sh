@@ -1,4 +1,5 @@
-cd docs
-#pipenv run make clean html json
+#!/usr/bin/env bash
+
+cd docs || exit
 pipenv run make clean html
 cd ..
