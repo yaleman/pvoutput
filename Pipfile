@@ -10,10 +10,7 @@ twine = "*"
 sphinx = "*"
 recommonmark = "*"
 coverage = "*"
+requests-mock = "*"
 
 [packages]
 requests = "*"
-requests-mock = "*"
-
-[requires]
-python_version = "3.7"

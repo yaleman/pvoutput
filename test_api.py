@@ -1,4 +1,4 @@
-from datetime import datetime, date, timedelta, time
+import datetime
 import re
 
 import pytest
@@ -7,6 +7,23 @@ import requests_mock
 
 # because we're testing, just grab everything.
 URLMATCHER = re.compile('.*')
+
+import datetime
+# used in test_datetime_fix
+FAKE_TIME = datetime.datetime(2020,9,6,12,59,00)
+@pytest.fixture
+def patch_datetime_now(monkeypatch):
+    """ patches datetime.now with a fake time
+        based on this https://stackoverflow.com/questions/20503373/how-to-monkeypatch-pythons-datetime-datetime-now-with-py-test
+        """
+    class mydatetime(datetime.datetime):
+        @classmethod
+        def now(cls):
+            return FAKE_TIME
+    monkeypatch.setattr(datetime, 'datetime', mydatetime)
+
+def test_patch_datetime(patch_datetime_now):
+    assert datetime.datetime.now() == FAKE_TIME
 
 def good_pvo_no_donation():
     """ returns a valid PVOutput API object """
@@ -59,29 +76,29 @@ def test_delete_status_date_too_early(pvo=good_pvo()):
     """ it should throw an error if you're deleting a status before yesterday """
     # TODO: check if this is right for donation accounts
     with pytest.raises(ValueError):
-        pvo.delete_status(date.today() - timedelta(days=2))
+        pvo.delete_status(datetime.date.today() - datetime.timedelta(days=2))
 
 
 def test_delete_status_date_too_late(pvo=good_pvo()):
     """ it should throw an error if you're deleting a far-future status """
 
     with pytest.raises(ValueError):
-        pvo.delete_status(date.today() + timedelta(days=2))
+        pvo.delete_status(datetime.date.today() + datetime.timedelta(days=2))
 
 
 def test_delete_status_date_derp(pvo=good_pvo()):
     """ it should barf if you're setting it to tomorrrow """
     with pytest.raises(ValueError):
-        pvo.delete_status(date_val=date.today() + timedelta(1))
+        pvo.delete_status(date_val=datetime.date.today() + datetime.timedelta(1))
 
 
 def test_delete_status_invalid_time_val_type(pvo=good_pvo()):
     """ if you're doing invalid time types, deletestatus() should fail """
     with pytest.raises(ValueError):
-        pvo.delete_status(date_val=date.today(), time_val="lol")
-        pvo.delete_status(date_val=date.today(), time_val=123)
-        pvo.delete_status(date_val=date.today(), time_val=True)
-        pvo.delete_status(date_val=date.today(), time_val=time(hour=23, minute=59))
+        pvo.delete_status(date_val=datetime.date.today(), time_val="lol")
+        pvo.delete_status(date_val=datetime.date.today(), time_val=123)
+        pvo.delete_status(date_val=datetime.date.today(), time_val=True)
+        pvo.delete_status(date_val=datetime.date.today(), time_val=datetime.time(hour=23, minute=59))
 
 def test_donation_mode_keys():
     """ test an addstatus on a non-donation account with a call that requires donations """
@@ -119,7 +136,7 @@ def test_getstatus_donation_mode_true():
     expecteddict = {
         "d": "20191012",
         "t": "23:00",
-        "timestamp": datetime.strptime("20191012 23:00", "%Y%m%d %H:%M"),
+        "timestamp": datetime.datetime.strptime("20191012 23:00", "%Y%m%d %H:%M"),
         "v1": 15910,
         "v2": 0,
         "v3": 15973,
@@ -151,7 +168,7 @@ def test_getstatus_donation_mode_false():
     expecteddict = {
         "d": "20191012",
         "t": "23:00",
-        "timestamp": datetime.strptime("20191012 23:00", "%Y%m%d %H:%M"),
+        "timestamp": datetime.datetime.strptime("20191012 23:00", "%Y%m%d %H:%M"),
         "v1": 15910,
         "v2": 0,
         "v3": 15973,
@@ -187,6 +204,7 @@ def test_register_notification_url_maxlength():
                 alerttype=1,
                 )
             assert response.status_code == 200
+
 def test_register_notification_url_validresponse():    
     pvo = pvoutput.PVOutput(apikey="helloworld", systemid=1, donation_made=False)
     with requests_mock.mock() as mock:
@@ -218,4 +236,23 @@ def test_register_notification_appid_maxlength(pvo=good_pvo()):
             status_code=200,
         )
         response = pvo.register_notification(appid='test', url="http://example.com", alerttype=1)
+        assert response.status_code == 200
+
+
+def test_datetime_fix(patch_datetime_now):
+    """ tests issue https://github.com/yaleman/pvoutput/issues/53
+    """
+    pvo=good_pvo()
+    test_data = {
+        'd' : '20200905',
+        'v1' : 12345,
+    }
+    print(f"test_datetime_fix: {test_data}")        
+    with requests_mock.mock() as mock:
+        mock.post(
+            url=URLMATCHER,
+            text="OK 200",
+            status_code=200,
+        )
+        response = pvo.addstatus(test_data)
         assert response.status_code == 200

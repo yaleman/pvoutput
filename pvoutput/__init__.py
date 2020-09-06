@@ -2,14 +2,21 @@
 
 name = "pvoutput"
 
-import requests
+import datetime
+from math import floor
 import re
-from datetime import datetime, date, timedelta, time
+
+import requests
 
 from .parameters import *
 
 # TODO: log? like, at all?
 
+def round_to_base(x, base):
+    """ rounds down to a specific base number 
+        based on answer in https://stackoverflow.com/a/2272174/188774
+    """
+    return base * round(floor(x/base))
 
 class DonationRequired(Exception):
     """ A custom exception for when you call a method that requires a donation-enabled account """
@@ -162,15 +169,14 @@ class PVOutput(object):
         """
         if not data.get("d", False):
             # if you don't set a date, make it now
-            data["d"] = date.today().strftime("%Y%m%d")
+            data["d"] = datetime.date.today().strftime("%Y%m%d")
         if not data.get("t", False):
             # if you don't set a time, set it to now
-            hour = int(datetime.now().strftime("%H"))
-            minute = int(
-                self.stats_period
-                * round(int(datetime.now().strftime("%M")) / self.stats_period)
-            )
-            data["t"] = time(hour=hour, minute=minute).strftime("%H:%M")
+
+            hour = int(datetime.datetime.now().strftime("%H"))
+            # round the minute to the current stats period
+            minute = round_to_base(datetime.datetime.now().minute, self.stats_period)
+            data["t"] = datetime.time(hour=hour, minute=minute).strftime("%H:%M")
         self.validate_data(data, ADDSTATUS_PARAMETERS)
 
         return self._call(
@@ -191,30 +197,30 @@ class PVOutput(object):
         # self.validate_data(data, ADDOUTPUT_PARAMETERS)
         # self._call(endpoint="https://pvoutput.org/service/r2/addoutput.jsp", data=data)
 
-    def delete_status(self, date_val: datetime.date, time_val=None):
+    def delete_status(self, date_val: datetime.datetime.date, time_val=None):
         """ deletes a given status, based on the provided parameters 
             needs a datetime() object
             set the hours/minutes to non-zero to delete a specific time
 
             :param date_val: The date to delete.
-            :type date_val: datetime.date
+            :type date_val: datetime.datetime.date
 
             :param time_val: The time entry to delete.
-            :type time_val: datetime.time
+            :type time_val: datetime.datetime.time
 
             :returns: the response object
             :rtype: requests.post
         """
-        if not isinstance(date_val, date):
+        if not isinstance(date_val, datetime.date):
             raise ValueError(
-                f"date_val should be of type datetime.datetime, not {type(date_val)}"
+                f"date_val should be of type datetime.datetime.datetime, not {type(date_val)}"
             )
-        if time_val and not isinstance(time_val, time):
+        if time_val and not isinstance(time_val, datetime.time):
             raise ValueError(
-                f"time_val should be of time datetime.time, not {type(time_val)}"
+                f"time_val should be of time datetime.datetime.time, not {type(time_val)}"
             )
-        yesterday = date.today() - timedelta(1)
-        tomorrow = date.today() + timedelta(1)
+        yesterday = datetime.date.today() - datetime.timedelta(1)
+        tomorrow = datetime.date.today() + datetime.timedelta(1)
         # you can't delete back past yesterday
         if date_val < yesterday:
             raise ValueError(
@@ -257,7 +263,7 @@ class PVOutput(object):
         responsedata = {
             "d": d,
             "t": t,
-            "timestamp": datetime.strptime(f"{d} {t}", "%Y%m%d %H:%M"),
+            "timestamp": datetime.datetime.strptime(f"{d} {t}", "%Y%m%d %H:%M"),
             "v1": None if v1 == "NaN" else float(v1),
             "v2": None if v2 == "NaN" else float(v2),
             "v3": None if v3 == "NaN" else float(v3),
