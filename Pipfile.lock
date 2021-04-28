@@ -68,10 +68,10 @@
         },
         "babel": {
             "hashes": [
-                "sha256:9d35c22fcc79893c3ecc85ac4a56cde1ecf3f19c540bba0922308a6c06ca6fa5",
-                "sha256:da031ab54472314f210b0adcff1588ee5d1d1d0ba4dbd07b94dba82bde791e05"
+                "sha256:ab49e12b91d937cd11f0b67cb259a57ab4ad2b59ac7a3b41d6c06c0ac5b0def9",
+                "sha256:bc0c176f9f6a994582230df350aa6e05ba2ebe4b3ac317eab29d9be5d2768da0"
             ],
-            "version": "==2.9.0"
+            "version": "==2.9.1"
         },
         "bleach": {
             "hashes": [
@@ -248,10 +248,10 @@
         },
         "importlib-metadata": {
             "hashes": [
-                "sha256:c9db46394197244adf2f0b08ec5bc3cf16757e9590b02af1fca085c16c0d600a",
-                "sha256:d2d46ef77ffc85cbf7dac7e81dd663fde71c45326131bea8033b9bad42268ebe"
+                "sha256:8c501196e49fb9df5df43833bdb1e4328f64847763ec8a50703148b73784d581",
+                "sha256:d7eb1dea6d6a6086f8be21784cc9e3bcfa55872b52309bc5fad53a8ea444465d"
             ],
-            "version": "==3.10.0"
+            "version": "==4.0.1"
         },
         "iniconfig": {
             "hashes": [
@@ -428,11 +428,11 @@
         },
         "requests-mock": {
             "hashes": [
-                "sha256:11215c6f4df72702aa357f205cf1e537cffd7392b3e787b58239bde5fb3db53b",
-                "sha256:e68f46844e4cee9d447150343c9ae875f99fa8037c6dcf5f15bf1fe9ab43d226"
+                "sha256:154903e7646b8215fbdccc6898c32a77b87d2fbafad2f43e99d6d7987dc86953",
+                "sha256:705c03efff5c4e38a00eb203e71e9b4381fbce9679870bda3ac533b61a0b8b9d"
             ],
             "index": "pypi",
-            "version": "==1.8.0"
+            "version": "==1.9.1"
         },
         "requests-toolbelt": {
             "hashes": [
