@@ -100,9 +100,7 @@ class PVOutput():
             raise TypeError(f"headers should be a dict, got {str(type(headers))}")
         # TODO: learn if I can dynamically send thing, is that **args?
         if method == 'GET':
-            with self.session.get(endpoint, data=data, headers=headers, params=params) as request:
-                await request.body()
-                response = request
+            response = await self.session.get(endpoint, data=data, headers=headers, params=params)
         else:
             response = await self.session.post(endpoint, data=data, headers=headers)
 
@@ -218,10 +216,6 @@ class PVOutput():
         )
         return response
 
-
-
-
-    # pylint: disable=too-many-locals
     async def getstatus(self) -> dict:
         """
         Makes a call to the API and gets the last update.
@@ -236,9 +230,11 @@ class PVOutput():
         if self.donation_made:
             url = f"{url}?ext=1&sid={self.systemid}"
         response = await self._call(endpoint=url, data=data, method='GET')
-        response.raise_for_status()
+
         # grab all the things
-        responsedata, extras = utils.responsedata_to_response(response.text.split(","))
+        text = await response.text()
+
+        responsedata, extras = utils.responsedata_to_response(text.split(","))
 
         # if we're fancy, we get more data
         if extras:
@@ -315,5 +311,5 @@ class PVOutput():
         # TODO: urlencode the callback URL
 
         call_url = f"https://pvoutput.org/service/r2/registernotification.jsp?appid={appid}&type={alerttype}&url={url}"
-        response = await self._call(endpoint=call_url, method='GET')
+        response = await self._call(endpoint=call_url, method='GET').text()
         return response
