@@ -1,0 +1,19 @@
+# mkdocs.yml
+site_name: PVOutput
+#theme:
+#  name: "material"
+
+plugins:
+- search:
+- mkdocstrings:
+    default_handler: python
+    handlers:
+      python:
+        rendering:
+          show_source: true
+    watch:
+    - "pvoutput/"
+
+nav:
+  - "Home": README.md
+  - "API Documentation": api.md

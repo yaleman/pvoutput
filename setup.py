@@ -15,7 +15,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/yaleman/pvoutput",
     packages=setuptools.find_packages(),
-    install_requires=["requests"],
+    install_requires=["requests", "aiohttp"],
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Programming Language :: Python :: 3",

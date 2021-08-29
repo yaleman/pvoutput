@@ -24,7 +24,7 @@ Get your API key from [the account page on PVOutput](https://pvoutput.org/accoun
 
 ## Prod-ish usage
 
-`python3 -m pip install pvoutput` to install
+Eventually, `pip install pvoutput` should do it. In the interim, for prod just grab the pvoutput directory and include it.
 
 * `pipenv install -r requirements.txt` or
 * `pip install -r requirements.txt`

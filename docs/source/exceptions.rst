@@ -1,4 +1,0 @@
-Exceptions
-====================================
-
-.. autoexception:: pvoutput.DonationRequired

@@ -3,6 +3,7 @@ import re
 
 import pytest
 import pvoutput
+import pvoutput.exceptions
 import requests_mock
 
 # because we're testing, just grab everything.
@@ -104,13 +105,13 @@ def test_donation_mode_keys():
     """ test an addstatus on a non-donation account with a call that requires donations """
     pvo = good_pvo_no_donation()
     data = {
-        "m1": "this field requires donations", 
+        "m1": "this field requires donations",
         "v1": 123,
         't' : "23:59",
         }
     with requests_mock.mock() as mock:
         mock.get(URLMATCHER, text="", status_code=200)
-        with pytest.raises(pvoutput.DonationRequired):
+        with pytest.raises(pvoutput.exceptions.DonationRequired):
             pvo.addstatus(data=data)
 
 def test_addstatus_every_possible_time():
@@ -189,7 +190,7 @@ def test_register_notification_url_maxlength():
     pvo = pvoutput.PVOutput(apikey="helloworld", systemid=1, donation_made=False)
     with pytest.raises(ValueError):
         pvo.register_notification(appid='test', url="#"*1000, alerttype=1)
-    
+
     with pytest.raises(ValueError):
         with requests_mock.mock() as mock:
             mock.get(
@@ -197,15 +198,15 @@ def test_register_notification_url_maxlength():
                 text="OK 200",
                 status_code=200,
             )
-    
+
             response = pvo.register_notification(
-                appid='test', 
-                url=f"http://example.com/{'#'*1000}", 
+                appid='test',
+                url=f"http://example.com/{'#'*1000}",
                 alerttype=1,
                 )
             assert response.status_code == 200
 
-def test_register_notification_url_validresponse():    
+def test_register_notification_url_validresponse():
     pvo = pvoutput.PVOutput(apikey="helloworld", systemid=1, donation_made=False)
     with requests_mock.mock() as mock:
         mock.get(
@@ -215,7 +216,7 @@ def test_register_notification_url_validresponse():
         )
         response = pvo.register_notification(appid='test', url="http://example.com", alerttype=1)
         assert response.status_code == 200
-        
+
 def test_register_notification_appid_maxlength(pvo=good_pvo()):
     with pytest.raises(ValueError):
         with requests_mock.mock() as mock:
@@ -228,7 +229,7 @@ def test_register_notification_appid_maxlength(pvo=good_pvo()):
             pvo.register_notification(appid='#'*5, url="#"*1000, alerttype=1)
             pvo.register_notification(appid='#'*1000, url="#"*10, alerttype=1)
             pvo.register_notification(appid='#'*151, url="#"*100, alerttype=1)
-    
+
     with requests_mock.mock() as mock:
         mock.get(
             url=URLMATCHER,
@@ -247,7 +248,7 @@ def test_datetime_fix(patch_datetime_now):
         'd' : '20200905',
         'v1' : 12345,
     }
-    print(f"test_datetime_fix: {test_data}")        
+    print(f"test_datetime_fix: {test_data}")
     with requests_mock.mock() as mock:
         mock.post(
             url=URLMATCHER,
