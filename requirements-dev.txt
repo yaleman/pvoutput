@@ -3,6 +3,7 @@ requests-mock
 pytest
 pytest-asyncio
 
+twine
 mkdocstrings
 mkdocs-material
 mkdocs
