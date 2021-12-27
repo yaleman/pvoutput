@@ -5,15 +5,28 @@ from math import floor
 
 from .exceptions import DonationRequired
 
+URLS = {
+    "addstatus": (
+        "https://pvoutput.org/service/r2/addstatus.jsp",
+        "POST",
+    ),
+    "getsystem": (
+        "https://pvoutput.org/service/r2/getsystem.jsp",
+        "GET",
+    ),
+}
+
+
 def round_to_base(number, base):
-    """ rounds down to a specific base number
-        based on answer in https://stackoverflow.com/a/2272174/188774
+    """rounds down to a specific base number
+    based on answer in https://stackoverflow.com/a/2272174/188774
     """
-    return base * round(floor(number/base))
+    return base * round(floor(number / base))
+
 
 def responsedata_to_response(input_data: list):
     """ Turns the status output into a dict """
-    #pylint: disable=invalid-name
+    # pylint: disable=invalid-name
     d, t, v1, v2, v3, v4, v5, v6, normalised_output, *extras = input_data
 
     # if there's no data, you get "NaN". Here we change that to NoneType
@@ -31,6 +44,7 @@ def responsedata_to_response(input_data: list):
     }
     return responsedata, extras
 
+
 def get_rate_limit_header(response_object):
     """ gets the rate limit header from the returned headers """
     retval = {}
@@ -39,8 +53,9 @@ def get_rate_limit_header(response_object):
             retval[key] = response_object.headers[key]
     return retval
 
+
 def validate_data(self, data, apiset):
-    """ Does a super-simple validation based on the api def raises errors if it's wrong, returns True if it's OK
+    """Does a super-simple validation based on the api def raises errors if it's wrong, returns True if it's OK
 
     This'll only raise an error on the first error it finds
 
@@ -55,15 +70,12 @@ def validate_data(self, data, apiset):
     """
     # if you set a 'required_oneof' key in apiset, validation will require at least one of those keys to be set
     if "required_oneof" in apiset.keys() and (
-        len(
-            [
-                key
-                for key in data.keys()
-                if key in apiset["required_oneof"]["keys"]
-            ]
-        )
+        len([key for key in data.keys() if key in apiset["required_oneof"]["keys"]])
         == 0
-        ): raise ValueError(f"one of {','.join(apiset['required_oneof']['keys'])} MUST be set")
+    ):
+        raise ValueError(
+            f"one of {','.join(apiset['required_oneof']['keys'])} MUST be set"
+        )
     for key in apiset:
         # check that that required values are set
         if apiset[key].get("required", False) and key not in data.keys():
@@ -72,7 +84,9 @@ def validate_data(self, data, apiset):
     for key in data.keys():
         if key not in apiset.keys():
             raise ValueError(f"key {key} isn't valid in the API spec")
-        if apiset[key].get("type", False) and not isinstance(data[key], apiset[key]["type"]):
+        if apiset[key].get("type", False) and not isinstance(
+            data[key], apiset[key]["type"]
+        ):
             raise TypeError(
                 f"data[{key}] type ({type(data[key])} is invalid - should be {str(type(apiset[key]['type']))})"
             )
@@ -90,9 +104,7 @@ def validate_data(self, data, apiset):
     # check for donation-only keys
     if not self.donation_made:
         donation_required_keys = [
-            key
-            for key in data.keys()
-            if apiset[key].get("donation_required", False)
+            key for key in data.keys() if apiset[key].get("donation_required", False)
         ]
         for key in data.keys():
             if key in donation_required_keys:

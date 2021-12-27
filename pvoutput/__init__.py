@@ -9,7 +9,8 @@ from .parameters import *
 
 from . import utils
 
-class PVOutput():
+
+class PVOutput:
     """ This class provides an interface to the pvoutput.org API """
 
     validate_data = utils.validate_data
@@ -22,7 +23,7 @@ class PVOutput():
         donation_made: bool = False,
         stats_period: int = 5,
     ):
-        """ Setup code
+        """Setup code
 
 
         ```
@@ -56,10 +57,8 @@ class PVOutput():
         }
         return headers
 
-    def _call(
-        self, endpoint, data=None, params=None, headers=False, method='POST'
-    ):
-        """ Makes a call to a URL endpoint with the data/headers/method you require.
+    def _call(self, endpoint, data=None, params=None, headers=False, method="POST"):
+        """Makes a call to a URL endpoint with the data/headers/method you require.
 
         :param endpoint: The URL to call
         :type endpoint: str
@@ -84,14 +83,14 @@ class PVOutput():
         if not headers:
             headers = self._headers()
         # TODO: type checking on call
-        if method == 'POST' and data and isinstance(data, dict) is False:
+        if method == "POST" and data and isinstance(data, dict) is False:
             raise TypeError(f"data should be a dict, got {str(type(data))}")
-        if method == 'GET' and params and isinstance(params,dict) is False:
+        if method == "GET" and params and isinstance(params, dict) is False:
             raise TypeError(f"params should be a dict, got {str(type(params))}")
-        if headers and not isinstance(headers,dict):
+        if headers and not isinstance(headers, dict):
             raise TypeError(f"headers should be a dict, got {str(type(headers))}")
         # TODO: learn if I can dynamically send thing, is that **args?
-        if method == 'GET':
+        if method == "GET":
             response = requests.get(endpoint, data=data, headers=headers, params=params)
         else:
             response = requests.post(endpoint, data=data, headers=headers)
@@ -113,8 +112,10 @@ class PVOutput():
         """
         headers = self._headers()
         headers["X-Rate-Limit"] = "1"
-        url = "https://pvoutput.org/service/r2/getstatus.jsp"
-        response = self._call(url, {}, headers=headers)
+
+        url, method = utils.URLS["getsystem"]
+
+        response = self._call(url, {}, headers=headers, method=method)
         retval = utils.get_rate_limit_header(response)
         return retval
 
@@ -136,13 +137,15 @@ class PVOutput():
 
             hour = int(datetime.datetime.now().strftime("%H"))
             # round the minute to the current stats period
-            minute = utils.round_to_base(datetime.datetime.now().minute, self.stats_period)
+            minute = utils.round_to_base(
+                datetime.datetime.now().minute, self.stats_period
+            )
             data["t"] = datetime.time(hour=hour, minute=minute).strftime("%H:%M")
         self.validate_data(data, ADDSTATUS_PARAMETERS)
 
-        return self._call(
-            endpoint="https://pvoutput.org/service/r2/addstatus.jsp", data=data
-        )
+        url, method = utils.URLS["addstatus"]
+
+        return self._call(endpoint=url, data=data, method=method)
 
     # def addoutput(self, data: dict):
     #     """ The Add Output service uploads end of day output information. It allows all of the information provided on the Add Output page to be uploaded.
@@ -159,18 +162,18 @@ class PVOutput():
     #     # self._call(endpoint="https://pvoutput.org/service/r2/addoutput.jsp", data=data)
 
     def delete_status(self, date_val: datetime.datetime.date, time_val=None):
-        """ deletes a given status, based on the provided parameters
-            needs a datetime() object
-            set the hours/minutes to non-zero to delete a specific time
+        """deletes a given status, based on the provided parameters
+        needs a datetime() object
+        set the hours/minutes to non-zero to delete a specific time
 
-            :param date_val: The date to delete.
-            :type date_val: datetime.datetime.date
+        :param date_val: The date to delete.
+        :type date_val: datetime.datetime.date
 
-            :param time_val: The time entry to delete.
-            :type time_val: datetime.datetime.time
+        :param time_val: The time entry to delete.
+        :type time_val: datetime.datetime.time
 
-            :returns: the response object
-            :rtype: requests.post
+        :returns: the response object
+        :rtype: requests.post
         """
         if not isinstance(date_val, datetime.date):
             raise ValueError(
@@ -214,10 +217,10 @@ class PVOutput():
         data = {}
         if self.donation_made:
             url = f"{url}?ext=1&sid={self.systemid}"
-        response = self._call(endpoint=url, data=data, method='GET')
+        response = self._call(endpoint=url, data=data, method="GET")
         response.raise_for_status()
         # grab all the things
-        #pylint: disable=invalid-name
+        # pylint: disable=invalid-name
         responsedata, extras = utils.responsedata_to_response(response.text.split(","))
 
         # if we're fancy, we get more data
@@ -294,5 +297,5 @@ class PVOutput():
         # TODO: urlencode the callback URL
 
         call_url = f"https://pvoutput.org/service/r2/registernotification.jsp?appid={appid}&type={alerttype}&url={url}"
-        response = self._call(endpoint=call_url, method='GET')
+        response = self._call(endpoint=call_url, method="GET")
         return response

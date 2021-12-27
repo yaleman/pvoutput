@@ -35,5 +35,7 @@ data = {
 # print("Testing delete_status for 20:00")
 # print(pvo.delete_status(date_val=testdate, time_val=testtime).text)
 
-
-pvo.getstatus()
+print("Getstatus")
+print(pvo.getstatus())
+print("Rate limit")
+print(pvo.check_rate_limit())
