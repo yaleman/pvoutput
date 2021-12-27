@@ -10,6 +10,7 @@ from ..parameters import *
 from .. import utils
 
 
+
 class PVOutput:
     """ This class provides an interface to the pvoutput.org API """
 
