@@ -50,6 +50,7 @@ exclude = [
     "requirements*.txt",
     ".gitignore",
     ".pylintrc",
-    "test*"
-
+    "test*",
+    "./.*",
+    "*.sh",
 ]
