@@ -10,8 +10,6 @@ from .parameters import *
 from . import utils
 
 
-
-
 class PVOutput:
     """ This class provides an interface to the pvoutput.org API """
 
@@ -33,8 +31,8 @@ class PVOutput:
         :type apikey: str
         :param systemid: system ID
         :type systemid: int
-        :param donation_mode: Whether to use the donation-required fields
-        :type donation_mode: bool
+        :param donation_made: Whether to use the donation-required fields
+        :type donation_made: bool
         ```
         """
         if not isinstance(systemid, int):

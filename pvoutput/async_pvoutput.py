@@ -30,8 +30,8 @@ class AsyncPVOutput:
         :type apikey: str
         :param systemid: system ID
         :type systemid: int
-        :param donation_mode: Whether to use the donation-required fields
-        :type donation_mode: bool
+        :param donation_made: Whether to use the donation-required fields
+        :type donation_made: bool
         ```
         """
         self.session = session
@@ -302,7 +302,7 @@ class AsyncPVOutput:
             )
         if len(appid) > 100:
             raise ValueError(
-                f"Length of appid can't be longer than 150 chars - was {len(appid)}"
+                f"Length of appid can't be longer than 100 chars - was {len(appid)}"
             )
 
         if not isinstance(alerttype, int):

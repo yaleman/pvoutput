@@ -59,7 +59,7 @@ def test_headers_gen(pvo=good_pvo()):
 def test_api_validation_addstatus_shouldwork():
     """ tests the validator for addstatus() """
     data = {"d": "20190515", "t": "1234", "v1": 123}
-    assert good_pvo_with_donation().validate_data(data, pvoutput.ADDSTATUS_PARAMETERS) == True
+    assert good_pvo_with_donation().validate_data(data, pvoutput.ADDSTATUS_PARAMETERS) is True
 
 
 def test_api_validation_types(pvo=good_pvo()):
@@ -99,7 +99,7 @@ def test_delete_status_invalid_time_val_type(pvo=good_pvo()):
         pvo.delete_status(date_val=datetime.date.today(), time_val=True)
         pvo.delete_status(date_val=datetime.date.today(), time_val=datetime.time(hour=23, minute=59))
 
-def test_donation_mode_keys():
+def test_donation_made_keys():
     """ test an addstatus on a non-donation account with a call that requires donations """
     pvo = good_pvo_no_donation()
     data = {
@@ -126,8 +126,8 @@ def test_addstatus_every_possible_time():
                 }
                 pvo.addstatus(data)
 
-def test_getstatus_donation_mode_true():
-    """ test getstatus in donation mode """
+def test_getstatus_donation_made_true():
+    """ test getstatus in donation made """
     mockdata_donation = (
         "20191012,23:00,15910,0,15973,724,NaN,NaN,239.4,33.000,NaN,NaN,NaN,NaN,NaN"
     )
@@ -160,7 +160,7 @@ def test_getstatus_donation_mode_true():
         assert good_pvo_with_donation().getstatus() == expecteddict
 
 
-def test_getstatus_donation_mode_false():
+def test_getstatus_donation_made_false():
     """ test addstatus when you haven't made a donation, and you're not trying to do donation things """
     mockdata_donation = "20191012,23:00,15910,0,15973,724,NaN,NaN,239.4"
 
@@ -241,12 +241,12 @@ def test_register_notification_appid_maxlength(pvo=good_pvo()):
 def test_datetime_fix(patch_datetime_now):
     """ tests issue https://github.com/yaleman/pvoutput/issues/53
     """
-    pvo=good_pvo()
+    pvo = good_pvo()
     test_data = {
         'd' : '20200905',
         'v1' : 12345,
     }
-    print(f"test_datetime_fix: {test_data}")
+    # print(f"test_datetime_fix: {test_data}")
     with requests_mock.mock() as mock:
         mock.post(
             url=URLMATCHER,
