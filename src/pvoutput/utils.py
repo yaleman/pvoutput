@@ -1,5 +1,6 @@
 """ Utilities """
-
+import json
+import os
 from datetime import datetime
 from math import floor
 
@@ -119,3 +120,14 @@ def validate_data(self, data, apiset):
         raise ValueError(f"v4 cannot be higher than 100000, is {data['v4']}")
 
     return True
+
+
+def get_apikey_systemid_from_config() -> tuple[str, int]:
+    config_file_name = os.path.expanduser("~/.config/pvoutput.json")
+    if not os.path.exists(config_file_name):
+        config_file_name = "config/pvoutput.json"
+
+    with open(config_file_name, 'r') as config_file:
+        config = json.load(config_file)
+
+    return config.get("apikey"), int(config.get("systemid"))

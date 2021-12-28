@@ -3,7 +3,7 @@
 import os
 import sys
 import json
-from pvoutput import PVOutput
+from src import pvoutput
 from datetime import date, time
 
 config_file_name = os.path.expanduser("~/.config/pvoutput.json")
@@ -14,7 +14,7 @@ if not os.path.exists(config_file_name):
 with open(config_file_name, 'r') as config_file:
     config = json.load(config_file)
 
-pvo = PVOutput(apikey=config.get('apikey'), systemid=config.get('systemid'), donation_made=True)
+pvo = pvoutput.PVOutput(apikey=config.get('apikey'), systemid=config.get('systemid'), donation_made=True)
 
 # print("testing check_rate_limit()")
 # print(json.dumps(pvo.check_rate_limit(), indent=2))

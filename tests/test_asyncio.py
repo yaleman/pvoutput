@@ -7,7 +7,7 @@ import sys
 import json
 import pytest
 
-import pvoutput
+from src import pvoutput
 from datetime import date, time
 
 try:

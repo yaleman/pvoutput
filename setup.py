@@ -1,6 +1,6 @@
 import setuptools
 
-from version import release_version
+from src.pvoutput import __version__ as release_version
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -14,7 +14,8 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/yaleman/pvoutput",
-    packages=setuptools.find_packages(),
+    package_dir={"": "src"},
+    packages=setuptools.find_packages(where="src"),
     install_requires=["requests", "aiohttp"],
     classifiers=[
         "Development Status :: 3 - Alpha",

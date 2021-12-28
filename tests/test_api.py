@@ -2,11 +2,11 @@ import datetime
 import re
 
 import pytest
-import pvoutput
+from src import pvoutput
 import requests_mock
 
 # because we're testing, just grab everything.
-URLMATCHER = re.compile('.*')
+URL_MATCHER = re.compile('.*')
 
 # used in test_datetime_fix
 FAKE_TIME = datetime.datetime(2020, 9, 6, 12, 59, 00)
@@ -15,11 +15,11 @@ def patch_datetime_now(monkeypatch):
     """ patches datetime.now with a fake time
         based on this https://stackoverflow.com/questions/20503373/how-to-monkeypatch-pythons-datetime-datetime-now-with-py-test
         """
-    class mydatetime(datetime.datetime):
+    class MockedDatetime(datetime.datetime):
         @classmethod
         def now(cls):
             return FAKE_TIME
-    monkeypatch.setattr(datetime, 'datetime', mydatetime)
+    monkeypatch.setattr(datetime, 'datetime', MockedDatetime)
 
 def test_patch_datetime(patch_datetime_now):
     assert datetime.datetime.now() == FAKE_TIME
@@ -108,7 +108,7 @@ def test_donation_made_keys():
         't' : "23:59",
         }
     with requests_mock.mock() as mock:
-        mock.get(URLMATCHER, text="", status_code=200)
+        mock.get(URL_MATCHER, text="", status_code=200)
         with pytest.raises(pvoutput.exceptions.DonationRequired):
             pvo.addstatus(data=data)
 
@@ -118,7 +118,7 @@ def test_addstatus_every_possible_time():
     for h in range(24):
         for m in range(60):
             with requests_mock.mock() as mock:
-                mock.post(URLMATCHER, text="", status_code=200)
+                mock.post(URL_MATCHER, text="", status_code=200)
                 t = "%d.2:%d2" % (h, m)
                 data = {
                     't' : t,
@@ -132,7 +132,7 @@ def test_getstatus_donation_made_true():
         "20191012,23:00,15910,0,15973,724,NaN,NaN,239.4,33.000,NaN,NaN,NaN,NaN,NaN"
     )
 
-    expecteddict = {
+    expected_dict = {
         "d": "20191012",
         "t": "23:00",
         "timestamp": datetime.datetime.strptime("20191012 23:00", "%Y%m%d %H:%M"),
@@ -153,18 +153,18 @@ def test_getstatus_donation_made_true():
 
     with requests_mock.mock() as mock:
         mock.get(
-            url=URLMATCHER,
+            url=URL_MATCHER,
             text=mockdata_donation,
             status_code=200,
         )
-        assert good_pvo_with_donation().getstatus() == expecteddict
+        assert good_pvo_with_donation().getstatus() == expected_dict
 
 
 def test_getstatus_donation_made_false():
     """ test addstatus when you haven't made a donation, and you're not trying to do donation things """
     mockdata_donation = "20191012,23:00,15910,0,15973,724,NaN,NaN,239.4"
 
-    expecteddict = {
+    expected_dict = {
         "d": "20191012",
         "t": "23:00",
         "timestamp": datetime.datetime.strptime("20191012 23:00", "%Y%m%d %H:%M"),
@@ -178,11 +178,11 @@ def test_getstatus_donation_made_false():
     }
     with requests_mock.mock() as mock:
         mock.get(
-            url=URLMATCHER,
+            url=URL_MATCHER,
             text=mockdata_donation,
             status_code=200,
         )
-        assert good_pvo_no_donation().getstatus() == expecteddict
+        assert good_pvo_no_donation().getstatus() == expected_dict
 
 def test_register_notification_url_maxlength():
     pvo = pvoutput.PVOutput(apikey="helloworld", systemid=1, donation_made=False)
@@ -192,7 +192,7 @@ def test_register_notification_url_maxlength():
     with pytest.raises(ValueError):
         with requests_mock.mock() as mock:
             mock.get(
-                url=URLMATCHER,
+                url=URL_MATCHER,
                 text="OK 200",
                 status_code=200,
             )
@@ -208,7 +208,7 @@ def test_register_notification_url_validresponse():
     pvo = pvoutput.PVOutput(apikey="helloworld", systemid=1, donation_made=False)
     with requests_mock.mock() as mock:
         mock.get(
-            url=URLMATCHER,
+            url=URL_MATCHER,
             text="OK 200",
             status_code=200,
         )
@@ -219,7 +219,7 @@ def test_register_notification_appid_maxlength(pvo=good_pvo()):
     with pytest.raises(ValueError):
         with requests_mock.mock() as mock:
             mock.get(
-                url=URLMATCHER,
+                url=URL_MATCHER,
                 text="OK 200",
                 status_code=200,
             )
@@ -230,7 +230,7 @@ def test_register_notification_appid_maxlength(pvo=good_pvo()):
 
     with requests_mock.mock() as mock:
         mock.get(
-            url=URLMATCHER,
+            url=URL_MATCHER,
             text="OK 200",
             status_code=200,
         )
@@ -249,7 +249,7 @@ def test_datetime_fix(patch_datetime_now):
     # print(f"test_datetime_fix: {test_data}")
     with requests_mock.mock() as mock:
         mock.post(
-            url=URLMATCHER,
+            url=URL_MATCHER,
             text="OK 200",
             status_code=200,
         )

@@ -1,5 +1,5 @@
-import pytest
-import pvoutput
+from src import pvoutput
+
 
 def test_parameters_copying():
     """ checks if the copied values are different """
