@@ -3,15 +3,13 @@ import re
 
 import pytest
 import pvoutput
-import pvoutput.exceptions
 import requests_mock
 
 # because we're testing, just grab everything.
 URLMATCHER = re.compile('.*')
 
-import datetime
 # used in test_datetime_fix
-FAKE_TIME = datetime.datetime(2020,9,6,12,59,00)
+FAKE_TIME = datetime.datetime(2020, 9, 6, 12, 59, 00)
 @pytest.fixture
 def patch_datetime_now(monkeypatch):
     """ patches datetime.now with a fake time

@@ -6,12 +6,11 @@ import re
 import asyncio
 import aiohttp
 
-from ..parameters import *
-from .. import utils
+from .parameters import *
+from . import utils
 
 
-
-class PVOutput:
+class AsyncPVOutput:
     """ This class provides an interface to the pvoutput.org API """
 
     validate_data = utils.validate_data
@@ -109,7 +108,7 @@ class PVOutput:
 
         if response.status == 400:
             # TODO: work out how to get the specific response and provide useful answers
-            raise ValueError(f"HTTP400: {response.text.strip()}")
+            raise ValueError(f"HTTP400: {(await response.text()).strip()}")
         # likely errors - https://pvoutput.org/help/api_specification.html#error-messages
         response.raise_for_status()
         return response
@@ -313,5 +312,5 @@ class PVOutput:
         # TODO: urlencode the callback URL
 
         call_url = f"https://pvoutput.org/service/r2/registernotification.jsp?appid={appid}&type={alerttype}&url={url}"
-        response = await self._call(endpoint=call_url, method="GET").text()
+        response = await (await self._call(endpoint=call_url, method="GET")).text()
         return response
