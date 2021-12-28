@@ -5,13 +5,15 @@ from math import floor
 
 from .exceptions import DonationRequired
 
+BASE_URL = "https://pvoutput.org/service/r2/"
+
 URLS = {
     "addstatus": (
-        "https://pvoutput.org/service/r2/addstatus.jsp",
+        BASE_URL + "addstatus.jsp",
         "POST",
     ),
     "getsystem": (
-        "https://pvoutput.org/service/r2/getsystem.jsp",
+        BASE_URL + "getsystem.jsp",
         "GET",
     ),
 }
