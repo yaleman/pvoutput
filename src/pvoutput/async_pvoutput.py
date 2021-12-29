@@ -142,6 +142,8 @@ class AsyncPVOutput:
         :param data: The status data
         :type data: dict
 
+        :returns: The aiohttp.ClientResponse object
+        :rtype: aiohttp.ClientResponse
         """
         if not data.get("d", False):
             # if you don't set a date, make it now
@@ -161,19 +163,27 @@ class AsyncPVOutput:
 
         return await self._call(endpoint=url, data=data, method=method)
 
-    # def addoutput(self, data: dict):
-    #     """ The Add Output service uploads end of day output information. It allows all of the information provided on the Add Output page to be uploaded.
+    async def addoutput(self, data: dict) -> aiohttp.ClientResponse:
+        """The Add Output service uploads end of day output information.
+        It allows all of the information provided on the Add Output page to be uploaded.
 
-    #     API Spec: https://pvoutput.org/help.html#api-addoutput
+        API Spec: https://pvoutput.org/help/api_specification.html#add-output-service
 
-    #     :param data: The output data to upload
-    #     :type data: dict
+        :param data: The output data to upload
+        :type data: dict
 
-    #     :raises NotImplementedError: If you use it, because I haven't got to this yet.
-    #     """
-    #     return NotImplementedError("Haven't Implemented pvoutput.addoutput() yet.")
-    #     # self.validate_data(data, ADDOUTPUT_PARAMETERS)
-    #     # self._call(endpoint="https://pvoutput.org/service/r2/addoutput.jsp", data=data)
+        :returns: The aiohttp.ClientResponse object
+        :rtype: aiohttp.ClientResponse
+        """
+        if not data.get("d", False):
+            # if you don't set a date, make it now
+            data["d"] = datetime.date.today().strftime("%Y%m%d")
+
+        utils.validate_data(data, ADDOUTPUT_PARAMETERS, self.donation_made)
+
+        url, method = utils.URLS["addoutput"]
+
+        return await self._call(endpoint=url, data=data, method=method)
 
     async def delete_status(self, date_val: datetime.datetime.date, time_val=None
                             ) -> aiohttp.ClientResponse:
@@ -187,8 +197,8 @@ class AsyncPVOutput:
         :param time_val: The time entry to delete.
         :type time_val: datetime.datetime.time
 
-        :returns: the response object
-        :rtype: requests.post
+        :returns: The aiohttp.ClientResponse object
+        :rtype: aiohttp.ClientResponse
         """
         if not isinstance(date_val, datetime.date):
             raise ValueError(
@@ -254,7 +264,6 @@ class AsyncPVOutput:
 
         All parameters are mandatory:
 
-        ```
         :param appid: Application ID (eg: example.app.id)
         :type appid: str (maxlen: 100)
 
@@ -264,7 +273,10 @@ class AsyncPVOutput:
         :param alert_type: Alert Type (See list below)
         :type alert_type: int
 
+        :returns: The aiohttp.ClientResponse object
+        :rtype: aiohttp.ClientResponse
 
+        ```
         Alert Type list:
 
         =====   ====
@@ -325,14 +337,16 @@ class AsyncPVOutput:
 
         All parameters are mandatory:
 
-        ```
         :param appid: Application ID (eg: example.app.id)
         :type appid: str (maxlen: 100)
 
         :param alert_type: Alert Type (See list below)
         :type alert_type: int
 
+        :returns: The aiohttp.ClientResponse object
+        :rtype: aiohttp.ClientResponse
 
+        ```
         Alert Type list:
 
         =====   ====

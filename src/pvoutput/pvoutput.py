@@ -142,25 +142,33 @@ class PVOutput:
                 datetime.datetime.now().minute, self.stats_period
             )
             data["t"] = datetime.time(hour=hour, minute=minute).strftime("%H:%M")
+
         utils.validate_data(data, ADDSTATUS_PARAMETERS, self.donation_made)
 
         url, method = utils.URLS["addstatus"]
 
         return self._call(endpoint=url, data=data, method=method)
 
-    # def addoutput(self, data: dict):
-    #     """ The Add Output service uploads end of day output information. It allows all of the information provided on the Add Output page to be uploaded.
+    def addoutput(self, data: dict) -> requests.Response:
+        """The Add Output service uploads end of day output information.
+        It allows all of the information provided on the Add Output page to be uploaded.
 
-    #     API Spec: https://pvoutput.org/help.html#api-addoutput
+        API Spec: https://pvoutput.org/help/api_specification.html#add-output-service
 
-    #     :param data: The output data to upload
-    #     :type data: dict
+        :param data: The output data to upload
+        :type data: dict
 
-    #     :raises NotImplementedError: If you use it, because I haven't got to this yet.
-    #     """
-    #     return NotImplementedError("Haven't Implemented pvoutput.addoutput() yet.")
-    #     # utils.validate_data(data, ADDOUTPUT_PARAMETERS, self.donation_made)
-    #     # self._call(endpoint="https://pvoutput.org/service/r2/addoutput.jsp", data=data)
+        :returns: the response object
+        :rtype: requests.Response
+        """
+        if not data.get("d", False):
+            # if you don't set a date, make it now
+            data["d"] = datetime.date.today().strftime("%Y%m%d")
+
+        utils.validate_data(data, ADDOUTPUT_PARAMETERS, self.donation_made)
+        url, method = utils.URLS["addoutput"]
+        response = self._call(endpoint=url, data=data, method=method)
+        return response
 
     def delete_status(self, date_val: datetime.datetime.date, time_val=None) -> requests.Response:
         """deletes a given status, based on the provided parameters

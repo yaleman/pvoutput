@@ -207,6 +207,19 @@ def test_getstatus_donation_made_false():
         assert good_pvo_no_donation().getstatus() == expected_dict
 
 
+def test_add_output():
+    """ tests the validator for addstatus() """
+    data = {"d": "20190515", "g": 123}
+    assert utils.validate_data(data, pvoutput.ADDOUTPUT_PARAMETERS, False) is True
+
+
+def test_add_output_float():
+    """ tests the validator for addstatus() """
+    data = {"d": "20190515", "g": 123.0}
+    with pytest.raises(TypeError):
+        utils.validate_data(data, pvoutput.ADDOUTPUT_PARAMETERS, False)
+
+
 def test_register_notification_url_maxlength():
     pvo = pvoutput.PVOutput(apikey="helloworld", systemid=1, donation_made=False)
     with pytest.raises(ValueError):

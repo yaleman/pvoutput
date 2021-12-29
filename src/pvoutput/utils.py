@@ -21,6 +21,10 @@ URLS = {
         BASE_URL + "getstatus.jsp",
         "GET",
     ),
+    "addoutput": (
+        BASE_URL + "addoutput.jsp",
+        "POST",
+    ),
     "deletestatus": (
         BASE_URL + "deletestatus.jsp",
         "POST",
@@ -110,7 +114,7 @@ def validate_data(data: dict, apiset: dict, donation_made: bool = False) -> bool
             data[key], apiset[key]["type"]
         ):
             raise TypeError(
-                f"data[{key}] type ({type(data[key])} is invalid - should be {str(type(apiset[key]['type']))})"
+                f"data[{key}] type ({type(data[key])} is invalid - should be {str(apiset[key]['type'])})"
             )
     # TODO: check format, 'format' should be a regex
     # for format_string in [apiset[key].get("format") for key in apiset.keys()]:
