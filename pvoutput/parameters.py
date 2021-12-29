@@ -2,6 +2,11 @@
 
 from copy import copy
 
+__all__ = [
+    "ADDSTATUS_PARAMETERS",
+    "DELETESTATUS_PARAMETERS",
+]
+
 standard_parameters = {
     "d": {
         "required": True,

@@ -10,7 +10,8 @@ from .parameters import *
 from . import utils
 
 
-__version__ = '0.0.7'
+__version__ = "0.0.7"
+
 
 class PVOutput:
     """ This class provides an interface to the pvoutput.org API """
