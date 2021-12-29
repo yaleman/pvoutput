@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 from math import floor
 
-from .exceptions import DonationRequired
+from .exceptions import DonationRequiredError, ConfigurationNotFoundError
 
 BASE_URL = "https://pvoutput.org/service/r2/"
 
@@ -15,6 +15,22 @@ URLS = {
     ),
     "getsystem": (
         BASE_URL + "getsystem.jsp",
+        "GET",
+    ),
+    "getstatus": (
+        BASE_URL + "getstatus.jsp",
+        "GET",
+    ),
+    "deletestatus": (
+        BASE_URL + "deletestatus.jsp",
+        "POST",
+    ),
+    "registernotification": (
+        BASE_URL + "registernotification.jsp",
+        "GET",
+    ),
+    "deregisternotification": (
+        BASE_URL + "deregisternotification.jsp",
         "GET",
     ),
 }
@@ -48,7 +64,7 @@ def responsedata_to_response(input_data: list):
     return responsedata, extras
 
 
-def get_rate_limit_header(response_object):
+def get_rate_limit_header(response_object) -> dict:
     """ gets the rate limit header from the returned headers """
     retval = {}
     for key in response_object.headers.keys():
@@ -57,16 +73,19 @@ def get_rate_limit_header(response_object):
     return retval
 
 
-def validate_data(self, data, apiset):
+def validate_data(data: dict, apiset: dict, donation_made: bool = False) -> bool:
     """Does a super-simple validation based on the api def raises errors if it's wrong, returns True if it's OK
 
-    This'll only raise an error on the first error it finds
+    This will only raise an error on the first error it finds
 
     :param data: the data to validate.
     :type data: dict
 
     :param apiset: A set of validation rules, eg: pvoutput.ADDSTATUS_PARAMETERS
     :type apiset: dict
+
+    :param donation_made: has a pvoutput donation been made
+    :type donation_made: bool
 
     :raises TypeError: if the type testing fails.
     :raises ValueError: if you're trying to pass an invalid value.
@@ -79,7 +98,7 @@ def validate_data(self, data, apiset):
         raise ValueError(
             f"one of {','.join(apiset['required_oneof']['keys'])} MUST be set"
         )
-    for key in apiset:
+    for key in apiset.keys():
         # check that that required values are set
         if apiset[key].get("required", False) and key not in data.keys():
             raise ValueError(f"key {key} required in data")
@@ -105,13 +124,13 @@ def validate_data(self, data, apiset):
     #     # check if more than 14 days ago
 
     # check for donation-only keys
-    if not self.donation_made:
+    if not donation_made:
         donation_required_keys = [
             key for key in data.keys() if apiset[key].get("donation_required", False)
         ]
         for key in data.keys():
             if key in donation_required_keys:
-                raise DonationRequired(
+                raise DonationRequiredError(
                     f"key {key} requires an account which has donated"
                 )
     if int(data.get("v3", 0)) > 200000:
@@ -122,10 +141,30 @@ def validate_data(self, data, apiset):
     return True
 
 
-def get_apikey_systemid_from_config() -> tuple[str, int]:
-    config_file_name = os.path.expanduser("~/.config/pvoutput.json")
-    if not os.path.exists(config_file_name):
-        config_file_name = "config/pvoutput.json"
+def get_apikey_systemid_from_config(config_file_name: str = None) -> tuple[str, int]:
+    """read a pvoutput.json files with apikey and systemid values
+    ```
+    {
+        "apikey": "aaaaaabbbbbbccccccddddddeeeeeeffffffgggg",
+        "systemid": 12345
+    }
+    ```
+    If parameter config_file_name is provided, that is first tried
+    if not found then the user home dir ~/.config/pvoutput.json is tried,
+    if not found then config/pvoutput.json is tried from the current dir
+
+    :param config_file_name: the filename to read the configuration from
+    :type config_file_name: str
+
+    :return: a tuple with apikey, systemid
+    :rtype: tuple[str, int]
+    """
+    if config_file_name is None or not os.path.exists(config_file_name):
+        config_file_name = os.path.expanduser("~/.config/pvoutput.json")
+        if not os.path.exists(config_file_name):
+            config_file_name = "config/pvoutput.json"
+            if not os.path.exists(config_file_name):
+                raise ConfigurationNotFoundError()
 
     with open(config_file_name, 'r') as config_file:
         config = json.load(config_file)

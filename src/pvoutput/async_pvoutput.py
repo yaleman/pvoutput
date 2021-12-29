@@ -1,17 +1,17 @@
 """ AsyncIO interface to the PVOutput API """
 
 import datetime
+from typing import Any, Coroutine
 
 import aiohttp
 
 from .parameters import *
 from . import utils
+from . import exceptions
 
 
 class AsyncPVOutput:
     """ This class provides an interface to the pvoutput.org API """
-
-    validate_data = utils.validate_data
 
     # pylint: disable=too-many-arguments
     def __init__(
@@ -58,9 +58,8 @@ class AsyncPVOutput:
         }
         return headers
 
-    async def _call(
-        self, endpoint, data=None, params=None, headers=False, method: str = "POST"
-    ):
+    async def _call(self, endpoint, data=None, params=None, headers=False, method: str = "POST"
+                    ) -> aiohttp.ClientResponse:
         """Makes a call to a URL endpoint with the data/headers/method you require.
 
         :param endpoint: The URL to call
@@ -68,6 +67,9 @@ class AsyncPVOutput:
 
         :param data: Data to send
         :type data: dict
+
+        :param params: query parameters for the url
+        :type params: dict
 
         :param headers: Additional headers, if unset it'll use self._headers() which is the standard API key / systemid set (eg, self.check_rate_limit)
         :type headers: dict
@@ -98,11 +100,11 @@ class AsyncPVOutput:
             raise TypeError(f"headers should be a dict, got {str(type(headers))}")
         # TODO: learn if I can dynamically send thing, is that **args?
         if method == "GET":
-            response = await self.session.get(
-                endpoint, data=data, headers=headers, params=params
-            )
-        else:
+            response = await self.session.get(endpoint, data=data, headers=headers, params=params)
+        elif method == "POST":
             response = await self.session.post(endpoint, data=data, headers=headers)
+        else:
+            raise exceptions.UnsupportedMethodError(f"method '{method}' is not supported")
 
         if response.status == 400:
             # TODO: work out how to get the specific response and provide useful answers
@@ -111,7 +113,7 @@ class AsyncPVOutput:
         response.raise_for_status()
         return response
 
-    async def check_rate_limit(self):
+    async def check_rate_limit(self) -> dict:
         """
         Makes a call to the site, checking if you have hit the rate limit. Check the `documentation`_ for details.
 
@@ -131,7 +133,7 @@ class AsyncPVOutput:
 
         return retval
 
-    async def addstatus(self, data: dict):
+    async def addstatus(self, data: dict) -> aiohttp.ClientResponse:
         """
         The Add Status service accepts live output data at the status interval (5 to 15 minutes) configured for the system.
 
@@ -153,7 +155,7 @@ class AsyncPVOutput:
                 datetime.datetime.now().minute, self.stats_period
             )
             data["t"] = datetime.time(hour=hour, minute=minute).strftime("%H:%M")
-        self.validate_data(data, ADDSTATUS_PARAMETERS)
+        utils.validate_data(data, ADDSTATUS_PARAMETERS, self.donation_made)
 
         url, method = utils.URLS["addstatus"]
 
@@ -173,7 +175,8 @@ class AsyncPVOutput:
     #     # self.validate_data(data, ADDOUTPUT_PARAMETERS)
     #     # self._call(endpoint="https://pvoutput.org/service/r2/addoutput.jsp", data=data)
 
-    async def delete_status(self, date_val: datetime.datetime.date, time_val=None):
+    async def delete_status(self, date_val: datetime.datetime.date, time_val=None
+                            ) -> aiohttp.ClientResponse:
         """deletes a given status, based on the provided parameters
         needs a datetime() object
         set the hours/minutes to non-zero to delete a specific time
@@ -210,10 +213,8 @@ class AsyncPVOutput:
         data = {"d": date_val.strftime("%Y%m%d")}
         if time_val:
             data["t"] = time_val.strftime("%H:%M")
-        response = self._call(
-            endpoint="https://pvoutput.org/service/r2/deletestatus.jsp", data=data
-        )
-        return response
+        url, method = utils.URLS["deletestatus"]
+        return await self._call(endpoint=url, data=data, method=method)
 
     async def getstatus(self) -> dict:
         """
@@ -224,28 +225,30 @@ class AsyncPVOutput:
         :rtype: dict
         """
         # TODO: extend this, you can do history searches and all sorts with this endpoint
-        url = "https://pvoutput.org/service/r2/getstatus.jsp"
-        data = {}
+        url, method = utils.URLS["getstatus"]
         if self.donation_made:
             url = f"{url}?ext=1&sid={self.systemid}"
-        response = await self._call(endpoint=url, data=data, method="GET")
+        data = {}
+        response = await self._call(endpoint=url, data=data, method=method)
 
         # grab all the things
         text = await response.text()
 
-        responsedata, extras = utils.responsedata_to_response(text.split(","))
+        response_data, extras = utils.responsedata_to_response(text.split(","))
 
         # if we're fancy, we get more data
         if extras:
             for i in range(1, 7):
-                responsedata[f"v{i+6}"] = (
+                response_data[f"v{i+6}"] = (
                     None if extras[i - 1] == "NaN" else float(extras[i - 1])
                 )
-        return responsedata
+        return response_data
 
-    async def register_notification(self, appid: str, url: str, alerttype: int):
+    async def register_notification(self, appid: str, callback_url: str, alert_type: int
+                                    ) -> aiohttp.ClientResponse:
         """
-        The Register Notification Service allows a third party application to receive PVOutput alert callbacks via a HTTP end point.
+        The Register Notification Service allows a third party application
+        to receive PVOutput alert callbacks via an HTTP end point.
 
         [API Documentation](https://pvoutput.org/help.html#api-registernotification)
 
@@ -255,28 +258,28 @@ class AsyncPVOutput:
         :param appid: Application ID (eg: example.app.id)
         :type appid: str (maxlen: 100)
 
-        :param url: Callback URL (eg: http://example.com/api/)
-        :type url: str (maxlen: 150)
+        :param callback_url: Callback URL (eg: http://example.com/api/)
+        :type callback_url: str (maxlen: 150)
 
-        :param type: Alert Type (See list below)
-        :type type: int
+        :param alert_type: Alert Type (See list below)
+        :type alert_type: int
 
 
-        Type list:
+        Alert Type list:
 
         =====   ====
         Value   Type
         =====   ====
         0       All Notifications
         1       Private Message
-        1       Private Message
         3       Joined Team
         4       Added Favourite
-        5       High Consumption Alert 6 System Idle Alert
+        5       High Consumption Alert
+        6       System Idle Alert
         8       Low Generation Alert
         11      Performance Alert
-        4       Standby Cost Alert
-        1       Extended Data V7 Alert
+        14      Standby Cost Alert
+        15      Extended Data V7 Alert
         16      Extended Data V8 Alert
         17      Extended Data V9 Alert
         18      Extended Data V10 Alert
@@ -292,23 +295,83 @@ class AsyncPVOutput:
         # validation of inputs
         if not isinstance(appid, str):
             raise TypeError(f"appid needs to be a string, got: {str(type(appid))}")
-        if not isinstance(url, str):
-            raise TypeError(f"url needs to be a string, got: {str(type(url))}")
-        if len(url) > 150:
+        if not isinstance(callback_url, str):
+            raise TypeError(f"url needs to be a string, got: {str(type(callback_url))}")
+        if len(callback_url) > 150:
             raise ValueError(
-                f"Length of url can't be longer than 150 chars - was {len(url)}"
+                f"Length of url can't be longer than 150 chars - was {len(callback_url)}"
             )
         if len(appid) > 100:
             raise ValueError(
                 f"Length of appid can't be longer than 100 chars - was {len(appid)}"
             )
-
-        if not isinstance(alerttype, int):
+        if not isinstance(alert_type, int):
             raise TypeError(
-                f"alerttype needs to be an int, got: {str(type(alerttype))}"
+                f"alert_type needs to be an int, got: {str(type(alert_type))}"
             )
-        # TODO: urlencode the callback URL
 
-        call_url = f"https://pvoutput.org/service/r2/registernotification.jsp?appid={appid}&type={alerttype}&url={url}"
-        response = await (await self._call(endpoint=call_url, method="GET")).text()
-        return response
+        url, method = utils.URLS['registernotification']
+        # no need to encode parameters, requests library does this
+        params = {"appid": appid,
+                  "type": alert_type,
+                  "url": callback_url}
+        return await self._call(endpoint=url, params=params, method=method)
+
+    async def deregister_notification(self, appid: str, alert_type: int) -> aiohttp.ClientResponse:
+        """
+        The Deregister Notification Service removes registered notifications under an application id for a system.
+
+        [API Documentation](https://pvoutput.org/help/api_specification.html#deregister-notification-service)
+
+        All parameters are mandatory:
+
+        ```
+        :param appid: Application ID (eg: example.app.id)
+        :type appid: str (maxlen: 100)
+
+        :param alert_type: Alert Type (See list below)
+        :type alert_type: int
+
+
+        Alert Type list:
+
+        =====   ====
+        Value   Type
+        =====   ====
+        0       All Notifications
+        1       Private Message
+        3       Joined Team
+        4       Added Favourite
+        5       High Consumption Alert
+        6       System Idle Alert
+        8       Low Generation Alert
+        11      Performance Alert
+        14      Standby Cost Alert
+        15      Extended Data V7 Alert
+        16      Extended Data V8 Alert
+        17      Extended Data V9 Alert
+        18      Extended Data V10 Alert
+        19      Extended Data V11 Alert
+        20      Extended Data V12 Alert
+        23      High Net Power Alert
+        24      Low Net Power Alert
+        =====   ====
+        ```
+        """
+        # TODO: Find out if HTTPS is supported for Callback URLs
+        # TODO: validation of types, is this the best way?
+        # validation of inputs
+        if not isinstance(appid, str):
+            raise TypeError(f"appid needs to be a string, got: {str(type(appid))}")
+        if len(appid) > 100:
+            raise ValueError(f"Length of appid can't be longer than 100 chars - was {len(appid)}")
+        if not isinstance(alert_type, int):
+            raise TypeError(
+                f"alert_type needs to be an int, got: {str(type(alert_type))}"
+            )
+
+        url, method = utils.URLS['deregisternotification']
+        # no need to encode parameters, requests library does this
+        params = {"appid": appid,
+                  "type": alert_type}
+        return await self._call(endpoint=url, params=params, method=method)
