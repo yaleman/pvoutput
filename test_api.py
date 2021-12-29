@@ -88,7 +88,7 @@ def test_delete_status_date_too_late(pvo=good_pvo()):
 
 
 def test_delete_status_date_derp(pvo=good_pvo()):
-    """ it should barf if you're setting it to tomorrrow """
+    """ it should barf if you're setting it to tomorrow """
     with pytest.raises(ValueError):
         pvo.delete_status(date_val=datetime.date.today() + datetime.timedelta(1))
 
