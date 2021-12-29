@@ -7,6 +7,7 @@ import requests
 from .parameters import *
 
 from . import utils
+from . import exceptions
 
 
 class PVOutput:
@@ -63,14 +64,15 @@ class PVOutput:
         :param data: Data to send
         :type data: dict
 
-        :param headers: Additional headers, if unset it'll use self._headers() which is the standard API key / systemid set (eg, self.check_rate_limit)
+        :param headers: Additional headers, if unset it'll use self._headers()
+                        which is the standard API key / systemid set (eg, self.check_rate_limit)
         :type headers: dict
 
-        :param method: specify a method if you want to use something other than requests.post
-        :type method: requests.request
+        :param method: specify a method if you want to use something other than POST
+        :type method: POST, GET
 
-        :returns: The method.response object
-        :rtype: method.response
+        :returns: The requests.Response object
+        :rtype: requests.Response
 
         :raises TypeError: if the data you pass is of the wrong format.
         :raises ValueError: if the call throws a HTTP 400 error.
@@ -89,8 +91,10 @@ class PVOutput:
         # TODO: learn if I can dynamically send thing, is that **args?
         if method == "GET":
             response = requests.get(endpoint, data=data, headers=headers, params=params)
-        else:
+        elif method == "POST":
             response = requests.post(endpoint, data=data, headers=headers)
+        else:
+            raise exceptions.UnsupportedMethodError(f"method '{method}' is not supported")
 
         if response.status_code == 400:
             # TODO: work out how to get the specific response and provide useful answers
@@ -170,7 +174,7 @@ class PVOutput:
         :type time_val: datetime.datetime.time
 
         :returns: the response object
-        :rtype: requests.post
+        :rtype: requests.Response
         """
         if not isinstance(date_val, datetime.date):
             raise ValueError(
@@ -195,16 +199,14 @@ class PVOutput:
         data = {"d": date_val.strftime("%Y%m%d")}
         if time_val:
             data["t"] = time_val.strftime("%H:%M")
-        response = self._call(
-            endpoint="https://pvoutput.org/service/r2/deletestatus.jsp", data=data
-        )
+        url, method = utils.URLS["deletestatus"]
+        response = self._call(endpoint=url, data=data, method=method)
         return response
 
     # pylint: disable=too-many-locals
     def getstatus(self) -> dict:
         """
         Makes a call to the API and gets the last update.
-
 
         :returns: the last updated data
         :rtype: dict
@@ -237,7 +239,6 @@ class PVOutput:
 
         All parameters are mandatory:
 
-        ```
         :param appid: Application ID (eg: example.app.id)
         :type appid: str (maxlen: 100)
 
@@ -250,6 +251,7 @@ class PVOutput:
         :return: the requests.Response object
         :rtype: requests.Response
 
+        ```
         Alert Type list:
 
         =====   ====
@@ -273,6 +275,7 @@ class PVOutput:
         23      High Net Power Alert
         24      Low Net Power Alert
         =====   ====
+        ```
         """
         # TODO: Find out if HTTPS is supported for Callback URLs
         # TODO: validation of types, is this the best way?
@@ -292,11 +295,11 @@ class PVOutput:
 
         if not isinstance(alert_type, int):
             raise TypeError(
-                f"alerttype needs to be an int, got: {str(type(alert_type))}"
+                f"alert_type needs to be an int, got: {str(type(alert_type))}"
             )
-        # TODO: urlencode the callback URL
 
         url, method = utils.URLS['registernotification']
+        # no need to encode parameters, requests library does this
         params = {"appid": appid,
                   "type": alert_type,
                   "url": callback_url}
@@ -310,7 +313,6 @@ class PVOutput:
 
         All parameters are mandatory:
 
-        ```
         :param appid: Application ID (eg: example.app.id)
         :type appid: str (maxlen: 100)
 
@@ -320,6 +322,7 @@ class PVOutput:
         :return: requests.Response object
         :rtype: requests.Response
 
+        ```
         Alert Type list:
 
         =====   ====

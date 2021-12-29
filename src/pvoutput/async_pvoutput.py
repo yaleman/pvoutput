@@ -74,11 +74,11 @@ class AsyncPVOutput:
         :param headers: Additional headers, if unset it'll use self._headers() which is the standard API key / systemid set (eg, self.check_rate_limit)
         :type headers: dict
 
-        :param method: specify a method if you want to use something other than requests.post
-        :type method: requests.request
+        :param method: specify a method if you want to use something other than POST
+        :type method: POST, GET
 
-        :returns: The method.response object
-        :rtype: method.response
+        :returns: The aiohttp.ClientResponse object
+        :rtype: aiohttp.ClientResponse
 
         :raises TypeError: if the data you pass is of the wrong format.
         :raises ValueError: if the call throws a HTTP 400 error.

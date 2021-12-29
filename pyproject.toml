@@ -41,7 +41,7 @@ dev = [
 ]
 
 [project.urls]
-Home = "https://github.com/yaleman/pygoodwe"
+Home = "https://github.com/yaleman/pvoutput"
 
 [project.scripts]
 
