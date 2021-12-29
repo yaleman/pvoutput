@@ -208,13 +208,13 @@ def test_getstatus_donation_made_false():
 
 
 def test_add_output():
-    """ tests the validator for addstatus() """
+    """ tests the validator for addoutput() """
     data = {"d": "20190515", "g": 123}
     assert utils.validate_data(data, pvoutput.ADDOUTPUT_PARAMETERS, False) is True
 
 
 def test_add_output_float():
-    """ tests the validator for addstatus() """
+    """ tests the validator for addoutput() """
     data = {"d": "20190515", "g": 123.0}
     with pytest.raises(TypeError):
         utils.validate_data(data, pvoutput.ADDOUTPUT_PARAMETERS, False)
