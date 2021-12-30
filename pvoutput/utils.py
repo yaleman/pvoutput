@@ -1,5 +1,5 @@
 """ Utilities """
-
+import re
 from datetime import datetime
 from math import floor
 
@@ -88,7 +88,7 @@ def validate_data(self, data, apiset):
             data[key], apiset[key]["type"]
         ):
             raise TypeError(
-                f"data[{key}] type ({type(data[key])} is invalid - should be {str(type(apiset[key]['type']))})"
+                f"data[{key}] type ({type(data[key])} is invalid - should be {str(apiset[key]['type'])})"
             )
     # TODO: check format, 'format' should be a regex
     for format_string in [apiset[key].get("format") for key in apiset.keys()]:
