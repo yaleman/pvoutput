@@ -1,16 +1,13 @@
-""" provides an class for uploading to the PVOutput API """
+""" AsyncIO interface to the PVOutput API """
 
 import datetime
 import re
 
-import requests
+import asyncio
+import aiohttp
 
-from .parameters import *
-
-from . import utils
-
-
-__version__ = "0.0.7"
+from ..parameters import *
+from .. import utils
 
 
 class PVOutput:
@@ -25,10 +22,9 @@ class PVOutput:
         systemid: int,
         donation_made: bool = False,
         stats_period: int = 5,
+        session=None,
     ):
-        """Setup code
-
-
+        """Startup phase
         ```
         :param apikey: API key (read or write)
         :type apikey: str
@@ -38,6 +34,10 @@ class PVOutput:
         :type donation_mode: bool
         ```
         """
+        self.session = session
+        if not session:
+            self.session = aiohttp.ClientSession()
+
         if not isinstance(systemid, int):
             raise TypeError("systemid should be int")
         if not isinstance(apikey, str):
@@ -60,7 +60,9 @@ class PVOutput:
         }
         return headers
 
-    def _call(self, endpoint, data=None, params=None, headers=False, method="POST"):
+    async def _call(
+        self, endpoint, data=None, params=None, headers=False, method: str = "POST"
+    ):
         """Makes a call to a URL endpoint with the data/headers/method you require.
 
         :param endpoint: The URL to call
@@ -82,10 +84,14 @@ class PVOutput:
         :raises ValueError: if the call throws a HTTP 400 error.
         :raises requests.exception: if method throws an exception.
         """
+        if not method:
+            method = self.session.post
+
         # always need the base headers
         if not headers:
             headers = self._headers()
         # TODO: type checking on call
+
         if method == "POST" and data and isinstance(data, dict) is False:
             raise TypeError(f"data should be a dict, got {str(type(data))}")
         if method == "GET" and params and isinstance(params, dict) is False:
@@ -94,20 +100,24 @@ class PVOutput:
             raise TypeError(f"headers should be a dict, got {str(type(headers))}")
         # TODO: learn if I can dynamically send thing, is that **args?
         if method == "GET":
-            response = requests.get(endpoint, data=data, headers=headers, params=params)
+            response = await self.session.get(
+                endpoint, data=data, headers=headers, params=params
+            )
         else:
-            response = requests.post(endpoint, data=data, headers=headers)
+            response = await self.session.post(endpoint, data=data, headers=headers)
 
-        if response.status_code == 400:
+        if response.status == 400:
             # TODO: work out how to get the specific response and provide useful answers
             raise ValueError(f"HTTP400: {response.text.strip()}")
         # likely errors - https://pvoutput.org/help/api_specification.html#error-messages
         response.raise_for_status()
         return response
 
-    def check_rate_limit(self):
+    async def check_rate_limit(self):
         """
-        Makes a call to the site, checking if you have hit the rate limit. Check the [documentation](https://pvoutput.org/help/api_specification.html#rate-limits)
+        Makes a call to the site, checking if you have hit the rate limit. Check the `documentation`_ for details.
+
+        .. _documentation: https://pvoutput.org/help.html#api-ratelimit
 
         :returns: the headers relating to the rate limit.
         :rtype: dict
@@ -118,11 +128,12 @@ class PVOutput:
 
         url, method = utils.URLS["getsystem"]
 
-        response = self._call(url, {}, headers=headers, method=method)
+        response = await self._call(url, {}, headers=headers, method=method)
         retval = utils.get_rate_limit_header(response)
+
         return retval
 
-    def addstatus(self, data: dict):
+    async def addstatus(self, data: dict):
         """
         The Add Status service accepts live output data at the status interval (5 to 15 minutes) configured for the system.
 
@@ -148,7 +159,7 @@ class PVOutput:
 
         url, method = utils.URLS["addstatus"]
 
-        return self._call(endpoint=url, data=data, method=method)
+        return await self._call(endpoint=url, data=data, method=method)
 
     # def addoutput(self, data: dict):
     #     """ The Add Output service uploads end of day output information. It allows all of the information provided on the Add Output page to be uploaded.
@@ -164,7 +175,7 @@ class PVOutput:
     #     # self.validate_data(data, ADDOUTPUT_PARAMETERS)
     #     # self._call(endpoint="https://pvoutput.org/service/r2/addoutput.jsp", data=data)
 
-    def delete_status(self, date_val: datetime.datetime.date, time_val=None):
+    async def delete_status(self, date_val: datetime.datetime.date, time_val=None):
         """deletes a given status, based on the provided parameters
         needs a datetime() object
         set the hours/minutes to non-zero to delete a specific time
@@ -206,8 +217,7 @@ class PVOutput:
         )
         return response
 
-    # pylint: disable=too-many-locals
-    def getstatus(self) -> dict:
+    async def getstatus(self) -> dict:
         """
         Makes a call to the API and gets the last update.
 
@@ -220,11 +230,12 @@ class PVOutput:
         data = {}
         if self.donation_made:
             url = f"{url}?ext=1&sid={self.systemid}"
-        response = self._call(endpoint=url, data=data, method="GET")
-        response.raise_for_status()
+        response = await self._call(endpoint=url, data=data, method="GET")
+
         # grab all the things
-        # pylint: disable=invalid-name
-        responsedata, extras = utils.responsedata_to_response(response.text.split(","))
+        text = await response.text()
+
+        responsedata, extras = utils.responsedata_to_response(text.split(","))
 
         # if we're fancy, we get more data
         if extras:
@@ -234,14 +245,15 @@ class PVOutput:
                 )
         return responsedata
 
-    def register_notification(self, appid: str, url: str, alerttype: int):
+    async def register_notification(self, appid: str, url: str, alerttype: int):
         """
         The Register Notification Service allows a third party application to receive PVOutput alert callbacks via a HTTP end point.
 
-        `API Documentation`_
+        [API Documentation](https://pvoutput.org/help.html#api-registernotification)
 
-        All parameters are mandatory
+        All parameters are mandatory:
 
+        ```
         :param appid: Application ID (eg: example.app.id)
         :type appid: str (maxlen: 100)
 
@@ -251,7 +263,6 @@ class PVOutput:
         :param type: Alert Type (See list below)
         :type type: int
 
-        .. _API Documentation: https://pvoutput.org/help.html#api-registernotification
 
         Type list:
 
@@ -276,6 +287,7 @@ class PVOutput:
         23      High Net Power Alert
         24      Low Net Power Alert
         =====   ====
+        ```
         """
         # TODO: Find out if HTTPS is supported for Callback URLs
         # TODO: validation of types, is this the best way?
@@ -300,5 +312,5 @@ class PVOutput:
         # TODO: urlencode the callback URL
 
         call_url = f"https://pvoutput.org/service/r2/registernotification.jsp?appid={appid}&type={alerttype}&url={url}"
-        response = self._call(endpoint=call_url, method="GET")
+        response = await self._call(endpoint=call_url, method="GET").text()
         return response

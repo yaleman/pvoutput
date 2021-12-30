@@ -1,4 +1,11 @@
+""" Standard parameter things. """
+
 from copy import copy
+
+__all__ = [
+    "ADDSTATUS_PARAMETERS",
+    "DELETESTATUS_PARAMETERS",
+]
 
 standard_parameters = {
     "d": {
@@ -18,9 +25,9 @@ standard_parameters = {
 }
 
 DELETESTATUS_PARAMETERS = {
-    "d": copy(standard_parameters["d"]), 
+    "d": copy(standard_parameters["d"]),
     "t": copy(standard_parameters["t"]),
-    }
+}
 DELETESTATUS_PARAMETERS["t"]["required"] = False  # isn't required if 'd' is set
 
 ADDSTATUS_PARAMETERS = {

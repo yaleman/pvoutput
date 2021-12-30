@@ -1,0 +1,58 @@
+[build-system]
+requires = [
+    "flit_core >=3.2,<4"
+]
+build-backend = "flit_core.buildapi"
+
+[project]
+authors = [
+    {name = "James Hodgkinson", email = "james@terminaloutcomes.com"}
+]
+classifiers = [
+    "License :: OSI Approved :: MIT License"
+]
+dynamic = [
+    "version",
+    "description"
+]
+
+dependencies = [
+    "requests",
+    "aiohttp"
+]
+
+keywords = [
+    "api",
+    "solar",
+    "pvoutput",
+]
+name = "pvoutput"
+readme = "README.md"
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "mypy",
+    "flit",
+    "requests-mock",
+    "mkdocstrings",
+    "mkdocs-material",
+    "mkdocs",
+]
+
+[project.urls]
+Home = "https://github.com/yaleman/pvoutput"
+
+[project.scripts]
+
+[tool.flit.sdist]
+exclude = [
+    "requirements*.txt",
+    ".gitignore",
+    ".pylintrc",
+    "test*",
+    "./.*",
+    "*.sh",
+    "mkdocs.yml",
+    "upload_to_pip",
+]

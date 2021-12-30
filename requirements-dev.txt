@@ -1,3 +1,9 @@
 -r requirements.txt
 requests-mock
 pytest
+pytest-asyncio
+
+mkdocstrings
+mkdocs-material
+mkdocs
+flit
