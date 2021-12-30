@@ -245,11 +245,12 @@ class PVOutput:
                 )
         return responsedata
 
-    async def register_notification(self, appid: str, url: str, alerttype: int):
+    async def register_notification(self, appid: str, url: str, alerttype: int) -> str:
         """
-        The Register Notification Service allows a third party application to receive PVOutput alert callbacks via a HTTP end point.
+        The Register Notification Service allows a third party application
+        to receive PVOutput alert callbacks via a HTTP end point.
 
-        [API Documentation](https://pvoutput.org/help.html#api-registernotification)
+        [API Documentation](https://pvoutput.org/help/api_specification.html#register-notification-service)
 
         All parameters are mandatory:
 
@@ -260,25 +261,28 @@ class PVOutput:
         :param url: Callback URL (eg: http://example.com/api/)
         :type url: str (maxlen: 150)
 
-        :param type: Alert Type (See list below)
-        :type type: int
+        :param alerttype: Alert Type (See list below)
+        :type alerttype: int
 
+        :return: The response text
+        :rtype: str
 
-        Type list:
+        ```
+        Alert Type list:
 
         =====   ====
         Value   Type
         =====   ====
         0       All Notifications
         1       Private Message
-        1       Private Message
         3       Joined Team
         4       Added Favourite
-        5       High Consumption Alert 6 System Idle Alert
+        5       High Consumption Alert
+        6       System Idle Alert
         8       Low Generation Alert
         11      Performance Alert
-        4       Standby Cost Alert
-        1       Extended Data V7 Alert
+        14      Standby Cost Alert
+        15      Extended Data V7 Alert
         16      Extended Data V8 Alert
         17      Extended Data V9 Alert
         18      Extended Data V10 Alert
@@ -309,8 +313,10 @@ class PVOutput:
             raise TypeError(
                 f"alerttype needs to be an int, got: {str(type(alerttype))}"
             )
-        # TODO: urlencode the callback URL
 
-        call_url = f"https://pvoutput.org/service/r2/registernotification.jsp?appid={appid}&type={alerttype}&url={url}"
-        response = await (await self._call(endpoint=call_url, method="GET")).text()
-        return response
+        call_url, method = utils.URLS['registernotification']
+        # no need to encode parameters, requests library does this
+        params = {"appid": appid,
+                  "type": alerttype,
+                  "url": url}
+        return await (await self._call(endpoint=call_url, params=params, method=method)).text()
