@@ -313,9 +313,9 @@ class PVOutput:
                 f"alerttype needs to be an int, got: {str(type(alerttype))}"
             )
 
-        call_url, method = utils.URLS['registernotification']
+        call_url, method = utils.URLS["registernotification"]
         # no need to encode parameters, requests library does this
-        params = {"appid": appid,
-                  "type": alerttype,
-                  "url": url}
-        return await (await self._call(endpoint=call_url, params=params, method=method)).text()
+        params = {"appid": appid, "type": alerttype, "url": url}
+        return await (
+            await self._call(endpoint=call_url, params=params, method=method)
+        ).text()
