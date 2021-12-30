@@ -117,7 +117,7 @@ def test_delete_status_invalid_time_val_type(pvo=good_pvo()):
         )
 
 
-def test_donation_mode_keys():
+def test_donation_made_keys():
     """test an addstatus on a non-donation account with a call that requires donations"""
     pvo = good_pvo_no_donation()
     data = {
@@ -146,8 +146,8 @@ def test_addstatus_every_possible_time():
                 pvo.addstatus(data)
 
 
-def test_getstatus_donation_mode_true():
-    """test getstatus in donation mode"""
+def test_getstatus_donation_made_true():
+    """test getstatus in donation made"""
     mockdata_donation = (
         "20191012,23:00,15910,0,15973,724,NaN,NaN,239.4,33.000,NaN,NaN,NaN,NaN,NaN"
     )
@@ -180,7 +180,7 @@ def test_getstatus_donation_mode_true():
         assert good_pvo_with_donation().getstatus() == expecteddict
 
 
-def test_getstatus_donation_mode_false():
+def test_getstatus_donation_made_false():
     """test addstatus when you haven't made a donation, and you're not trying to do donation things"""
     mockdata_donation = "20191012,23:00,15910,0,15973,724,NaN,NaN,239.4"
 

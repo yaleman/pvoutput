@@ -95,7 +95,7 @@ def validate_data(self, data, apiset):
         print(format_string)
 
     # TODO: 'd' can't be more than 14 days ago, if a donator, goes out to 90
-    # check if donation_mode == True and age of thing
+    # check if donation_made == True and age of thing
     # if self.donation_made:
     #     # check if more than 90 days ago
     # else:
