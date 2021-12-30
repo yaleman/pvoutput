@@ -290,7 +290,7 @@ class PVOutput:
             )
         if len(appid) > 100:
             raise ValueError(
-                f"Length of appid can't be longer than 150 chars - was {len(appid)}"
+                f"Length of appid can't be longer than 100 chars - was {len(appid)}"
             )
 
         if not isinstance(alerttype, int):
