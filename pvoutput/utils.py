@@ -50,7 +50,7 @@ def responsedata_to_response(input_data: list):
     return responsedata, extras
 
 
-def get_rate_limit_header(response_object):
+def get_rate_limit_header(response_object) -> dict:
     """gets the rate limit header from the returned headers"""
     retval = {}
     for key in response_object.headers.keys():

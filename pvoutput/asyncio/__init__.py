@@ -113,11 +113,10 @@ class PVOutput:
         response.raise_for_status()
         return response
 
-    async def check_rate_limit(self):
+    async def check_rate_limit(self) -> dict:
         """
-        Makes a call to the site, checking if you have hit the rate limit. Check the `documentation`_ for details.
-
-        .. _documentation: https://pvoutput.org/help.html#api-ratelimit
+        Makes a call to the site, checking if you have hit the rate limit.
+        Check the [documentation](https://pvoutput.org/help/api_specification.html#rate-limits)
 
         :returns: the headers relating to the rate limit.
         :rtype: dict
