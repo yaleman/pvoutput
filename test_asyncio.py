@@ -11,7 +11,7 @@ try:
     import aiohttp #pylint: disable=unused-import
 except ImportError as error_message:
     print(f"Failed to import aiohttp: {error_message}")
-    sys.exit(1)
+    pytest.fail()
 
 
 # All test coroutines will be treated as marked.
@@ -22,7 +22,7 @@ from datetime import datetime, date,time
 
 if not os.path.exists(os.path.expanduser("~/.config/pvoutput.json")):
     print("Failed to find config file")
-    sys.exit(1)
+    pytest.fail()
 
 with open(os.path.expanduser("~/.config/pvoutput.json"), 'r') as config_file:
     config = json.load(config_file)
