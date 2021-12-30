@@ -25,7 +25,7 @@ def round_to_base(number, base):
 
 
 def responsedata_to_response(input_data: list):
-    """ Turns the status output into a dict """
+    """Turns the status output into a dict"""
     # pylint: disable=invalid-name
     d, t, v1, v2, v3, v4, v5, v6, normalised_output, *extras = input_data
 
@@ -46,7 +46,7 @@ def responsedata_to_response(input_data: list):
 
 
 def get_rate_limit_header(response_object):
-    """ gets the rate limit header from the returned headers """
+    """gets the rate limit header from the returned headers"""
     retval = {}
     for key in response_object.headers.keys():
         if key.startswith("X-Rate-Limit"):

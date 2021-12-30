@@ -14,7 +14,7 @@ __version__ = "0.0.7"
 
 
 class PVOutput:
-    """ This class provides an interface to the pvoutput.org API """
+    """This class provides an interface to the pvoutput.org API"""
 
     validate_data = utils.validate_data
 
