@@ -312,5 +312,5 @@ class PVOutput:
         # TODO: urlencode the callback URL
 
         call_url = f"https://pvoutput.org/service/r2/registernotification.jsp?appid={appid}&type={alerttype}&url={url}"
-        response = await self._call(endpoint=call_url, method="GET").text()
+        response = await (await self._call(endpoint=call_url, method="GET")).text()
         return response
