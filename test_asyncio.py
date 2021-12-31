@@ -1,9 +1,6 @@
-#!/usr/bin/env python3
-
-""" test some things """
+""" test asyncio things """
 
 import os
-import sys
 import json
 import pytest
 
@@ -17,28 +14,31 @@ except ImportError as error_message:
 # All test coroutines will be treated as marked.
 pytestmark = pytest.mark.asyncio
 
+# disabling this, needs to be done because of pytest
+# pylint: disable=wrong-import-position
+
 from pvoutput.asyncio import PVOutput
-from datetime import datetime, date,time
 
 @pytest.fixture
 def config():
-
+    """ configuration fixture """
     if not os.path.exists(os.path.expanduser("~/.config/pvoutput.json")):
         print("Failed to find config file")
         pytest.skip()
 
-    with open(os.path.expanduser("~/.config/pvoutput.json"), 'r') as config_file:
-        config = json.load(config_file)
-    return config
+    with open(os.path.expanduser("~/.config/pvoutput.json"), 'r', encoding="utf8") as config_file:
+        config_data = json.load(config_file)
+    return config_data
 
+# pylint: disable=redefined-outer-name
 async def test_configured_async_getstatus(config):
     """ tests the getstatus endpoint"""
 
     async with aiohttp.ClientSession() as session:
         pvo = PVOutput(apikey=config.get('apikey'), systemid=config.get('systemid'), donation_made=True, session=session)
 
-        testdate = date.today()
-        testtime = time(hour=20, minute=00)
+        # testdate = date.today()
+        # testtime = time(hour=20, minute=00)
         # data = {
         #     'd' : testdate.strftime("%Y%m%d"),
         #     't' : testtime.strftime("%H:%M"),

@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
 
+""" random test things """
+
 import os
 import sys
 import json
+from datetime import date,time
+
 from pvoutput import PVOutput
-from datetime import datetime, date,time
 
 if not os.path.exists(os.path.expanduser("~/.config/pvoutput.json")):
     print("Failed to find config file")
     sys.exit(1)
 
-with open(os.path.expanduser("~/.config/pvoutput.json"), 'r') as config_file:
+with open(os.path.expanduser("~/.config/pvoutput.json"), 'r', encoding="utf8") as config_file:
     config = json.load(config_file)
 
 pvo = PVOutput(apikey=config.get('apikey'), systemid=config.get('systemid'), donation_made=True)

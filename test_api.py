@@ -1,15 +1,16 @@
+""" tests synchronous api things """
 import datetime
 import re
 
 import pytest
+import requests_mock
+
 import pvoutput
 import pvoutput.exceptions
-import requests_mock
 
 # because we're testing, just grab everything.
 URLMATCHER = re.compile('.*')
 
-import datetime
 # used in test_datetime_fix
 FAKE_TIME = datetime.datetime(2020,9,6,12,59,00)
 @pytest.fixture
@@ -17,13 +18,15 @@ def patch_datetime_now(monkeypatch):
     """ patches datetime.now with a fake time
         based on this https://stackoverflow.com/questions/20503373/how-to-monkeypatch-pythons-datetime-datetime-now-with-py-test
         """
-    class mydatetime(datetime.datetime):
+    class PatchedDateTime(datetime.datetime):
+        """ monkeypatched datetime """
         @classmethod
-        def now(cls):
+        def now(cls, _): # pylint: disable=signature-differs
             return FAKE_TIME
-    monkeypatch.setattr(datetime, 'datetime', mydatetime)
+    monkeypatch.setattr(datetime, 'datetime', PatchedDateTime)
 
 def test_patch_datetime(patch_datetime_now):
+    """ testing that the monkeypatching works """
     assert datetime.datetime.now() == FAKE_TIME
 
 def good_pvo_no_donation():
@@ -35,6 +38,7 @@ def good_pvo_with_donation():
     return pvoutput.PVOutput(apikey="helloworld", systemid=1, donation_made=True)
 
 def good_pvo():
+    """ returns a valid PVOutput API object that's not donating """
     return good_pvo_no_donation()
 
 def test_api_inputs():
@@ -52,6 +56,7 @@ def test_api_validation():
 
 def test_headers_gen(pvo=good_pvo()):
     """ tests that PVOutput._headers() returns a valid dict """
+    # pylint: disable=protected-access
     assert pvo._headers() == {
         "X-Pvoutput-Apikey": "helloworld",
         "X-Pvoutput-SystemId": "1",
@@ -61,7 +66,7 @@ def test_headers_gen(pvo=good_pvo()):
 def test_api_validation_addstatus_shouldwork():
     """ tests the validator for addstatus() """
     data = {"d": "20190515", "t": "1234", "v1": 123}
-    assert good_pvo_with_donation().validate_data(data, pvoutput.ADDSTATUS_PARAMETERS) == True
+    assert good_pvo_with_donation().validate_data(data, pvoutput.ADDSTATUS_PARAMETERS)
 
 
 def test_api_validation_types(pvo=good_pvo()):
@@ -117,13 +122,13 @@ def test_donation_mode_keys():
 def test_addstatus_every_possible_time():
     """ this'll test every possible time, because.. why not? """
     pvo = good_pvo_with_donation()
-    for h in range(24):
-        for m in range(60):
+    for hour in range(24):
+        for minute in range(60):
             with requests_mock.mock() as mock:
                 mock.post(URLMATCHER, text="", status_code=200)
-                t = "%d.2:%d2" % (h, m)
+                t_value = f"{hour:02}:{minute:02}"
                 data = {
-                    't' : t,
+                    't' : t_value,
                     'v1' : 54,
                 }
                 pvo.addstatus(data)
@@ -187,6 +192,8 @@ def test_getstatus_donation_mode_false():
         assert good_pvo_no_donation().getstatus() == expecteddict
 
 def test_register_notification_url_maxlength():
+
+    """ tests a long-url entry fail into register notification"""
     pvo = pvoutput.PVOutput(apikey="helloworld", systemid=1, donation_made=False)
     with pytest.raises(ValueError):
         pvo.register_notification(appid='test', url="#"*1000, alerttype=1)
@@ -207,6 +214,7 @@ def test_register_notification_url_maxlength():
             assert response.status_code == 200
 
 def test_register_notification_url_validresponse():
+    """ tests a valid entry into register notification"""
     pvo = pvoutput.PVOutput(apikey="helloworld", systemid=1, donation_made=False)
     with requests_mock.mock() as mock:
         mock.get(
@@ -218,6 +226,7 @@ def test_register_notification_url_validresponse():
         assert response.status_code == 200
 
 def test_register_notification_appid_maxlength(pvo=good_pvo()):
+    """tests the max length of appids"""
     with pytest.raises(ValueError):
         with requests_mock.mock() as mock:
             mock.get(
@@ -238,7 +247,6 @@ def test_register_notification_appid_maxlength(pvo=good_pvo()):
         )
         response = pvo.register_notification(appid='test', url="http://example.com", alerttype=1)
         assert response.status_code == 200
-
 
 def test_datetime_fix(patch_datetime_now):
     """ tests issue https://github.com/yaleman/pvoutput/issues/53
