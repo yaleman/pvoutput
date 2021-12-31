@@ -21,7 +21,7 @@ def patch_datetime_now(monkeypatch):
     class PatchedDateTime(datetime.datetime):
         """ monkeypatched datetime """
         @classmethod
-        def now(cls, _): # pylint: disable=signature-differs
+        def now(cls, tz=None): # pylint: disable=signature-differs
             return FAKE_TIME
     monkeypatch.setattr(datetime, 'datetime', PatchedDateTime)
 
