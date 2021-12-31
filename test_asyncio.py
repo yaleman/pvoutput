@@ -25,7 +25,7 @@ def config():
 
     if not os.path.exists(os.path.expanduser("~/.config/pvoutput.json")):
         print("Failed to find config file")
-        pytest.fail()
+        pytest.skip()
 
     with open(os.path.expanduser("~/.config/pvoutput.json"), 'r') as config_file:
         config = json.load(config_file)

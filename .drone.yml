@@ -10,7 +10,7 @@ steps:
   - pip install -r requirements-dev.txt
   - pip install .
   - pip install pytest
-  - pytest -k 'not test_configured_'
+  - pytest
 - name: testbuild
   image: python:3.8
   commands:
