@@ -72,8 +72,8 @@ class PVOutput:
         :param headers: Additional headers, if unset it'll use self._headers() which is the standard API key / systemid set (eg, self.check_rate_limit)
         :type headers: dict
 
-        :param method: specify a method if you want to use something other than requests.post
-        :type method: requests.request
+        :param method: specify a method if you want to use something other than POST
+        :type method: str
 
         :returns: The method.response object
         :rtype: method.response
@@ -95,8 +95,10 @@ class PVOutput:
         # TODO: learn if I can dynamically send thing, is that **args?
         if method == "GET":
             response = requests.get(endpoint, data=data, headers=headers, params=params)
-        else:
+        elif method == "POST":
             response = requests.post(endpoint, data=data, headers=headers)
+        else:
+            raise UnknownMethodError(f"unknown method {method}")
 
         if response.status_code == 400:
             # TODO: work out how to get the specific response and provide useful answers
