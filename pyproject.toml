@@ -38,6 +38,7 @@ dev = [
     "mypy",
     "flit",
     "requests-mock",
+    "types-requests",
     "mkdocstrings",
     "mkdocs-material",
     "mkdocs",

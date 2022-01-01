@@ -4,6 +4,7 @@ pytest
 pytest-asyncio
 pylint-pytest
 requests-mock
+types-requests
 
 mkdocstrings
 mkdocs-material
