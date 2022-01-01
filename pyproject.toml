@@ -55,4 +55,5 @@ exclude = [
     "*.sh",
     "mkdocs.yml",
     "upload_to_pip",
+    "docs/*",
 ]
