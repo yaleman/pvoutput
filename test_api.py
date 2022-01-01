@@ -3,8 +3,6 @@ import datetime
 import re
 
 import pytest
-import pvoutput
-import pvoutput.exceptions
 import requests_mock
 
 import pvoutput
