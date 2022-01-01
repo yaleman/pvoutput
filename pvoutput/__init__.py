@@ -235,7 +235,9 @@ class PVOutput:
                 )
         return responsedata
 
-    def register_notification(self, appid: str, url: str, alerttype: int) -> requests.Response:
+    def register_notification(
+        self, appid: str, url: str, alerttype: int
+    ) -> requests.Response:
         """
         The Register Notification Service allows a third party application
         to receive PVOutput alert callbacks via a HTTP end point.
