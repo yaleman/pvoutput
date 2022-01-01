@@ -1,17 +1,30 @@
 """ Utilities """
-
 from datetime import datetime
 from math import floor
 
 from .exceptions import DonationRequired
 
+BASE_URL = "https://pvoutput.org/service/r2/"
+
 URLS = {
     "addstatus": (
-        "https://pvoutput.org/service/r2/addstatus.jsp",
+        BASE_URL + "addstatus.jsp",
         "POST",
     ),
+    "deletestatus": (
+        BASE_URL + "deletestatus.jsp",
+        "POST",
+    ),
+    "getstatus": (
+        BASE_URL + "getstatus.jsp",
+        "GET",
+    ),
     "getsystem": (
-        "https://pvoutput.org/service/r2/getsystem.jsp",
+        BASE_URL + "getsystem.jsp",
+        "GET",
+    ),
+    "registernotification": (
+        BASE_URL + "registernotification.jsp",
         "GET",
     ),
 }
@@ -25,7 +38,7 @@ def round_to_base(number, base):
 
 
 def responsedata_to_response(input_data: list):
-    """ Turns the status output into a dict """
+    """Turns the status output into a dict"""
     # pylint: disable=invalid-name
     d, t, v1, v2, v3, v4, v5, v6, normalised_output, *extras = input_data
 
@@ -45,8 +58,8 @@ def responsedata_to_response(input_data: list):
     return responsedata, extras
 
 
-def get_rate_limit_header(response_object):
-    """ gets the rate limit header from the returned headers """
+def get_rate_limit_header(response_object) -> dict:
+    """gets the rate limit header from the returned headers"""
     retval = {}
     for key in response_object.headers.keys():
         if key.startswith("X-Rate-Limit"):
@@ -88,14 +101,14 @@ def validate_data(self, data, apiset):
             data[key], apiset[key]["type"]
         ):
             raise TypeError(
-                f"data[{key}] type ({type(data[key])} is invalid - should be {str(type(apiset[key]['type']))})"
+                f"data[{key}] type ({type(data[key])} is invalid - should be {str(apiset[key]['type'])})"
             )
     # TODO: check format, 'format' should be a regex
-    for format_string in [apiset[key].get("format") for key in apiset.keys()]:
-        print(format_string)
+    # for format_string in [apiset[key].get("format") for key in apiset.keys()]:
+    #     print(format_string)
 
     # TODO: 'd' can't be more than 14 days ago, if a donator, goes out to 90
-    # check if donation_mode == True and age of thing
+    # check if donation_made == True and age of thing
     # if self.donation_made:
     #     # check if more than 90 days ago
     # else:

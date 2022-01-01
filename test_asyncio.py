@@ -5,7 +5,7 @@ import json
 import pytest
 
 try:
-    import aiohttp #pylint: disable=unused-import
+    import aiohttp  # pylint: disable=unused-import
 except ImportError as error_message:
     print(f"Failed to import aiohttp: {error_message}")
     pytest.fail()
@@ -19,23 +19,32 @@ pytestmark = pytest.mark.asyncio
 
 from pvoutput.asyncio import PVOutput
 
+
 @pytest.fixture
 def config():
-    """ configuration fixture """
+    """configuration fixture"""
     if not os.path.exists(os.path.expanduser("~/.config/pvoutput.json")):
         print("Failed to find config file")
         pytest.skip()
 
-    with open(os.path.expanduser("~/.config/pvoutput.json"), 'r', encoding="utf8") as config_file:
+    with open(
+        os.path.expanduser("~/.config/pvoutput.json"), "r", encoding="utf8"
+    ) as config_file:
         config_data = json.load(config_file)
     return config_data
 
+
 # pylint: disable=redefined-outer-name
 async def test_configured_async_getstatus(config):
-    """ tests the getstatus endpoint"""
+    """tests the getstatus endpoint"""
 
     async with aiohttp.ClientSession() as session:
-        pvo = PVOutput(apikey=config.get('apikey'), systemid=config.get('systemid'), donation_made=True, session=session)
+        pvo = PVOutput(
+            apikey=config.get("apikey"),
+            systemid=config.get("systemid"),
+            donation_made=True,
+            session=session,
+        )
 
         # testdate = date.today()
         # testtime = time(hour=20, minute=00)
@@ -49,7 +58,9 @@ async def test_configured_async_getstatus(config):
         #     'm1' : 'Testing', # custom message
         # }
         result = await pvo.getstatus()
-        print(result)
+        # print(result)
         assert result
 
-        print(await pvo.check_rate_limit())
+        result = await pvo.check_rate_limit()
+        # print(check_rate_limit)
+        assert result

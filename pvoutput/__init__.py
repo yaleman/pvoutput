@@ -1,11 +1,11 @@
-""" provides an class for uploading to the PVOutput API """
+""" Synchronous interface to the PVOutput API """
 
 import datetime
-import re
 
 import requests
 
 from .parameters import *
+from .exceptions import *
 
 from . import utils
 
@@ -14,7 +14,7 @@ __version__ = "0.0.7"
 
 
 class PVOutput:
-    """ This class provides an interface to the pvoutput.org API """
+    """This class provides an interface to the pvoutput.org API"""
 
     validate_data = utils.validate_data
 
@@ -28,15 +28,12 @@ class PVOutput:
     ):
         """Setup code
 
-
-        ```
         :param apikey: API key (read or write)
         :type apikey: str
         :param systemid: system ID
         :type systemid: int
-        :param donation_mode: Whether to use the donation-required fields
-        :type donation_mode: bool
-        ```
+        :param donation_made: Whether to use the donation-required fields
+        :type donation_made: bool
         """
         if not isinstance(systemid, int):
             raise TypeError("systemid should be int")
@@ -48,8 +45,7 @@ class PVOutput:
         self.stats_period = stats_period
 
     def _headers(self) -> dict:
-        """
-        Relevant documentation: https://pvoutput.org/help.html#api-spec
+        """Relevant documentation: https://pvoutput.org/help/api_specification.html#http-headers
 
         :return: headers for calls to the API
         :rtype: dict
@@ -60,7 +56,9 @@ class PVOutput:
         }
         return headers
 
-    def _call(self, endpoint, data=None, params=None, headers=False, method="POST"):
+    def _call(
+        self, endpoint, data=None, params=None, headers=False, method: str = "POST"
+    ) -> requests.Response:
         """Makes a call to a URL endpoint with the data/headers/method you require.
 
         :param endpoint: The URL to call
@@ -72,11 +70,11 @@ class PVOutput:
         :param headers: Additional headers, if unset it'll use self._headers() which is the standard API key / systemid set (eg, self.check_rate_limit)
         :type headers: dict
 
-        :param method: specify a method if you want to use something other than requests.post
-        :type method: requests.request
+        :param method: specify a method if you want to use something other than POST
+        :type method: str
 
-        :returns: The method.response object
-        :rtype: method.response
+        :returns: The response object
+        :rtype: requests.Response
 
         :raises TypeError: if the data you pass is of the wrong format.
         :raises ValueError: if the call throws a HTTP 400 error.
@@ -95,8 +93,10 @@ class PVOutput:
         # TODO: learn if I can dynamically send thing, is that **args?
         if method == "GET":
             response = requests.get(endpoint, data=data, headers=headers, params=params)
-        else:
+        elif method == "POST":
             response = requests.post(endpoint, data=data, headers=headers)
+        else:
+            raise UnknownMethodError(f"unknown method {method}")
 
         if response.status_code == 400:
             # TODO: work out how to get the specific response and provide useful answers
@@ -105,32 +105,34 @@ class PVOutput:
         response.raise_for_status()
         return response
 
-    def check_rate_limit(self):
-        """
-        Makes a call to the site, checking if you have hit the rate limit. Check the [documentation](https://pvoutput.org/help/api_specification.html#rate-limits)
+    def check_rate_limit(self) -> dict:
+        """Makes a call to the site, checking if you have hit the rate limit.
+
+        API spec: https://pvoutput.org/help/api_specification.html#rate-limits
 
         :returns: the headers relating to the rate limit.
         :rtype: dict
-
         """
         headers = self._headers()
         headers["X-Rate-Limit"] = "1"
 
         url, method = utils.URLS["getsystem"]
 
-        response = self._call(url, {}, headers=headers, method=method)
+        response = self._call(endpoint=url, params={}, headers=headers, method=method)
         retval = utils.get_rate_limit_header(response)
         return retval
 
-    def addstatus(self, data: dict):
-        """
-        The Add Status service accepts live output data at the status interval (5 to 15 minutes) configured for the system.
+    def addstatus(self, data: dict) -> requests.Response:
+        """The Add Status service accepts live output data
+        at the Status Interval (5 to 15 minutes) configured for the system.
 
-        API Spec: https://pvoutput.org/help.html#api-addstatus
+        API Spec: https://pvoutput.org/help/api_specification.html#add-status-service
 
         :param data: The status data
         :type data: dict
 
+        :returns: The response object
+        :rtype: requests.Response
         """
         if not data.get("d", False):
             # if you don't set a date, make it now
@@ -164,10 +166,14 @@ class PVOutput:
     #     # self.validate_data(data, ADDOUTPUT_PARAMETERS)
     #     # self._call(endpoint="https://pvoutput.org/service/r2/addoutput.jsp", data=data)
 
-    def delete_status(self, date_val: datetime.datetime.date, time_val=None):
-        """deletes a given status, based on the provided parameters
+    def delete_status(
+        self, date_val: datetime.datetime.date, time_val=None
+    ) -> requests.Response:
+        """Deletes a given status, based on the provided parameters
         needs a datetime() object
         set the hours/minutes to non-zero to delete a specific time
+
+        API spec: https://pvoutput.org/help/api_specification.html#delete-status-service
 
         :param date_val: The date to delete.
         :type date_val: datetime.datetime.date
@@ -175,8 +181,8 @@ class PVOutput:
         :param time_val: The time entry to delete.
         :type time_val: datetime.datetime.time
 
-        :returns: the response object
-        :rtype: requests.post
+        :returns: The response object
+        :rtype: requests.Response
         """
         if not isinstance(date_val, datetime.date):
             raise ValueError(
@@ -201,26 +207,27 @@ class PVOutput:
         data = {"d": date_val.strftime("%Y%m%d")}
         if time_val:
             data["t"] = time_val.strftime("%H:%M")
-        response = self._call(
-            endpoint="https://pvoutput.org/service/r2/deletestatus.jsp", data=data
-        )
-        return response
 
-    # pylint: disable=too-many-locals
+        url, method = utils.URLS["deletestatus"]
+
+        return self._call(endpoint=url, data=data, method=method)
+
     def getstatus(self) -> dict:
-        """
-        Makes a call to the API and gets the last update.
+        """The Get Status service retrieves system status information and live output data.
 
+        API spec: https://pvoutput.org/help/api_specification.html#get-status-service
 
         :returns: the last updated data
         :rtype: dict
         """
         # TODO: extend this, you can do history searches and all sorts with this endpoint
-        url = "https://pvoutput.org/service/r2/getstatus.jsp"
         data = {}
+        params = {}
         if self.donation_made:
-            url = f"{url}?ext=1&sid={self.systemid}"
-        response = self._call(endpoint=url, data=data, method="GET")
+            params["ext"] = 1
+            params["sid"] = self.systemid
+        url, method = utils.URLS["getstatus"]
+        response = self._call(endpoint=url, params=params, data=data, method=method)
         response.raise_for_status()
         # grab all the things
         # pylint: disable=invalid-name
@@ -234,11 +241,13 @@ class PVOutput:
                 )
         return responsedata
 
-    def register_notification(self, appid: str, url: str, alerttype: int):
-        """
-        The Register Notification Service allows a third party application to receive PVOutput alert callbacks via a HTTP end point.
+    def register_notification(
+        self, appid: str, url: str, alerttype: int
+    ) -> requests.Response:
+        """The Register Notification Service allows a third party application
+        to receive PVOutput alert callbacks via a HTTP end point.
 
-        `API Documentation`_
+        API spec: https://pvoutput.org/help/api_specification.html#register-notification-service
 
         All parameters are mandatory
 
@@ -248,26 +257,27 @@ class PVOutput:
         :param url: Callback URL (eg: http://example.com/api/)
         :type url: str (maxlen: 150)
 
-        :param type: Alert Type (See list below)
-        :type type: int
+        :param alerttype: Alert Type (See list below)
+        :type alerttype: int
 
-        .. _API Documentation: https://pvoutput.org/help.html#api-registernotification
+        :return: The response object
+        :rtype: requests.Response
 
-        Type list:
+        Alert Type list:
 
         =====   ====
         Value   Type
         =====   ====
         0       All Notifications
         1       Private Message
-        1       Private Message
         3       Joined Team
         4       Added Favourite
-        5       High Consumption Alert 6 System Idle Alert
+        5       High Consumption Alert
+        6       System Idle Alert
         8       Low Generation Alert
         11      Performance Alert
-        4       Standby Cost Alert
-        1       Extended Data V7 Alert
+        14      Standby Cost Alert
+        15      Extended Data V7 Alert
         16      Extended Data V8 Alert
         17      Extended Data V9 Alert
         18      Extended Data V10 Alert
@@ -290,15 +300,15 @@ class PVOutput:
             )
         if len(appid) > 100:
             raise ValueError(
-                f"Length of appid can't be longer than 150 chars - was {len(appid)}"
+                f"Length of appid can't be longer than 100 chars - was {len(appid)}"
             )
 
         if not isinstance(alerttype, int):
             raise TypeError(
                 f"alerttype needs to be an int, got: {str(type(alerttype))}"
             )
-        # TODO: urlencode the callback URL
 
-        call_url = f"https://pvoutput.org/service/r2/registernotification.jsp?appid={appid}&type={alerttype}&url={url}"
-        response = self._call(endpoint=call_url, method="GET")
-        return response
+        call_url, method = utils.URLS["registernotification"]
+        # no need to encode parameters, requests library does this
+        params = {"appid": appid, "type": alerttype, "url": url}
+        return self._call(endpoint=call_url, params=params, method=method)
