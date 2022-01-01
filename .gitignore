@@ -112,3 +112,6 @@ PVOutputHelp.pdf
 sonarqube-test.sh
 .DS_Store
 .coverage
+
+# IDE
+.idea
