@@ -58,7 +58,9 @@ async def test_configured_async_getstatus(config):
         #     'm1' : 'Testing', # custom message
         # }
         result = await pvo.getstatus()
-        print(result)
+        # print(result)
         assert result
 
-        print(await pvo.check_rate_limit())
+        result = await pvo.check_rate_limit()
+        # print(check_rate_limit)
+        assert result

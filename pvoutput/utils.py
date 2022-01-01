@@ -96,8 +96,8 @@ def validate_data(self, data, apiset):
                 f"data[{key}] type ({type(data[key])} is invalid - should be {str(apiset[key]['type'])})"
             )
     # TODO: check format, 'format' should be a regex
-    for format_string in [apiset[key].get("format") for key in apiset.keys()]:
-        print(format_string)
+    # for format_string in [apiset[key].get("format") for key in apiset.keys()]:
+    #     print(format_string)
 
     # TODO: 'd' can't be more than 14 days ago, if a donator, goes out to 90
     # check if donation_made == True and age of thing

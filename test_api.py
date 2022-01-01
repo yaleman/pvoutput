@@ -279,7 +279,7 @@ def test_datetime_fix(patch_datetime_now):
         "d": "20200905",
         "v1": 12345,
     }
-    print(f"test_datetime_fix: {test_data}")
+    # print(f"test_datetime_fix: {test_data}")
     with requests_mock.mock() as mock:
         mock.post(
             url=URLMATCHER,
