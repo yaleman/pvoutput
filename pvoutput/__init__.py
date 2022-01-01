@@ -289,7 +289,6 @@ class PVOutput:
         =====   ====
         """
         # TODO: Find out if HTTPS is supported for Callback URLs
-        # TODO: validation of types, is this the best way?
         # validation of inputs
         if not isinstance(appid, str):
             raise TypeError(f"appid needs to be a string, got: {str(type(appid))}")
@@ -304,9 +303,9 @@ class PVOutput:
                 f"Length of appid can't be longer than 100 chars - was {len(appid)}"
             )
 
-        if not isinstance(alerttype, int):
-            raise TypeError(
-                f"alerttype needs to be an int, got: {str(type(alerttype))}"
+        if not isinstance(alerttype, int) or alerttype not in utils.ALERT_TYPES:
+            raise UnknownAlertTypeError(
+                f"alerttype is unknown, got: {type(alerttype)} - {alerttype}"
             )
 
         call_url, method = utils.URLS["registernotification"]

@@ -7,3 +7,7 @@ class DonationRequired(Exception):
 
 class UnknownMethodError(Exception):
     """The method is unknown."""
+
+
+class UnknownAlertTypeError(Exception):
+    """The provided Alert Type is not supported"""
