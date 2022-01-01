@@ -4,6 +4,7 @@ PVOutput.org python API module. Works with the R2 [API version spec here](https:
 
 Get your API key from [the account page on PVOutput](https://pvoutput.org/account.jsp)
 
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 # Example usage
 
     > from pvoutput import PVOutput
