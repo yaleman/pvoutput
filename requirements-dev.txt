@@ -1,9 +1,9 @@
 -r requirements.txt
-requests-mock
 pylint
 pytest
 pytest-asyncio
 pylint-pytest
+requests-mock
 
 mkdocstrings
 mkdocs-material

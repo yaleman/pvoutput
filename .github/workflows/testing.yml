@@ -1,0 +1,23 @@
+name: test the things
+
+on: [push, pull_request]
+
+jobs:
+  pylint:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+
+      - run: |
+            python3 -m venv venv
+            source venv/bin/activate
+            python3 -m pip install --upgrade --quiet pip flit
+            python3 -m pip install --quiet -r requirements-dev.txt
+            python3 -m pylint --rcfile=.pylintrc pvoutput

@@ -173,7 +173,7 @@ class PVOutput:
     #     # self._call(endpoint="https://pvoutput.org/service/r2/addoutput.jsp", data=data)
 
     async def delete_status(
-        self, date_val: datetime.datetime.date, time_val=None
+        self, date_val: datetime.datetime, time_val=None
     ) -> aiohttp.ClientResponse:
         """Deletes a given status, based on the provided parameters
         needs a datetime() object
@@ -227,14 +227,13 @@ class PVOutput:
         :rtype: dict
         """
         # TODO: extend this, you can do history searches and all sorts with this endpoint
-        data = {}
         params = {}
         if self.donation_made:
             params["ext"] = 1
             params["sid"] = self.systemid
         url, method = utils.URLS["getstatus"]
         response = await self._call(
-            endpoint=url, params=params, data=data, method=method
+            endpoint=url, params=params, data=None, method=method
         )
         response.raise_for_status()
         # grab all the things
