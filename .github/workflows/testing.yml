@@ -19,5 +19,23 @@ jobs:
             python3 -m venv venv
             source venv/bin/activate
             python3 -m pip install --upgrade --quiet pip flit
-            python3 -m pip install --quiet -r requirements-dev.txt
+            flit install --deps all
             python3 -m pylint --rcfile=.pylintrc pvoutput
+  flit:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+
+      - run: |
+            python3 -m venv venv
+            source venv/bin/activate
+            python3 -m pip install --upgrade --quiet pip flit
+            flit install --deps production
+            python3 -m flit build
