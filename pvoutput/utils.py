@@ -11,6 +11,14 @@ URLS = {
         BASE_URL + "addstatus.jsp",
         "POST",
     ),
+    "deletestatus": (
+        BASE_URL + "deletestatus.jsp",
+        "POST",
+    ),
+    "getstatus": (
+        BASE_URL + "getstatus.jsp",
+        "GET",
+    ),
     "getsystem": (
         BASE_URL + "getsystem.jsp",
         "GET",
