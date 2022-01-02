@@ -192,11 +192,11 @@ class PVOutput:
         """
         if not isinstance(date_val, datetime.date):
             raise ValueError(
-                f"date_val should be of type datetime.datetime.datetime, not {type(date_val)}"
+                f"date_val should be of type datetime.date, not {type(date_val)}"
             )
         if time_val and not isinstance(time_val, datetime.time):
             raise ValueError(
-                f"time_val should be of time datetime.datetime.time, not {type(time_val)}"
+                f"time_val should be of time datetime.time, not {type(time_val)}"
             )
         yesterday = datetime.date.today() - datetime.timedelta(1)
         tomorrow = datetime.date.today() + datetime.timedelta(1)
