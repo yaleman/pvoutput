@@ -1,5 +1,4 @@
 import asyncio
-import datetime
 import json
 
 import aiofiles
@@ -20,13 +19,8 @@ async def main():
 
     async with aiohttp.ClientSession() as session:
         pvo = PVOutput(apikey=apikey, systemid=systemid, session=session)
-        result = await pvo.check_rate_limit()
+        result = await pvo.getstatus()
     print(json.dumps(result, indent=2))
-
-    reset_datetime = datetime.datetime.fromtimestamp(
-        int(result["X-Rate-Limit-Reset"]), datetime.timezone.utc
-    )
-    print(f"{reset_datetime.isoformat()=}")
 
 
 if __name__ == "__main__":

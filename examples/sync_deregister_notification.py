@@ -1,4 +1,3 @@
-import datetime
 import json
 
 from pvoutput import PVOutput
@@ -12,16 +11,12 @@ def get_apikey_systemid():
 
 def main():
     apikey, systemid = get_apikey_systemid()
+
     pvo = PVOutput(apikey=apikey, systemid=systemid)
 
-    result = pvo.check_rate_limit()
-
-    print(json.dumps(result, indent=2))
-
-    reset_datetime = datetime.datetime.fromtimestamp(
-        int(result["X-Rate-Limit-Reset"]), datetime.timezone.utc
-    )
-    print(f"{reset_datetime.isoformat()=}")
+    appid = "my.application.id"
+    alerttype = 0
+    pvo.deregister_notification(appid, alerttype)
 
 
 if __name__ == "__main__":

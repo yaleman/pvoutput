@@ -20,13 +20,10 @@ async def main():
 
     async with aiohttp.ClientSession() as session:
         pvo = PVOutput(apikey=apikey, systemid=systemid, session=session)
-        result = await pvo.check_rate_limit()
-    print(json.dumps(result, indent=2))
 
-    reset_datetime = datetime.datetime.fromtimestamp(
-        int(result["X-Rate-Limit-Reset"]), datetime.timezone.utc
-    )
-    print(f"{reset_datetime.isoformat()=}")
+        testdate = datetime.date.today()
+        testtime = datetime.time(hour=23, minute=45)
+        await pvo.delete_status(date_val=testdate, time_val=testtime)
 
 
 if __name__ == "__main__":
