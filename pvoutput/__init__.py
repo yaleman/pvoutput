@@ -186,11 +186,11 @@ class PVOutput:
         """
         if not isinstance(date_val, datetime.date):
             raise ValueError(
-                f"date_val should be of type datetime.datetime.datetime, not {type(date_val)}"
+                f"date_val should be of type datetime.date, not {type(date_val)}"
             )
         if time_val and not isinstance(time_val, datetime.time):
             raise ValueError(
-                f"time_val should be of time datetime.datetime.time, not {type(time_val)}"
+                f"time_val should be of time datetime.time, not {type(time_val)}"
             )
         yesterday = datetime.date.today() - datetime.timedelta(1)
         tomorrow = datetime.date.today() + datetime.timedelta(1)
@@ -312,3 +312,62 @@ class PVOutput:
         # no need to encode parameters, requests library does this
         params = {"appid": appid, "type": alerttype, "url": url}
         return self._call(endpoint=call_url, params=params, method=method)
+
+    def deregister_notification(self, appid: str, alerttype: int) -> requests.Response:
+        """The Deregister Notification Service removes registered notifications under an application id for a system.
+
+        API spec: https://pvoutput.org/help/api_specification.html#deregister-notification-service
+
+        All parameters are mandatory
+
+        :param appid: Application ID (eg: example.app.id)
+        :type appid: str (maxlen: 100)
+
+        :param alerttype: Alert Type (See list below)
+        :type alerttype: int
+
+        :return: The response object
+        :rtype: requests.Response
+
+        Alert Type list:
+
+        =====   ====
+        Value   Type
+        =====   ====
+        0       All Notifications
+        1       Private Message
+        3       Joined Team
+        4       Added Favourite
+        5       High Consumption Alert
+        6       System Idle Alert
+        8       Low Generation Alert
+        11      Performance Alert
+        14      Standby Cost Alert
+        15      Extended Data V7 Alert
+        16      Extended Data V8 Alert
+        17      Extended Data V9 Alert
+        18      Extended Data V10 Alert
+        19      Extended Data V11 Alert
+        20      Extended Data V12 Alert
+        23      High Net Power Alert
+        24      Low Net Power Alert
+        =====   ====
+        """
+        # TODO: Find out if HTTPS is supported for Callback URLs
+        # validation of inputs
+        if not isinstance(appid, str):
+            raise TypeError(f"appid needs to be a string, got: {str(type(appid))}")
+        if len(appid) > 100:
+            raise ValueError(
+                f"Length of appid can't be longer than 100 chars - was {len(appid)}"
+            )
+
+        if not isinstance(alerttype, int) or alerttype not in utils.ALERT_TYPES:
+            raise UnknownAlertTypeError(
+                f"alerttype is unknown, got: {type(alerttype)} - {alerttype}"
+            )
+
+        url, method = utils.URLS["deregisternotification"]
+        # no need to encode parameters, requests library does this
+        params = {"appid": appid, "type": alerttype}
+        return self._call(endpoint=url, params=params, method=method)
