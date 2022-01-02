@@ -52,7 +52,8 @@ def test_addstatus(pvo):
     }
 
     addstatus_response = pvo.addstatus(data)
-    assert addstatus_response.text is not None
+    assert addstatus_response.status_code == 200
+    assert addstatus_response.text == "OK 200: Added Status"
 
 
 def test_getstatus(pvo):

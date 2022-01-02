@@ -1,5 +1,5 @@
 """ test asyncio things """
-
+import datetime
 import os
 import json
 import pytest
@@ -34,23 +34,6 @@ def config():
     return config_data
 
 
-# pylint: disable=redefined-outer-name
-async def test_configured_async_getstatus(config):
-    """tests the getstatus endpoint"""
-
-    async with aiohttp.ClientSession() as session:
-        pvo = PVOutput(
-            apikey=config.get("apikey"),
-            systemid=config.get("systemid"),
-            donation_made=True,
-            session=session,
-        )
-
-        result = await pvo.getstatus()
-        assert result
-        assert isinstance(result, dict)
-
-
 async def test_check_rate_limit(config):
     """tests check rate limit with the getsystem endpoint"""
 
@@ -65,6 +48,66 @@ async def test_check_rate_limit(config):
         result = await pvo.check_rate_limit()
         assert result
         assert len(result) == 3
+
+
+async def test_addstatus(config):
+    """test the addstatus endpoint"""
+
+    testdate = datetime.date.today()
+    testtime = datetime.time(hour=23, minute=45)
+    data = {
+        "d": testdate.strftime("%Y%m%d"),
+        "t": testtime.strftime("%H:%M"),
+        "v2": 500,  # power generation
+        "v4": 450,  # power consumption
+        "v5": 23.5,  # temperature
+        "v6": 234.0,  # voltage
+        "m1": "Testing",  # custom message
+    }
+
+    async with aiohttp.ClientSession() as session:
+        pvo = PVOutput(
+            apikey=config.get("apikey"),
+            systemid=config.get("systemid"),
+            donation_made=True,
+            session=session,
+        )
+        addstatus_response = await pvo.addstatus(data)
+        assert addstatus_response.status == 200
+        assert await addstatus_response.text() == "OK 200: Added Status"
+
+
+# pylint: disable=redefined-outer-name
+async def test_configured_async_getstatus(config):
+    """tests the getstatus endpoint"""
+
+    async with aiohttp.ClientSession() as session:
+        pvo = PVOutput(
+            apikey=config.get("apikey"),
+            systemid=config.get("systemid"),
+            donation_made=True,
+            session=session,
+        )
+        result = await pvo.getstatus()
+        assert result
+        assert isinstance(result, dict)
+
+
+async def test_deletestatus(config):
+    testdate = datetime.date.today()
+    testtime = datetime.time(hour=23, minute=45)
+
+    async with aiohttp.ClientSession() as session:
+        pvo = PVOutput(
+            apikey=config.get("apikey"),
+            systemid=config.get("systemid"),
+            donation_made=True,
+            session=session,
+        )
+        delete_result = await pvo.delete_status(testdate, testtime)
+        assert delete_result
+        assert delete_result.status == 200
+        assert await delete_result.text() == "OK 200: Deleted Status"
 
 
 async def test_register_notification(config):
