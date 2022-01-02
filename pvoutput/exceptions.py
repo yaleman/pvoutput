@@ -11,3 +11,7 @@ class UnknownMethodError(Exception):
 
 class InvalidRegexpError(Exception):
     """There was an error with the regexp format for this key"""
+
+
+class UnknownAlertTypeError(Exception):
+    """The provided Alert Type is not supported"""

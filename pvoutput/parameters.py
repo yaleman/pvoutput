@@ -2,10 +2,7 @@
 
 from copy import copy
 
-__all__ = [
-    "ADDSTATUS_PARAMETERS",
-    "DELETESTATUS_PARAMETERS",
-]
+__all__ = ["ADDSTATUS_PARAMETERS", "DELETESTATUS_PARAMETERS", "ADDOUTPUT_PARAMETERS"]
 
 standard_parameters = {
     "d": {
@@ -124,3 +121,111 @@ The following values are valid for the c1 flag.
     2 Only v1 generation is a lifetime energy value.
     3 Only v3 consumption is a lifetime energy value.
 """
+
+ADDOUTPUT_PARAMETERS = {
+    "d": copy(standard_parameters["d"]),
+    "g": {
+        "required": False,
+        "description": "Generated (Wh)",
+        "type": int,
+        "donation_required": False,
+    },
+    "e": {
+        "required": False,
+        "description": "Exported (Wh)",
+        "type": int,
+        "donation_required": False,
+    },
+    "pp": {
+        "required": False,
+        "description": "Peak Power (W)",
+        "type": int,
+        "donation_required": False,
+    },
+    "pt": {
+        "required": False,
+        "description": "Peak Time",
+        "format": r"^([0-1][0-9]|2[0-3]):[0-5][0-9]$",
+        "type": str,
+        "donation_required": False,
+    },
+    "cd": {
+        "required": False,
+        "description": "Condition",
+        "format": "Fine|Partly Cloudy|Mostly Cloudy|Cloudy|Showers|Snow|Hazy|Fog|Dusty|Frost|Storm",
+        "type": str,
+        "donation_required": False,
+    },
+    "tm": {
+        "required": False,
+        "description": "Min Temp (C)",
+        "type": float,
+        "donation_required": False,
+    },
+    "tx": {
+        "required": False,
+        "description": "Max Temp (C)",
+        "type": float,
+        "donation_required": False,
+    },
+    "cm": {
+        "required": False,
+        "description": "Comments",
+        "type": str,
+        "donation_required": False,
+    },
+    "ip": {
+        "required": False,
+        "description": "Import Peak (Wh)",
+        "type": int,
+        "donation_required": False,
+    },
+    "io": {
+        "required": False,
+        "description": "Import Off Peak (Wh)",
+        "type": int,
+        "donation_required": False,
+    },
+    "is": {
+        "required": False,
+        "description": "Import Shoulder (Wh)",
+        "type": int,
+        "donation_required": False,
+    },
+    "ih": {
+        "required": False,
+        "description": "Import High Shoulder (Wh)",
+        "type": int,
+        "donation_required": False,
+    },
+    "c": {
+        "required": False,
+        "description": "Consumption (Wh)",
+        "type": int,
+        "donation_required": False,
+    },
+    "ep": {
+        "required": False,
+        "description": "Export Peak (Wh)",
+        "type": int,
+        "donation_required": False,
+    },
+    "eo": {
+        "required": False,
+        "description": "Export Off-Peak (Wh)",
+        "type": int,
+        "donation_required": False,
+    },
+    "es": {
+        "required": False,
+        "description": "Export Shoulder (Wh)",
+        "type": int,
+        "donation_required": False,
+    },
+    "eh": {
+        "required": False,
+        "description": "Export High Shoulder (Wh)",
+        "type": int,
+        "donation_required": False,
+    },
+}

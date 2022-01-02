@@ -158,22 +158,27 @@ class PVOutput:
 
         return await self._call(endpoint=url, data=data, method=method)
 
-    # def addoutput(self, data: dict):
-    #     """ The Add Output service uploads end of day output information. It allows all of the information provided on the Add Output page to be uploaded.
+    async def addoutput(self, data: dict) -> aiohttp.ClientResponse:
+        """The Add Output service uploads end of day output information.
+        It allows all of the information provided on the Add Output page to be uploaded.
 
-    #     API Spec: https://pvoutput.org/help.html#api-addoutput
+        API Spec: https://pvoutput.org/help/api_specification.html#add-output-service
 
-    #     :param data: The output data to upload
-    #     :type data: dict
+        :param data: The output data to upload
+        :type data: dict
 
-    #     :raises NotImplementedError: If you use it, because I haven't got to this yet.
-    #     """
-    #     return NotImplementedError("Haven't Implemented pvoutput.addoutput() yet.")
-    #     # self.validate_data(data, ADDOUTPUT_PARAMETERS)
-    #     # self._call(endpoint="https://pvoutput.org/service/r2/addoutput.jsp", data=data)
+        :returns: The response object
+        :rtype: aiohttp.ClientResponse
+        """
+        if not data.get("d", False):
+            # if you don't set a date, make it now
+            data["d"] = datetime.date.today().strftime("%Y%m%d")
+        self.validate_data(data, ADDOUTPUT_PARAMETERS)
+        url, method = utils.URLS["addoutput"]
+        return await self._call(endpoint=url, data=data, method=method)
 
     async def delete_status(
-        self, date_val: datetime.datetime, time_val=None
+        self, date_val: datetime.date, time_val=None
     ) -> aiohttp.ClientResponse:
         """Deletes a given status, based on the provided parameters
         needs a datetime() object
@@ -192,11 +197,11 @@ class PVOutput:
         """
         if not isinstance(date_val, datetime.date):
             raise ValueError(
-                f"date_val should be of type datetime.datetime.datetime, not {type(date_val)}"
+                f"date_val should be of type datetime.date, not {type(date_val)}"
             )
         if time_val and not isinstance(time_val, datetime.time):
             raise ValueError(
-                f"time_val should be of time datetime.datetime.time, not {type(time_val)}"
+                f"time_val should be of time datetime.time, not {type(time_val)}"
             )
         yesterday = datetime.date.today() - datetime.timedelta(1)
         tomorrow = datetime.date.today() + datetime.timedelta(1)
@@ -295,7 +300,6 @@ class PVOutput:
         =====   ====
         """
         # TODO: Find out if HTTPS is supported for Callback URLs
-        # TODO: validation of types, is this the best way?
         # validation of inputs
         if not isinstance(appid, str):
             raise TypeError(f"appid needs to be a string, got: {str(type(appid))}")
@@ -310,12 +314,73 @@ class PVOutput:
                 f"Length of appid can't be longer than 100 chars - was {len(appid)}"
             )
 
-        if not isinstance(alerttype, int):
-            raise TypeError(
-                f"alerttype needs to be an int, got: {str(type(alerttype))}"
+        if not isinstance(alerttype, int) or alerttype not in utils.ALERT_TYPES:
+            raise UnknownAlertTypeError(
+                f"alerttype is unknown, got: {type(alerttype)} - {alerttype}"
             )
 
         call_url, method = utils.URLS["registernotification"]
         # no need to encode parameters, requests library does this
         params = {"appid": appid, "type": alerttype, "url": url}
         return await self._call(endpoint=call_url, params=params, method=method)
+
+    async def deregister_notification(
+        self, appid: str, alerttype: int
+    ) -> aiohttp.ClientResponse:
+        """The Deregister Notification Service removes registered notifications under an application id for a system.
+
+        API spec: https://pvoutput.org/help/api_specification.html#deregister-notification-service
+
+        All parameters are mandatory
+
+        :param appid: Application ID (eg: example.app.id)
+        :type appid: str (maxlen: 100)
+
+        :param alerttype: Alert Type (See list below)
+        :type alerttype: int
+
+        :return: The response object
+        :rtype: aiohttp.ClientResponse
+
+        Alert Type list:
+
+        =====   ====
+        Value   Type
+        =====   ====
+        0       All Notifications
+        1       Private Message
+        3       Joined Team
+        4       Added Favourite
+        5       High Consumption Alert
+        6       System Idle Alert
+        8       Low Generation Alert
+        11      Performance Alert
+        14      Standby Cost Alert
+        15      Extended Data V7 Alert
+        16      Extended Data V8 Alert
+        17      Extended Data V9 Alert
+        18      Extended Data V10 Alert
+        19      Extended Data V11 Alert
+        20      Extended Data V12 Alert
+        23      High Net Power Alert
+        24      Low Net Power Alert
+        =====   ====
+        """
+        # TODO: Find out if HTTPS is supported for Callback URLs
+        # validation of inputs
+        if not isinstance(appid, str):
+            raise TypeError(f"appid needs to be a string, got: {str(type(appid))}")
+        if len(appid) > 100:
+            raise ValueError(
+                f"Length of appid can't be longer than 100 chars - was {len(appid)}"
+            )
+
+        if not isinstance(alerttype, int) or alerttype not in utils.ALERT_TYPES:
+            raise UnknownAlertTypeError(
+                f"alerttype is unknown, got: {type(alerttype)} - {alerttype}"
+            )
+
+        url, method = utils.URLS["deregisternotification"]
+        # no need to encode parameters, requests library does this
+        params = {"appid": appid, "type": alerttype}
+        return await self._call(endpoint=url, params=params, method=method)

@@ -7,18 +7,22 @@ Get your API key from [the account page on PVOutput](https://pvoutput.org/accoun
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 # Example usage
 
-    > from pvoutput import PVOutput
-    > import json
-    > apikey = 'aaaaaabbbbbbccccccddddddeeeeeeffffffgggg'
-    > systemid = 12345
-    > pvo = PVOutput(apikey=apikey, systemid=systemid)
-    > print(json.dumps(pvo.check_rate_limit(), indent=2))
+```python
+    from pvoutput import PVOutput
+    import json
+    apikey = 'aaaaaabbbbbbccccccddddddeeeeeeffffffgggg'
+    systemid = 12345
+    pvo = PVOutput(apikey=apikey, systemid=systemid)
+    print(json.dumps(pvo.check_rate_limit(), indent=2))
+```
+Will give you output like this:
+```
     {
-    "X-Rate-Limit-Remaining": "271",
-    "X-Rate-Limit-Limit": "300",
-    "X-Rate-Limit-Reset": "1570597200"
+        "X-Rate-Limit-Remaining": "271",
+        "X-Rate-Limit-Limit": "300",
+        "X-Rate-Limit-Reset": "1570597200"
     }
-
+```
 # Installing
 
 ## Prod-ish usage
