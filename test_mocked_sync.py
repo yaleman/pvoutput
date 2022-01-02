@@ -239,6 +239,33 @@ def test_getstatus_donation_made_false():
         assert good_pvo_no_donation().getstatus() == expecteddict
 
 
+def test_add_output():
+    """tests the validator for addoutput()"""
+    data = {"d": "20190515", "g": 123}
+    pvo = good_pvo()
+    with requests_mock.mock() as mock:
+        mock.post(
+            url=URLMATCHER,
+            text="Added Output",
+            status_code=200,
+        )
+        result = pvo.addoutput(data)
+        assert result.status_code == 200
+        assert result.text == "Added Output"
+
+
+def test_add_output_float():
+    """tests the validator for addoutput()"""
+    data = {"d": "20190515", "g": 123.0}
+    pvo = good_pvo_no_donation()
+
+    with pytest.raises(
+        TypeError,
+        match=r"data\[g\].*<class 'float'> is invalid - should be <class 'int'>",
+    ):
+        pvo.validate_data(data, pvoutput.ADDOUTPUT_PARAMETERS)
+
+
 def test_register_notification_url_maxlength():
 
     """tests a long-url entry fail into register notification"""
@@ -308,7 +335,6 @@ def test_datetime_fix(patch_datetime_now):
         "d": "20200905",
         "v1": 12345,
     }
-    print(f"test_datetime_fix: {test_data}")
     with requests_mock.mock() as mock:
         mock.post(
             url=URLMATCHER,
