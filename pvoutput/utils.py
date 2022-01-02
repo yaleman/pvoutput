@@ -146,7 +146,9 @@ def validate_data(self, data, apiset):
                         f"key '{key}', with value '{data[key]}' does not match '{format_string}'"
                     )
             except re.error as error:
-                raise InvalidRegexpError(f"Error for key '{key}' with format '{format_string}': {error}") from error
+                raise InvalidRegexpError(
+                    f"Error for key '{key}' with format '{format_string}': {error}"
+                ) from error
 
     # TODO: 'd' can't be more than 14 days ago, if a donator, goes out to 90
     # check if donation_made == True and age of thing
