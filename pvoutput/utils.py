@@ -31,6 +31,10 @@ URLS = {
         BASE_URL + "registernotification.jsp",
         "GET",
     ),
+    "deregisternotification": (
+        BASE_URL + "deregisternotification.jsp",
+        "GET",
+    ),
 }
 
 ALERT_TYPES = {
