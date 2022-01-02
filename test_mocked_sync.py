@@ -65,6 +65,77 @@ def test_api_validation():
         pvoutput.PVOutput.validate_data(None, {}, pvoutput.ADDSTATUS_PARAMETERS)
 
 
+def test_validation_regexp_date():
+    """tests the validator for format regexp date"""
+    api = {
+        "d": {
+            "format": r"^(20\d{2})(\d{2})(\d{2})$",
+        }
+    }
+    with pytest.raises(
+        ValueError, match=r"key '.*', with value '.*' does not match '.*'"
+    ):
+        assert good_pvo_with_donation().validate_data({"d": "19000515"}, api)
+    with pytest.raises(
+        ValueError, match=r"key '.*', with value '.*' does not match '.*'"
+    ):
+        assert good_pvo_with_donation().validate_data({"d": "201905150"}, api)
+    with pytest.raises(
+        ValueError, match=r"key '.*', with value '.*' does not match '.*'"
+    ):
+        assert good_pvo_with_donation().validate_data({"d": "2019515"}, api)
+
+    assert good_pvo_with_donation().validate_data({"d": "20190515"}, api)
+
+
+def test_validation_regexp_time():
+    """tests the validator for format regexp date"""
+    api = {
+        "t": {
+            "format": r"^([0-1][0-9]|2[0-3]):[0-5][0-9]$",
+        }
+    }
+    with pytest.raises(
+        ValueError, match=r"key '.*', with value '.*' does not match '.*'"
+    ):
+        assert good_pvo_with_donation().validate_data({"t": "0:00"}, api)
+    with pytest.raises(
+        ValueError, match=r"key '.*', with value '.*' does not match '.*'"
+    ):
+        assert good_pvo_with_donation().validate_data({"t": "00:0"}, api)
+    with pytest.raises(
+        ValueError, match=r"key '.*', with value '.*' does not match '.*'"
+    ):
+        assert good_pvo_with_donation().validate_data({"t": "24:00"}, api)
+    with pytest.raises(
+        ValueError, match=r"key '.*', with value '.*' does not match '.*'"
+    ):
+        assert good_pvo_with_donation().validate_data({"t": "23:60"}, api)
+
+    assert good_pvo_with_donation().validate_data({"t": "00:00"}, api)
+    assert good_pvo_with_donation().validate_data({"t": "12:59"}, api)
+    assert good_pvo_with_donation().validate_data({"t": "23:59"}, api)
+
+
+def test_api_validation_invalid_regexp():
+    """tests the validator with an invalid regexp"""
+    data = {"d": "20190515"}
+    api = {
+        "d": {
+            "required": True,
+            "description": "Date",
+            "format": r"^([0-9]{8}$",
+            "type": str,
+            "donation_required": False,
+        }
+    }
+    with pytest.raises(
+        pvoutput.exceptions.InvalidRegexpError,
+        match=f"Error for key '.*' with format '.*': .*",
+    ):
+        assert good_pvo_with_donation().validate_data(data, api)
+
+
 def test_headers_gen(pvo=good_pvo()):
     """tests that PVOutput._headers() returns a valid dict"""
     # pylint: disable=protected-access
@@ -239,6 +310,33 @@ def test_getstatus_donation_made_false():
         assert good_pvo_no_donation().getstatus() == expecteddict
 
 
+def test_add_output():
+    """tests the validator for addoutput()"""
+    data = {"d": "20190515", "g": 123}
+    pvo = good_pvo()
+    with requests_mock.mock() as mock:
+        mock.post(
+            url=URLMATCHER,
+            text="Added Output",
+            status_code=200,
+        )
+        result = pvo.addoutput(data)
+        assert result.status_code == 200
+        assert result.text == "Added Output"
+
+
+def test_add_output_float():
+    """tests the validator for addoutput()"""
+    data = {"d": "20190515", "g": 123.0}
+    pvo = good_pvo_no_donation()
+
+    with pytest.raises(
+        TypeError,
+        match=r"data\[g\].*<class 'float'> is invalid - should be <class 'int'>",
+    ):
+        pvo.validate_data(data, pvoutput.ADDOUTPUT_PARAMETERS)
+
+
 def test_register_notification_url_maxlength():
 
     """tests a long-url entry fail into register notification"""
@@ -308,7 +406,6 @@ def test_datetime_fix(patch_datetime_now):
         "d": "20200905",
         "v1": 12345,
     }
-    print(f"test_datetime_fix: {test_data}")
     with requests_mock.mock() as mock:
         mock.post(
             url=URLMATCHER,

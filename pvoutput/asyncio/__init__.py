@@ -158,19 +158,24 @@ class PVOutput:
 
         return await self._call(endpoint=url, data=data, method=method)
 
-    # def addoutput(self, data: dict):
-    #     """ The Add Output service uploads end of day output information. It allows all of the information provided on the Add Output page to be uploaded.
+    async def addoutput(self, data: dict) -> aiohttp.ClientResponse:
+        """The Add Output service uploads end of day output information.
+        It allows all of the information provided on the Add Output page to be uploaded.
 
-    #     API Spec: https://pvoutput.org/help.html#api-addoutput
+        API Spec: https://pvoutput.org/help/api_specification.html#add-output-service
 
-    #     :param data: The output data to upload
-    #     :type data: dict
+        :param data: The output data to upload
+        :type data: dict
 
-    #     :raises NotImplementedError: If you use it, because I haven't got to this yet.
-    #     """
-    #     return NotImplementedError("Haven't Implemented pvoutput.addoutput() yet.")
-    #     # self.validate_data(data, ADDOUTPUT_PARAMETERS)
-    #     # self._call(endpoint="https://pvoutput.org/service/r2/addoutput.jsp", data=data)
+        :returns: The response object
+        :rtype: aiohttp.ClientResponse
+        """
+        if not data.get("d", False):
+            # if you don't set a date, make it now
+            data["d"] = datetime.date.today().strftime("%Y%m%d")
+        self.validate_data(data, ADDOUTPUT_PARAMETERS)
+        url, method = utils.URLS["addoutput"]
+        return await self._call(endpoint=url, data=data, method=method)
 
     async def delete_status(
         self, date_val: datetime.date, time_val=None
