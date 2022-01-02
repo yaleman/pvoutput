@@ -173,7 +173,7 @@ class PVOutput:
     #     # self._call(endpoint="https://pvoutput.org/service/r2/addoutput.jsp", data=data)
 
     async def delete_status(
-        self, date_val: datetime.datetime, time_val=None
+        self, date_val: datetime.date, time_val=None
     ) -> aiohttp.ClientResponse:
         """Deletes a given status, based on the provided parameters
         needs a datetime() object
