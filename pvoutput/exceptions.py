@@ -7,3 +7,7 @@ class DonationRequired(Exception):
 
 class UnknownMethodError(Exception):
     """The method is unknown."""
+
+
+class InvalidRegexpError(Exception):
+    """There was an error with the regexp format for this key"""

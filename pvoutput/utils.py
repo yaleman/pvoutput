@@ -1,8 +1,9 @@
 """ Utilities """
+import re
 from datetime import datetime
 from math import floor
 
-from .exceptions import DonationRequired
+from .exceptions import DonationRequired, InvalidRegexpError
 
 BASE_URL = "https://pvoutput.org/service/r2/"
 
@@ -103,9 +104,19 @@ def validate_data(self, data, apiset):
             raise TypeError(
                 f"data[{key}] type ({type(data[key])} is invalid - should be {str(apiset[key]['type'])})"
             )
-    # TODO: check format, 'format' should be a regex
-    # for format_string in [apiset[key].get("format") for key in apiset.keys()]:
-    #     print(format_string)
+
+    for key in data:
+        format_string = apiset[key].get("format", False)
+        if format_string:
+            try:
+                c = re.compile(format_string)
+                m = c.match(data[key])
+                if m is None:
+                    raise ValueError(
+                        f"key '{key}', with value '{data[key]}' does not match '{format_string}'"
+                    )
+            except re.error as e:
+                raise InvalidRegexpError(f"Error for key '{key}' with format '{format_string}': {e}")
 
     # TODO: 'd' can't be more than 14 days ago, if a donator, goes out to 90
     # check if donation_made == True and age of thing
