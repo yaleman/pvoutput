@@ -110,6 +110,28 @@ async def test_deletestatus(config):
         assert await delete_result.text() == "OK 200: Deleted Status"
 
 
+async def test_addoutput(config):
+    """test the addoutput endpoint"""
+
+    testdate = datetime.date.today()
+    data = {
+        "d": testdate.strftime("%Y%m%d"),
+        "g": 500,  # Generated (Wh)
+        "e": 450,  # Exported (Wh)
+    }
+
+    async with aiohttp.ClientSession() as session:
+        pvo = PVOutput(
+            apikey=config.get("apikey"),
+            systemid=config.get("systemid"),
+            donation_made=True,
+            session=session,
+        )
+        addoutput_response = await pvo.addoutput(data)
+        assert addoutput_response.status == 200
+        assert await addoutput_response.text() == "OK 200: Added Output"
+
+
 async def test_register_notification(config):
     """tests register notification"""
 
