@@ -17,7 +17,9 @@ def main():
     result = pvo.check_rate_limit()
     print(json.dumps(result, indent=2))
 
-    reset_datetime = datetime.datetime.fromtimestamp(int(result['X-Rate-Limit-Reset']), datetime.timezone.utc)
+    reset_datetime = datetime.datetime.fromtimestamp(
+        int(result["X-Rate-Limit-Reset"]), datetime.timezone.utc
+    )
     print(f"{reset_datetime.isoformat()=}")
 
 
