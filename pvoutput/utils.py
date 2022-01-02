@@ -1,14 +1,19 @@
 """ Utilities """
+import re
 from datetime import datetime
 from math import floor
 
-from .exceptions import DonationRequired
+from .exceptions import DonationRequired, InvalidRegexpError
 
 BASE_URL = "https://pvoutput.org/service/r2/"
 
 URLS = {
     "addstatus": (
         BASE_URL + "addstatus.jsp",
+        "POST",
+    ),
+    "addoutput": (
+        BASE_URL + "addoutput.jsp",
         "POST",
     ),
     "deletestatus": (
@@ -27,6 +32,30 @@ URLS = {
         BASE_URL + "registernotification.jsp",
         "GET",
     ),
+    "deregisternotification": (
+        BASE_URL + "deregisternotification.jsp",
+        "GET",
+    ),
+}
+
+ALERT_TYPES = {
+    0: "All Notifications",
+    1: "Private Message",
+    3: "Joined Team",
+    4: "Added Favourite",
+    5: "High Consumption Alert",
+    6: "System Idle Alert",
+    8: "Low Generation Alert",
+    11: "Performance Alert",
+    14: "Standby Cost Alert",
+    15: "Extended Data V7 Alert",
+    16: "Extended Data V8 Alert",
+    17: "Extended Data V9 Alert",
+    18: "Extended Data V10 Alert",
+    19: "Extended Data V11 Alert",
+    20: "Extended Data V12 Alert",
+    23: "High Net Power Alert",
+    24: "Low Net Power Alert",
 }
 
 
@@ -67,6 +96,7 @@ def get_rate_limit_header(response_object) -> dict:
     return retval
 
 
+# pylint: disable=too-many-branches
 def validate_data(self, data, apiset):
     """Does a super-simple validation based on the api def raises errors if it's wrong, returns True if it's OK
 
@@ -80,6 +110,7 @@ def validate_data(self, data, apiset):
 
     :raises TypeError: if the type testing fails.
     :raises ValueError: if you're trying to pass an invalid value.
+    :raises pvoutput.InvalidRegexpError: if value does not match the regexp in format.
     """
     # if you set a 'required_oneof' key in apiset, validation will require at least one of those keys to be set
     if "required_oneof" in apiset.keys() and (
@@ -103,9 +134,19 @@ def validate_data(self, data, apiset):
             raise TypeError(
                 f"data[{key}] type ({type(data[key])} is invalid - should be {str(apiset[key]['type'])})"
             )
-    # TODO: check format, 'format' should be a regex
-    # for format_string in [apiset[key].get("format") for key in apiset.keys()]:
-    #     print(format_string)
+
+    for key in data:
+        format_string = apiset[key].get("format", False)
+        if format_string:
+            try:
+                compiled = re.compile(format_string)
+                match = compiled.match(data[key])
+                if match is None:
+                    raise ValueError(
+                        f"key '{key}', with value '{data[key]}' does not match '{format_string}'"
+                    )
+            except re.error as error:
+                raise InvalidRegexpError(f"Error for key '{key}' with format '{format_string}': {error}") from error
 
     # TODO: 'd' can't be more than 14 days ago, if a donator, goes out to 90
     # check if donation_made == True and age of thing

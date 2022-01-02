@@ -53,16 +53,70 @@ def good_pvo():
 
 def test_api_inputs():
     """tests basic "this should fail" on API init"""
-    with pytest.raises(TypeError):
+    with pytest.raises(TypeError, match=r"apikey should be .*"):
         pvoutput.PVOutput(apikey=1234512345, systemid=1)
-    with pytest.raises(TypeError):
+    with pytest.raises(TypeError, match=r"systemid should be .*"):
         pvoutput.PVOutput(apikey="helloworld", systemid="test")
 
 
 def test_api_validation():
     """tests a basic "this should clearly fail" validation"""
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=r"one of .* MUST be set"):
         pvoutput.PVOutput.validate_data(None, {}, pvoutput.ADDSTATUS_PARAMETERS)
+
+
+def test_validation_regexp_date():
+    """tests the validator for format regexp date"""
+    api = {
+        "d": {
+            "format": r"^(20\d{2})(\d{2})(\d{2})$",
+        }
+    }
+    with pytest.raises(ValueError, match=r"key '.*', with value '.*' does not match '.*'"):
+        assert good_pvo_with_donation().validate_data({"d": "19000515"}, api)
+    with pytest.raises(ValueError, match=r"key '.*', with value '.*' does not match '.*'"):
+        assert good_pvo_with_donation().validate_data({"d": "201905150"}, api)
+    with pytest.raises(ValueError, match=r"key '.*', with value '.*' does not match '.*'"):
+        assert good_pvo_with_donation().validate_data({"d": "2019515"}, api)
+
+    assert good_pvo_with_donation().validate_data({"d": "20190515"}, api)
+
+
+def test_validation_regexp_time():
+    """tests the validator for format regexp date"""
+    api = {
+        "t": {
+            "format": r"^([0-1][0-9]|2[0-3]):[0-5][0-9]$",
+        }
+    }
+    with pytest.raises(ValueError, match=r"key '.*', with value '.*' does not match '.*'"):
+        assert good_pvo_with_donation().validate_data({"t": "0:00"}, api)
+    with pytest.raises(ValueError, match=r"key '.*', with value '.*' does not match '.*'"):
+        assert good_pvo_with_donation().validate_data({"t": "00:0"}, api)
+    with pytest.raises(ValueError, match=r"key '.*', with value '.*' does not match '.*'"):
+        assert good_pvo_with_donation().validate_data({"t": "24:00"}, api)
+    with pytest.raises(ValueError, match=r"key '.*', with value '.*' does not match '.*'"):
+        assert good_pvo_with_donation().validate_data({"t": "23:60"}, api)
+
+    assert good_pvo_with_donation().validate_data({"t": "00:00"}, api)
+    assert good_pvo_with_donation().validate_data({"t": "12:59"}, api)
+    assert good_pvo_with_donation().validate_data({"t": "23:59"}, api)
+
+
+def test_api_validation_invalid_regexp():
+    """tests the validator with an invalid regexp"""
+    data = {"d": "20190515"}
+    api = {
+        "d": {
+            "required": True,
+            "description": "Date",
+            "format": r"^([0-9]{8}$",
+            "type": str,
+            "donation_required": False,
+        }
+    }
+    with pytest.raises(pvoutput.exceptions.InvalidRegexpError, match=f"Error for key '.*' with format '.*': .*"):
+        assert good_pvo_with_donation().validate_data(data, api)
 
 
 def test_headers_gen(pvo=good_pvo()):
@@ -76,7 +130,7 @@ def test_headers_gen(pvo=good_pvo()):
 
 def test_api_validation_addstatus_shouldwork():
     """tests the validator for addstatus()"""
-    data = {"d": "20190515", "t": "1234", "v1": 123}
+    data = {"d": "20190515", "t": "12:34", "v1": 123}
     assert good_pvo_with_donation().validate_data(data, pvoutput.ADDSTATUS_PARAMETERS)
 
 
@@ -84,40 +138,71 @@ def test_api_validation_types(pvo=good_pvo()):
     """tests the type-based validation in addstatus on a fail"""
     data_failtime = {"d": "20190515", "t": 1234, "v1": "123"}
     data_faildate = {"d": 1, "t": "1234", "v1": "123"}
-    with pytest.raises(TypeError):
+    with pytest.raises(
+        TypeError,
+        match=r"data\[.*\] type \(<class '.*'> is invalid - should be <class '.*'>\)",
+    ):
         pvo.validate_data(data_failtime, pvoutput.ADDSTATUS_PARAMETERS)
+    with pytest.raises(
+        TypeError,
+        match=r"data\[.*\] type \(<class '.*'> is invalid - should be <class '.*'>\)",
+    ):
         pvo.validate_data(data_faildate, pvoutput.ADDSTATUS_PARAMETERS)
 
 
 def test_delete_status_date_too_early(pvo=good_pvo()):
     """it should throw an error if you're deleting a status before yesterday"""
     # TODO: check if this is right for donation accounts
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError, match=r"date_val can only be yesterday or today, you provided .*"
+    ):
         pvo.delete_status(datetime.date.today() - datetime.timedelta(days=2))
 
 
 def test_delete_status_date_too_late(pvo=good_pvo()):
     """it should throw an error if you're deleting a far-future status"""
 
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError, match=r"date_val can only be yesterday or today, you provided .*"
+    ):
         pvo.delete_status(datetime.date.today() + datetime.timedelta(days=2))
 
 
 def test_delete_status_date_derp(pvo=good_pvo()):
     """it should barf if you're setting it to tomorrow"""
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError, match=r"date_val can only be yesterday or today, you provided .*"
+    ):
         pvo.delete_status(date_val=datetime.date.today() + datetime.timedelta(1))
 
 
 def test_delete_status_invalid_time_val_type(pvo=good_pvo()):
     """if you're doing invalid time types, deletestatus() should fail"""
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError, match=r"time_val should be of time datetime\.time, not .*"
+    ):
         pvo.delete_status(date_val=datetime.date.today(), time_val="lol")
+    with pytest.raises(
+        ValueError, match=r"time_val should be of time datetime\.time, not .*"
+    ):
         pvo.delete_status(date_val=datetime.date.today(), time_val=123)
+    with pytest.raises(
+        ValueError, match=r"time_val should be of time datetime\.time, not .*"
+    ):
         pvo.delete_status(date_val=datetime.date.today(), time_val=True)
-        pvo.delete_status(
+
+
+def test_delete_status_works(pvo=good_pvo()):
+    """if you're doing invalid time types, deletestatus() should fail"""
+
+    with requests_mock.mock() as mock:
+        mock.post(URLMATCHER, text="Status Deleted", status_code=200)
+        result = pvo.delete_status(
             date_val=datetime.date.today(), time_val=datetime.time(hour=23, minute=59)
         )
+        assert result
+        assert result.status_code == 200
+        assert result.text == "Status Deleted"
 
 
 def test_donation_made_keys():
@@ -208,6 +293,33 @@ def test_getstatus_donation_made_false():
         assert good_pvo_no_donation().getstatus() == expecteddict
 
 
+def test_add_output():
+    """tests the validator for addoutput()"""
+    data = {"d": "20190515", "g": 123}
+    pvo = good_pvo()
+    with requests_mock.mock() as mock:
+        mock.post(
+            url=URLMATCHER,
+            text="Added Output",
+            status_code=200,
+        )
+        result = pvo.addoutput(data)
+        assert result.status_code == 200
+        assert result.text == "Added Output"
+
+
+def test_add_output_float():
+    """tests the validator for addoutput()"""
+    data = {"d": "20190515", "g": 123.0}
+    pvo = good_pvo_no_donation()
+
+    with pytest.raises(
+        TypeError,
+        match=r"data\[g\].*<class 'float'> is invalid - should be <class 'int'>",
+    ):
+        pvo.validate_data(data, pvoutput.ADDOUTPUT_PARAMETERS)
+
+
 def test_register_notification_url_maxlength():
 
     """tests a long-url entry fail into register notification"""
@@ -245,30 +357,29 @@ def test_register_notification_url_validresponse():
         )
         assert response.status_code == 200
 
+
 def test_register_notification_appid_maxlength(pvo=good_pvo()):
     """tests the max length of appids"""
-    with pytest.raises(ValueError):
-        with requests_mock.mock() as mock:
-            mock.get(
-                url=URLMATCHER,
-                text="OK 200",
-                status_code=200,
-            )
-            pvo.register_notification(appid="#" * 10, url="#" * 152, alerttype=1)
-            pvo.register_notification(appid="#" * 5, url="#" * 1000, alerttype=1)
-            pvo.register_notification(appid="#" * 1000, url="#" * 10, alerttype=1)
-            pvo.register_notification(appid="#" * 151, url="#" * 100, alerttype=1)
-
     with requests_mock.mock() as mock:
         mock.get(
             url=URLMATCHER,
             text="OK 200",
             status_code=200,
         )
+        with pytest.raises(ValueError):
+            pvo.register_notification(appid="#" * 10, url="#" * 152, alerttype=1)
+        with pytest.raises(ValueError):
+            pvo.register_notification(appid="#" * 5, url="#" * 1000, alerttype=1)
+        with pytest.raises(ValueError):
+            pvo.register_notification(appid="#" * 1000, url="#" * 10, alerttype=1)
+        with pytest.raises(ValueError):
+            pvo.register_notification(appid="#" * 151, url="#" * 100, alerttype=1)
+
         response = pvo.register_notification(
             appid="test", url="http://example.com", alerttype=1
         )
         assert response.status_code == 200
+        assert response.text == "OK 200"
 
 
 def test_datetime_fix(patch_datetime_now):
@@ -278,7 +389,6 @@ def test_datetime_fix(patch_datetime_now):
         "d": "20200905",
         "v1": 12345,
     }
-    print(f"test_datetime_fix: {test_data}")
     with requests_mock.mock() as mock:
         mock.post(
             url=URLMATCHER,
