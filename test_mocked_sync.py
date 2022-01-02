@@ -65,6 +65,77 @@ def test_api_validation():
         pvoutput.PVOutput.validate_data(None, {}, pvoutput.ADDSTATUS_PARAMETERS)
 
 
+def test_validation_regexp_date():
+    """tests the validator for format regexp date"""
+    api = {
+        "d": {
+            "format": r"^(20\d{2})(\d{2})(\d{2})$",
+        }
+    }
+    with pytest.raises(
+        ValueError, match=r"key '.*', with value '.*' does not match '.*'"
+    ):
+        assert good_pvo_with_donation().validate_data({"d": "19000515"}, api)
+    with pytest.raises(
+        ValueError, match=r"key '.*', with value '.*' does not match '.*'"
+    ):
+        assert good_pvo_with_donation().validate_data({"d": "201905150"}, api)
+    with pytest.raises(
+        ValueError, match=r"key '.*', with value '.*' does not match '.*'"
+    ):
+        assert good_pvo_with_donation().validate_data({"d": "2019515"}, api)
+
+    assert good_pvo_with_donation().validate_data({"d": "20190515"}, api)
+
+
+def test_validation_regexp_time():
+    """tests the validator for format regexp date"""
+    api = {
+        "t": {
+            "format": r"^([0-1][0-9]|2[0-3]):[0-5][0-9]$",
+        }
+    }
+    with pytest.raises(
+        ValueError, match=r"key '.*', with value '.*' does not match '.*'"
+    ):
+        assert good_pvo_with_donation().validate_data({"t": "0:00"}, api)
+    with pytest.raises(
+        ValueError, match=r"key '.*', with value '.*' does not match '.*'"
+    ):
+        assert good_pvo_with_donation().validate_data({"t": "00:0"}, api)
+    with pytest.raises(
+        ValueError, match=r"key '.*', with value '.*' does not match '.*'"
+    ):
+        assert good_pvo_with_donation().validate_data({"t": "24:00"}, api)
+    with pytest.raises(
+        ValueError, match=r"key '.*', with value '.*' does not match '.*'"
+    ):
+        assert good_pvo_with_donation().validate_data({"t": "23:60"}, api)
+
+    assert good_pvo_with_donation().validate_data({"t": "00:00"}, api)
+    assert good_pvo_with_donation().validate_data({"t": "12:59"}, api)
+    assert good_pvo_with_donation().validate_data({"t": "23:59"}, api)
+
+
+def test_api_validation_invalid_regexp():
+    """tests the validator with an invalid regexp"""
+    data = {"d": "20190515"}
+    api = {
+        "d": {
+            "required": True,
+            "description": "Date",
+            "format": r"^([0-9]{8}$",
+            "type": str,
+            "donation_required": False,
+        }
+    }
+    with pytest.raises(
+        pvoutput.exceptions.InvalidRegexpError,
+        match=f"Error for key '.*' with format '.*': .*",
+    ):
+        assert good_pvo_with_donation().validate_data(data, api)
+
+
 def test_headers_gen(pvo=good_pvo()):
     """tests that PVOutput._headers() returns a valid dict"""
     # pylint: disable=protected-access

@@ -8,14 +8,14 @@ standard_parameters = {
     "d": {
         "required": True,
         "description": "Date",
-        "format": "[0-9]{8}",
+        "format": r"^(20\d{2})(\d{2})(\d{2})$",
         "type": str,
         "donation_required": False,
     },
     "t": {
         "required": True,
         "description": "Time",
-        "format": "[12]{0,1}[0-9]{1}:[1-5]{0,1}[0-9]{1}",
+        "format": r"^([0-1][0-9]|2[0-3]):[0-5][0-9]$",
         "type": str,
         "donation_required": False,
     },  # TODO: the validator is terrible
@@ -67,7 +67,7 @@ ADDSTATUS_PARAMETERS = {
         "required": False,
         "description": "Net Flag",
         "donation_required": False,
-        "format": "^1$",
+        "format": r"^1$",
     },
     "v7": {
         "required": False,
@@ -103,7 +103,7 @@ ADDSTATUS_PARAMETERS = {
         "required": False,
         "description": "Cumulative Flag",
         "type": int,
-        "format": "[123]{1}",
+        "format": r"[123]{1}",
         "donation_required": False,
     },
     "m1": {
