@@ -72,11 +72,17 @@ def test_validation_regexp_date():
             "format": r"^(20\d{2})(\d{2})(\d{2})$",
         }
     }
-    with pytest.raises(ValueError, match=r"key '.*', with value '.*' does not match '.*'"):
+    with pytest.raises(
+        ValueError, match=r"key '.*', with value '.*' does not match '.*'"
+    ):
         assert good_pvo_with_donation().validate_data({"d": "19000515"}, api)
-    with pytest.raises(ValueError, match=r"key '.*', with value '.*' does not match '.*'"):
+    with pytest.raises(
+        ValueError, match=r"key '.*', with value '.*' does not match '.*'"
+    ):
         assert good_pvo_with_donation().validate_data({"d": "201905150"}, api)
-    with pytest.raises(ValueError, match=r"key '.*', with value '.*' does not match '.*'"):
+    with pytest.raises(
+        ValueError, match=r"key '.*', with value '.*' does not match '.*'"
+    ):
         assert good_pvo_with_donation().validate_data({"d": "2019515"}, api)
 
     assert good_pvo_with_donation().validate_data({"d": "20190515"}, api)
@@ -89,13 +95,21 @@ def test_validation_regexp_time():
             "format": r"^([0-1][0-9]|2[0-3]):[0-5][0-9]$",
         }
     }
-    with pytest.raises(ValueError, match=r"key '.*', with value '.*' does not match '.*'"):
+    with pytest.raises(
+        ValueError, match=r"key '.*', with value '.*' does not match '.*'"
+    ):
         assert good_pvo_with_donation().validate_data({"t": "0:00"}, api)
-    with pytest.raises(ValueError, match=r"key '.*', with value '.*' does not match '.*'"):
+    with pytest.raises(
+        ValueError, match=r"key '.*', with value '.*' does not match '.*'"
+    ):
         assert good_pvo_with_donation().validate_data({"t": "00:0"}, api)
-    with pytest.raises(ValueError, match=r"key '.*', with value '.*' does not match '.*'"):
+    with pytest.raises(
+        ValueError, match=r"key '.*', with value '.*' does not match '.*'"
+    ):
         assert good_pvo_with_donation().validate_data({"t": "24:00"}, api)
-    with pytest.raises(ValueError, match=r"key '.*', with value '.*' does not match '.*'"):
+    with pytest.raises(
+        ValueError, match=r"key '.*', with value '.*' does not match '.*'"
+    ):
         assert good_pvo_with_donation().validate_data({"t": "23:60"}, api)
 
     assert good_pvo_with_donation().validate_data({"t": "00:00"}, api)
@@ -115,7 +129,10 @@ def test_api_validation_invalid_regexp():
             "donation_required": False,
         }
     }
-    with pytest.raises(pvoutput.exceptions.InvalidRegexpError, match=f"Error for key '.*' with format '.*': .*"):
+    with pytest.raises(
+        pvoutput.exceptions.InvalidRegexpError,
+        match=f"Error for key '.*' with format '.*': .*",
+    ):
         assert good_pvo_with_donation().validate_data(data, api)
 
 
