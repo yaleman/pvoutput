@@ -68,6 +68,7 @@ def get_rate_limit_header(response_object) -> dict:
     return retval
 
 
+# pylint: disable=too-many-branches
 def validate_data(self, data, apiset):
     """Does a super-simple validation based on the api def raises errors if it's wrong, returns True if it's OK
 
@@ -81,6 +82,7 @@ def validate_data(self, data, apiset):
 
     :raises TypeError: if the type testing fails.
     :raises ValueError: if you're trying to pass an invalid value.
+    :raises pvoutput.InvalidRegexpError: if value does not match the regexp in format.
     """
     # if you set a 'required_oneof' key in apiset, validation will require at least one of those keys to be set
     if "required_oneof" in apiset.keys() and (
@@ -109,14 +111,14 @@ def validate_data(self, data, apiset):
         format_string = apiset[key].get("format", False)
         if format_string:
             try:
-                c = re.compile(format_string)
-                m = c.match(data[key])
-                if m is None:
+                compiled = re.compile(format_string)
+                match = compiled.match(data[key])
+                if match is None:
                     raise ValueError(
                         f"key '{key}', with value '{data[key]}' does not match '{format_string}'"
                     )
-            except re.error as e:
-                raise InvalidRegexpError(f"Error for key '{key}' with format '{format_string}': {e}")
+            except re.error as error:
+                raise InvalidRegexpError(f"Error for key '{key}' with format '{format_string}': {error}") from error
 
     # TODO: 'd' can't be more than 14 days ago, if a donator, goes out to 90
     # check if donation_made == True and age of thing
