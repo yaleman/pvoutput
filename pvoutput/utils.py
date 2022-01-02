@@ -33,6 +33,26 @@ URLS = {
     ),
 }
 
+ALERT_TYPES = {
+    0: "All Notifications",
+    1: "Private Message",
+    3: "Joined Team",
+    4: "Added Favourite",
+    5: "High Consumption Alert",
+    6: "System Idle Alert",
+    8: "Low Generation Alert",
+    11: "Performance Alert",
+    14: "Standby Cost Alert",
+    15: "Extended Data V7 Alert",
+    16: "Extended Data V8 Alert",
+    17: "Extended Data V9 Alert",
+    18: "Extended Data V10 Alert",
+    19: "Extended Data V11 Alert",
+    20: "Extended Data V12 Alert",
+    23: "High Net Power Alert",
+    24: "Low Net Power Alert",
+}
+
 
 def round_to_base(number, base):
     """rounds down to a specific base number
