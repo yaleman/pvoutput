@@ -145,7 +145,7 @@ ADDOUTPUT_PARAMETERS = {
     "pt": {
         "required": False,
         "description": "Peak Time",
-        "format": "[12]{0,1}[0-9]{1}:[1-5]{0,1}[0-9]{1}",
+        "format": r"^([0-1][0-9]|2[0-3]):[0-5][0-9]$",
         "type": str,
         "donation_required": False,
     },
