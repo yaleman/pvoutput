@@ -32,16 +32,23 @@ readme = "README.md"
 [project.optional-dependencies]
 dev = [
     "pylint",
-    "pylint-pytest",
     "pytest",
-    "pytest-asyncio",
     "mypy",
     "flit",
-    "requests-mock",
     "types-requests",
+]
+
+doc = [
     "mkdocstrings",
     "mkdocs-material",
     "mkdocs",
+]
+
+test = [
+    "aiofiles",
+    "pylint-pytest",
+    "pytest-asyncio",
+    "requests-mock",
 ]
 
 [project.urls]
