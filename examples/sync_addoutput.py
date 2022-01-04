@@ -20,7 +20,10 @@ def main():
         "g": 500,  # Generated (Wh)
         "e": 450,  # Exported (Wh)
     }
-    pvo.addoutput(data)
+    print("Adding output")
+    result = pvo.addoutput(data)
+    print(f"Status code: {result.status_code}")
+    print(f"Response content: '{result.text}'")
 
 
 if __name__ == "__main__":

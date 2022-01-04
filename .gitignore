@@ -116,3 +116,4 @@ sonarqube-test.sh
 # IDE
 .idea
 /examples/pvoutput.json
+pvoutput.json
