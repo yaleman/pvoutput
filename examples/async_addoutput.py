@@ -27,7 +27,10 @@ async def main():
 
     async with aiohttp.ClientSession() as session:
         pvo = PVOutput(apikey=apikey, systemid=systemid, session=session)
-        await pvo.addoutput(data)
+        result = await pvo.addoutput(data)
+    result.raise_for_status()
+    print(f"Status code: {result.status}")
+    print(f"Response content: '{await result.text()}'")
 
 
 if __name__ == "__main__":
