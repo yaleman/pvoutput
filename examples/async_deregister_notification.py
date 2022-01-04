@@ -1,5 +1,4 @@
 import asyncio
-import datetime
 import json
 
 import aiofiles
@@ -18,15 +17,13 @@ async def get_apikey_systemid():
 async def main():
     apikey, systemid = await get_apikey_systemid()
 
+    appid = "my.application.id"
+    alerttype = 0
+
     async with aiohttp.ClientSession() as session:
         pvo = PVOutput(apikey=apikey, systemid=systemid, session=session)
-        result = await pvo.check_rate_limit()
-    print(json.dumps(result, indent=2))
 
-    reset_datetime = datetime.datetime.fromtimestamp(
-        int(result["X-Rate-Limit-Reset"]), datetime.timezone.utc
-    )
-    print(f"{reset_datetime.isoformat()=}")
+        await pvo.deregister_notification(appid, alerttype)
 
 
 if __name__ == "__main__":

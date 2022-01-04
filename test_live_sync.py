@@ -72,6 +72,21 @@ def test_deletestatus(pvo):
     assert delete_result.text == "OK 200: Deleted Status"
 
 
+def test_addoutput(pvo):
+    """test the addoutput endpoint"""
+
+    testdate = datetime.date.today()
+    data = {
+        "d": testdate.strftime("%Y%m%d"),
+        "g": 500,  # Generated (Wh)
+        "e": 450,  # Exported (Wh)
+    }
+
+    addoutput_response = pvo.addoutput(data)
+    assert addoutput_response.status_code == 200
+    assert addoutput_response.text == "OK 200: Added Output"
+
+
 def test_register_notification(pvo):
     """tests register notification"""
     result = pvo.register_notification(

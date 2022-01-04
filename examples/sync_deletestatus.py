@@ -14,14 +14,9 @@ def main():
     apikey, systemid = get_apikey_systemid()
     pvo = PVOutput(apikey=apikey, systemid=systemid)
 
-    result = pvo.check_rate_limit()
-
-    print(json.dumps(result, indent=2))
-
-    reset_datetime = datetime.datetime.fromtimestamp(
-        int(result["X-Rate-Limit-Reset"]), datetime.timezone.utc
-    )
-    print(f"{reset_datetime.isoformat()=}")
+    date_val = datetime.date.today()
+    time_val = datetime.time(hour=23, minute=45)
+    pvo.delete_status(date_val, time_val)
 
 
 if __name__ == "__main__":

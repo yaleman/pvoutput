@@ -1,5 +1,4 @@
 import asyncio
-import datetime
 import json
 
 import aiofiles
@@ -18,15 +17,17 @@ async def get_apikey_systemid():
 async def main():
     apikey, systemid = await get_apikey_systemid()
 
+    data = {
+        "v2": 500,  # power generation
+        "v4": 450,  # power consumption
+        "v5": 23.5,  # temperature
+        "v6": 234.0,  # voltage
+        "m1": "Testing",  # custom message
+    }
+
     async with aiohttp.ClientSession() as session:
         pvo = PVOutput(apikey=apikey, systemid=systemid, session=session)
-        result = await pvo.check_rate_limit()
-    print(json.dumps(result, indent=2))
-
-    reset_datetime = datetime.datetime.fromtimestamp(
-        int(result["X-Rate-Limit-Reset"]), datetime.timezone.utc
-    )
-    print(f"{reset_datetime.isoformat()=}")
+        await pvo.addstatus(data)
 
 
 if __name__ == "__main__":
