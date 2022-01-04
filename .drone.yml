@@ -7,5 +7,5 @@ steps:
   image: python:3.8
   commands:
   - python3 -m pip install --quiet --upgrade pip flit
-  - flit install --deps all
+  - FLIT_ROOT_INSTALL=1 flit install --deps all
   - pytest
