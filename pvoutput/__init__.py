@@ -4,6 +4,7 @@ import datetime
 
 import requests
 
+from .pvoutput_base import PVOutputBase
 from .parameters import *
 from .exceptions import *
 
@@ -13,10 +14,8 @@ from . import utils
 __version__ = "0.0.8"
 
 
-class PVOutput:
+class PVOutput(PVOutputBase):
     """This class provides an interface to the pvoutput.org API"""
-
-    validate_data = utils.validate_data
 
     # pylint: disable=too-many-arguments
     def __init__(
@@ -35,27 +34,9 @@ class PVOutput:
         :param donation_made: Whether to use the donation-required fields
         :type donation_made: bool
         """
-        if not isinstance(systemid, int):
-            raise TypeError("systemid should be int")
-        if not isinstance(apikey, str):
-            raise TypeError("apikey should be str")
-        self.apikey = apikey
-        self.systemid = systemid
-        self.donation_made = donation_made
-        self.stats_period = stats_period
+        super(PVOutput, self).__init__(apikey, systemid, donation_made, stats_period)
 
-    def _headers(self) -> dict:
-        """Relevant documentation: https://pvoutput.org/help/api_specification.html#http-headers
-
-        :return: headers for calls to the API
-        :rtype: dict
-        """
-        headers = {
-            "X-Pvoutput-Apikey": self.apikey,
-            "X-Pvoutput-SystemId": str(self.systemid),
-        }
-        return headers
-
+    @PVOutputBase._call_validator()
     def _call(
         self, endpoint, data=None, params=None, headers=False, method: str = "POST"
     ) -> requests.Response:
@@ -80,16 +61,6 @@ class PVOutput:
         :raises ValueError: if the call throws a HTTP 400 error.
         :raises requests.exception: if method throws an exception.
         """
-        # always need the base headers
-        if not headers:
-            headers = self._headers()
-        # TODO: type checking on call
-        if method == "POST" and data and isinstance(data, dict) is False:
-            raise TypeError(f"data should be a dict, got {str(type(data))}")
-        if method == "GET" and params and isinstance(params, dict) is False:
-            raise TypeError(f"params should be a dict, got {str(type(params))}")
-        if headers and not isinstance(headers, dict):
-            raise TypeError(f"headers should be a dict, got {str(type(headers))}")
         # TODO: learn if I can dynamically send thing, is that **args?
         if method == "GET":
             response = requests.get(endpoint, data=data, headers=headers, params=params)
@@ -122,6 +93,8 @@ class PVOutput:
         retval = utils.get_rate_limit_header(response)
         return retval
 
+    @PVOutputBase._addstatus_validator()
+    @PVOutputBase._data_validator(ADDSTATUS_PARAMETERS)
     def addstatus(self, data: dict) -> requests.Response:
         """The Add Status service accepts live output data
         at the Status Interval (5 to 15 minutes) configured for the system.
@@ -134,24 +107,12 @@ class PVOutput:
         :returns: The response object
         :rtype: requests.Response
         """
-        if not data.get("d", False):
-            # if you don't set a date, make it now
-            data["d"] = datetime.date.today().strftime("%Y%m%d")
-        if not data.get("t", False):
-            # if you don't set a time, set it to now
-
-            hour = int(datetime.datetime.now().strftime("%H"))
-            # round the minute to the current stats period
-            minute = utils.round_to_base(
-                datetime.datetime.now().minute, self.stats_period
-            )
-            data["t"] = datetime.time(hour=hour, minute=minute).strftime("%H:%M")
-        self.validate_data(data, ADDSTATUS_PARAMETERS)
-
         url, method = utils.URLS["addstatus"]
 
         return self._call(endpoint=url, data=data, method=method)
 
+    @PVOutputBase._addoutput_validator()
+    @PVOutputBase._data_validator(ADDOUTPUT_PARAMETERS)
     def addoutput(self, data: dict) -> requests.Response:
         """The Add Output service uploads end of day output information.
         It allows all of the information provided on the Add Output page to be uploaded.
@@ -164,13 +125,10 @@ class PVOutput:
         :returns: The response object
         :rtype: requests.Response
         """
-        if not data.get("d", False):
-            # if you don't set a date, make it now
-            data["d"] = datetime.date.today().strftime("%Y%m%d")
-        self.validate_data(data, ADDOUTPUT_PARAMETERS)
         url, method = utils.URLS["addoutput"]
         return self._call(endpoint=url, data=data, method=method)
 
+    @PVOutputBase._delete_status_validator()
     def delete_status(
         self, date_val: datetime.date, time_val=None
     ) -> requests.Response:
@@ -189,26 +147,6 @@ class PVOutput:
         :returns: The response object
         :rtype: requests.Response
         """
-        if not isinstance(date_val, datetime.date):
-            raise ValueError(
-                f"date_val should be of type datetime.date, not {type(date_val)}"
-            )
-        if time_val and not isinstance(time_val, datetime.time):
-            raise ValueError(
-                f"time_val should be of time datetime.time, not {type(time_val)}"
-            )
-        yesterday = datetime.date.today() - datetime.timedelta(1)
-        tomorrow = datetime.date.today() + datetime.timedelta(1)
-        # you can't delete back past yesterday
-        if date_val < yesterday:
-            raise ValueError(
-                f"date_val can only be yesterday or today, you provided {date_val}"
-            )
-        # you can't delete forward of today
-        if date_val >= tomorrow:
-            raise ValueError(
-                f"date_val can only be yesterday or today, you provided {date_val}"
-            )
         data = {"d": date_val.strftime("%Y%m%d")}
         if time_val:
             data["t"] = time_val.strftime("%H:%M")
@@ -227,7 +165,6 @@ class PVOutput:
         :rtype: dict
         """
         # TODO: extend this, you can do history searches and all sorts with this endpoint
-
         params = {}
         if self.donation_made:
             params["ext"] = 1
@@ -247,6 +184,7 @@ class PVOutput:
                 )
         return responsedata
 
+    @PVOutputBase._register_notification_validator()
     def register_notification(
         self, appid: str, url: str, alerttype: int
     ) -> requests.Response:
@@ -294,30 +232,12 @@ class PVOutput:
         =====   ====
         """
         # TODO: Find out if HTTPS is supported for Callback URLs
-        # validation of inputs
-        if not isinstance(appid, str):
-            raise TypeError(f"appid needs to be a string, got: {str(type(appid))}")
-        if not isinstance(url, str):
-            raise TypeError(f"url needs to be a string, got: {str(type(url))}")
-        if len(url) > 150:
-            raise ValueError(
-                f"Length of url can't be longer than 150 chars - was {len(url)}"
-            )
-        if len(appid) > 100:
-            raise ValueError(
-                f"Length of appid can't be longer than 100 chars - was {len(appid)}"
-            )
-
-        if not isinstance(alerttype, int) or alerttype not in utils.ALERT_TYPES:
-            raise UnknownAlertTypeError(
-                f"alerttype is unknown, got: {type(alerttype)} - {alerttype}"
-            )
-
         call_url, method = utils.URLS["registernotification"]
         # no need to encode parameters, requests library does this
         params = {"appid": appid, "type": alerttype, "url": url}
         return self._call(endpoint=call_url, params=params, method=method)
 
+    @PVOutputBase._deregister_notification_validator()
     def deregister_notification(self, appid: str, alerttype: int) -> requests.Response:
         """The Deregister Notification Service removes registered notifications under an application id for a system.
 
@@ -359,19 +279,6 @@ class PVOutput:
         =====   ====
         """
         # TODO: Find out if HTTPS is supported for Callback URLs
-        # validation of inputs
-        if not isinstance(appid, str):
-            raise TypeError(f"appid needs to be a string, got: {str(type(appid))}")
-        if len(appid) > 100:
-            raise ValueError(
-                f"Length of appid can't be longer than 100 chars - was {len(appid)}"
-            )
-
-        if not isinstance(alerttype, int) or alerttype not in utils.ALERT_TYPES:
-            raise UnknownAlertTypeError(
-                f"alerttype is unknown, got: {type(alerttype)} - {alerttype}"
-            )
-
         url, method = utils.URLS["deregisternotification"]
         # no need to encode parameters, requests library does this
         params = {"appid": appid, "type": alerttype}
