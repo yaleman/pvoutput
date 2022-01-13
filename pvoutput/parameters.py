@@ -1,8 +1,19 @@
 """ Standard parameter things. """
 
 from copy import copy
+from datetime import date, datetime, time
 
-__all__ = ["ADDSTATUS_PARAMETERS", "DELETESTATUS_PARAMETERS", "ADDOUTPUT_PARAMETERS"]
+
+from .utils import ALERT_TYPES, validate_delete_status_date
+
+__all__ = [
+    "ADDOUTPUT_PARAMETERS",
+    "ADDSTATUS_PARAMETERS",
+    "CALL_PARAMETERS",
+    "DELETESTATUS_PARAMETERS",
+    "DELETE_NOTIFICATION_PARAMETERS",
+    "REGISTER_NOTIFICATION_PARAMETERS",
+]
 
 standard_parameters = {
     "d": {
@@ -11,6 +22,7 @@ standard_parameters = {
         "format": r"^(20\d{2})(\d{2})(\d{2})$",
         "type": str,
         "donation_required": False,
+        "default": datetime.today().strftime("%Y%m%d"),
     },
     "t": {
         "required": True,
@@ -18,14 +30,59 @@ standard_parameters = {
         "format": r"^([0-1][0-9]|2[0-3]):[0-5][0-9]$",
         "type": str,
         "donation_required": False,
+        "default": datetime.now().strftime("%H:%M"),
     },  # TODO: the validator is terrible
 }
 
-DELETESTATUS_PARAMETERS = {
-    "d": copy(standard_parameters["d"]),
-    "t": copy(standard_parameters["t"]),
+CALL_PARAMETERS = {
+    "endpoint": {
+        "required": True,
+        "type": str,
+        "donation_required": False,
+    },
+    "data": {
+        "required": False,
+        "type": dict,
+        "donation_required": False,
+        "default": None,
+    },
+    "params": {
+        "required": False,
+        "type": dict,
+        "donation_required": False,
+    },
+    "headers": {
+        "required": False,
+        "type": dict,
+        "donation_required": False,
+    },
+    "method": {
+        "required": False,
+        "type": str,
+        "donation_required": False,
+        "default": "POST",
+        "choices": [
+            "GET",
+            "POST",
+        ],
+    },
 }
-DELETESTATUS_PARAMETERS["t"]["required"] = False  # isn't required if 'd' is set
+
+DELETESTATUS_PARAMETERS = {
+    "date_val": {
+        "required": True,
+        "description": "Date",
+        "type": date,
+        "donation_required": False,
+        "additional_validators": [validate_delete_status_date],
+    },
+    "time_val": {
+        "required": False,
+        "description": "Time",
+        "type": time,
+        "donation_required": False,
+    },
+}
 
 ADDSTATUS_PARAMETERS = {
     "d": copy(standard_parameters["d"]),
@@ -45,6 +102,7 @@ ADDSTATUS_PARAMETERS = {
         "required": False,
         "description": "Energy Consumption (Wh)",
         "donation_required": False,
+        "maxval": 200000,
     },
     "v4": {
         "required": False,
@@ -228,4 +286,26 @@ ADDOUTPUT_PARAMETERS = {
         "type": int,
         "donation_required": False,
     },
+}
+
+
+DELETE_NOTIFICATION_PARAMETERS = {
+    "appid": {
+        "required": True,
+        "type": str,
+        "maxlen": 100,
+    },
+    "alerttype": {
+        "required": True,
+        "type": int,
+        "choices": ALERT_TYPES,
+    },
+}
+
+REGISTER_NOTIFICATION_PARAMETERS = copy(DELETE_NOTIFICATION_PARAMETERS)
+# registering notifications requires a URL
+REGISTER_NOTIFICATION_PARAMETERS["url"] = {
+    "required": True,
+    "type": str,
+    "maxlen": 150,
 }

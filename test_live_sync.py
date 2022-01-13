@@ -2,8 +2,9 @@
 
 import os
 import json
-import pytest
 import datetime
+
+import pytest
 
 from pvoutput import PVOutput
 
@@ -24,6 +25,7 @@ def config():
 
 @pytest.fixture
 def pvo(config):
+    """fixture for testing"""
     return PVOutput(
         apikey=config.get("apikey"), systemid=config.get("systemid"), donation_made=True
     )
@@ -64,6 +66,7 @@ def test_getstatus(pvo):
 
 
 def test_deletestatus(pvo):
+    """tests deletestatus"""
     testdate = datetime.date.today()
     testtime = datetime.time(hour=23, minute=45)
     delete_result = pvo.delete_status(testdate, testtime)

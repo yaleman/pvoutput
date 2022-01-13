@@ -50,7 +50,7 @@ async def test_check_rate_limit(config):
         assert len(result) == 3
 
 
-async def test_addstatus(config):
+async def test_configured_async_addstatus(config):
     """test the addstatus endpoint"""
 
     testdate = datetime.date.today()
@@ -93,7 +93,8 @@ async def test_configured_async_getstatus(config):
         assert isinstance(result, dict)
 
 
-async def test_deletestatus(config):
+async def test_configured_deletestatus(config):
+    """test the deletestatus endpoint"""
     testdate = datetime.date.today()
     testtime = datetime.time(hour=23, minute=45)
 
@@ -110,7 +111,7 @@ async def test_deletestatus(config):
         assert await delete_result.text() == "OK 200: Deleted Status"
 
 
-async def test_addoutput(config):
+async def test_configured_addoutput(config):
     """test the addoutput endpoint"""
 
     testdate = datetime.date.today()
