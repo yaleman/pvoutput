@@ -14,8 +14,6 @@ def round_to_base(number, base):
     """
     return base * round(floor(number / base))
 
-
-# pylint: disable=too-few-public-methods
 class PVOutputBase:
     """base class for the PVOutput API"""
 
