@@ -17,7 +17,7 @@ def round_to_base(number, base):
 
 # pylint: disable=too-few-public-methods
 class PVOutputBase:
-    """ base class for the PVOutput API """
+    """base class for the PVOutput API"""
 
     def __init__(
         self,
@@ -48,7 +48,7 @@ class PVOutputBase:
         return headers
 
     def get_time_by_base(self) -> str:
-        """ rounds the current time to the base specified (ie, to 15 minutes or 5 minutes etc)"""
+        """rounds the current time to the base specified (ie, to 15 minutes or 5 minutes etc)"""
         now = datetime.now()
         hour = int(now.strftime("%H"))
         # round the minute to the current stats period
@@ -62,7 +62,7 @@ class PVOutputBase:
         key: str,
         value: Any,
     ):
-        """ handles the regular expression format checks """
+        """handles the regular expression format checks"""
         try:
             compiled = re.compile(format_string)
             match = compiled.match(value)

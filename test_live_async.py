@@ -94,7 +94,7 @@ async def test_configured_async_getstatus(config):
 
 
 async def test_configured_deletestatus(config):
-    """ test the deletestatus endpoint """
+    """test the deletestatus endpoint"""
     testdate = datetime.date.today()
     testtime = datetime.time(hour=23, minute=45)
 

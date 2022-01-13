@@ -93,7 +93,7 @@ def get_rate_limit_header(response_object) -> dict:
 
 
 def validate_delete_status_date(date_val: date):
-    """ runs the validation for the date_val option of delete_status """
+    """runs the validation for the date_val option of delete_status"""
     yesterday = date.today() - timedelta(days=1)
     tomorrow = date.today() + timedelta(days=1)
     # you can't delete back past yesterday

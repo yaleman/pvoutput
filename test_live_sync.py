@@ -25,7 +25,7 @@ def config():
 
 @pytest.fixture
 def pvo(config):
-    """ fixture for testing """
+    """fixture for testing"""
     return PVOutput(
         apikey=config.get("apikey"), systemid=config.get("systemid"), donation_made=True
     )
