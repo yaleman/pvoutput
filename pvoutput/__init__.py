@@ -4,61 +4,19 @@ import datetime
 
 import requests
 
-from .parameters import *
+from .base import PVOutputBase
 from .exceptions import *
+from .parameters import *
 
 from . import utils
-
 
 __version__ = "0.0.8"
 
 
-class PVOutput:
+class PVOutput(PVOutputBase):
     """This class provides an interface to the pvoutput.org API"""
 
-    validate_data = utils.validate_data
-
-    # pylint: disable=too-many-arguments
-    def __init__(
-        self,
-        apikey: str,
-        systemid: int,
-        donation_made: bool = False,
-        stats_period: int = 5,
-    ):
-        """Setup code
-
-        :param apikey: API key (read or write)
-        :type apikey: str
-        :param systemid: system ID
-        :type systemid: int
-        :param donation_made: Whether to use the donation-required fields
-        :type donation_made: bool
-        """
-        if not isinstance(systemid, int):
-            raise TypeError("systemid should be int")
-        if not isinstance(apikey, str):
-            raise TypeError("apikey should be str")
-        self.apikey = apikey
-        self.systemid = systemid
-        self.donation_made = donation_made
-        self.stats_period = stats_period
-
-    def _headers(self) -> dict:
-        """Relevant documentation: https://pvoutput.org/help/api_specification.html#http-headers
-
-        :return: headers for calls to the API
-        :rtype: dict
-        """
-        headers = {
-            "X-Pvoutput-Apikey": self.apikey,
-            "X-Pvoutput-SystemId": str(self.systemid),
-        }
-        return headers
-
-    def _call(
-        self, endpoint, data=None, params=None, headers=False, method: str = "POST"
-    ) -> requests.Response:
+    def _call(self, **kwargs) -> requests.Response:
         """Makes a call to a URL endpoint with the data/headers/method you require.
 
         :param endpoint: The URL to call
@@ -80,23 +38,28 @@ class PVOutput:
         :raises ValueError: if the call throws a HTTP 400 error.
         :raises requests.exception: if method throws an exception.
         """
-        # always need the base headers
-        if not headers:
-            headers = self._headers()
-        # TODO: type checking on call
-        if method == "POST" and data and isinstance(data, dict) is False:
-            raise TypeError(f"data should be a dict, got {str(type(data))}")
-        if method == "GET" and params and isinstance(params, dict) is False:
-            raise TypeError(f"params should be a dict, got {str(type(params))}")
-        if headers and not isinstance(headers, dict):
-            raise TypeError(f"headers should be a dict, got {str(type(headers))}")
-        # TODO: learn if I can dynamically send thing, is that **args?
-        if method == "GET":
-            response = requests.get(endpoint, data=data, headers=headers, params=params)
-        elif method == "POST":
-            response = requests.post(endpoint, data=data, headers=headers)
+
+        if "headers" not in kwargs:
+            kwargs["headers"] = self._headers()
+        self.validate_data(kwargs, CALL_PARAMETERS)
+
+        if kwargs["method"] == "GET":
+            response = requests.get(
+                kwargs["endpoint"],
+                data=kwargs.get("data"),
+                headers=kwargs.get("headers"),
+                params=kwargs.get("params"),
+            )
+        elif kwargs["method"] == "POST":
+            response = requests.post(
+                kwargs["endpoint"],
+                data=kwargs.get("data"),
+                headers=kwargs.get("headers"),
+            )
         else:
-            raise UnknownMethodError(f"unknown method {method}")
+            raise UnknownMethodError(
+                f"unknown method {kwargs['method']} ({type(kwargs['method'])})"
+            )
 
         if response.status_code == 400:
             # TODO: work out how to get the specific response and provide useful answers
@@ -134,18 +97,10 @@ class PVOutput:
         :returns: The response object
         :rtype: requests.Response
         """
-        if not data.get("d", False):
-            # if you don't set a date, make it now
-            data["d"] = datetime.date.today().strftime("%Y%m%d")
-        if not data.get("t", False):
+        # can't push this through the validator as it relies on the class config
+        if "t" not in data:
             # if you don't set a time, set it to now
-
-            hour = int(datetime.datetime.now().strftime("%H"))
-            # round the minute to the current stats period
-            minute = utils.round_to_base(
-                datetime.datetime.now().minute, self.stats_period
-            )
-            data["t"] = datetime.time(hour=hour, minute=minute).strftime("%H:%M")
+            data["t"] = self.get_time_by_base()
         self.validate_data(data, ADDSTATUS_PARAMETERS)
 
         url, method = utils.URLS["addstatus"]
@@ -164,17 +119,15 @@ class PVOutput:
         :returns: The response object
         :rtype: requests.Response
         """
-        if not data.get("d", False):
-            # if you don't set a date, make it now
-            data["d"] = datetime.date.today().strftime("%Y%m%d")
         self.validate_data(data, ADDOUTPUT_PARAMETERS)
         url, method = utils.URLS["addoutput"]
         return self._call(endpoint=url, data=data, method=method)
 
     def delete_status(
-        self, date_val: datetime.date, time_val=None
+        self, date_val: datetime.date, time_val: datetime.time = None
     ) -> requests.Response:
-        """Deletes a given status, based on the provided parameters
+        """
+        Deletes a given status, based on the provided parameters
         needs a datetime() object
         set the hours/minutes to non-zero to delete a specific time
 
@@ -189,26 +142,14 @@ class PVOutput:
         :returns: The response object
         :rtype: requests.Response
         """
-        if not isinstance(date_val, datetime.date):
-            raise ValueError(
-                f"date_val should be of type datetime.date, not {type(date_val)}"
-            )
-        if time_val and not isinstance(time_val, datetime.time):
-            raise ValueError(
-                f"time_val should be of time datetime.time, not {type(time_val)}"
-            )
-        yesterday = datetime.date.today() - datetime.timedelta(1)
-        tomorrow = datetime.date.today() + datetime.timedelta(1)
-        # you can't delete back past yesterday
-        if date_val < yesterday:
-            raise ValueError(
-                f"date_val can only be yesterday or today, you provided {date_val}"
-            )
-        # you can't delete forward of today
-        if date_val >= tomorrow:
-            raise ValueError(
-                f"date_val can only be yesterday or today, you provided {date_val}"
-            )
+        self.validate_data(
+            {
+                "date_val": date_val,
+                "time_val": time_val,
+            },
+            DELETESTATUS_PARAMETERS,
+        )
+
         data = {"d": date_val.strftime("%Y%m%d")}
         if time_val:
             data["t"] = time_val.strftime("%H:%M")
@@ -233,10 +174,9 @@ class PVOutput:
             params["ext"] = 1
             params["sid"] = self.systemid
         url, method = utils.URLS["getstatus"]
-        response = self._call(endpoint=url, params=params, data=None, method=method)
+        response = self._call(endpoint=url, params=params, method=method)
         response.raise_for_status()
         # grab all the things
-        # pylint: disable=invalid-name
         responsedata, extras = utils.responsedata_to_response(response.text.split(","))
 
         # if we're fancy, we get more data
@@ -293,28 +233,17 @@ class PVOutput:
         24      Low Net Power Alert
         =====   ====
         """
-        # TODO: Find out if HTTPS is supported for Callback URLs
-        # validation of inputs
-        if not isinstance(appid, str):
-            raise TypeError(f"appid needs to be a string, got: {str(type(appid))}")
-        if not isinstance(url, str):
-            raise TypeError(f"url needs to be a string, got: {str(type(url))}")
-        if len(url) > 150:
-            raise ValueError(
-                f"Length of url can't be longer than 150 chars - was {len(url)}"
-            )
-        if len(appid) > 100:
-            raise ValueError(
-                f"Length of appid can't be longer than 100 chars - was {len(appid)}"
-            )
 
-        if not isinstance(alerttype, int) or alerttype not in utils.ALERT_TYPES:
-            raise UnknownAlertTypeError(
-                f"alerttype is unknown, got: {type(alerttype)} - {alerttype}"
-            )
+        self.validate_data(
+            {
+                "appid": appid,
+                "url": url,
+                "alerttype": alerttype,
+            },
+            REGISTER_NOTIFICATION_PARAMETERS,
+        )
 
         call_url, method = utils.URLS["registernotification"]
-        # no need to encode parameters, requests library does this
         params = {"appid": appid, "type": alerttype, "url": url}
         return self._call(endpoint=call_url, params=params, method=method)
 
@@ -358,21 +287,15 @@ class PVOutput:
         24      Low Net Power Alert
         =====   ====
         """
-        # TODO: Find out if HTTPS is supported for Callback URLs
-        # validation of inputs
-        if not isinstance(appid, str):
-            raise TypeError(f"appid needs to be a string, got: {str(type(appid))}")
-        if len(appid) > 100:
-            raise ValueError(
-                f"Length of appid can't be longer than 100 chars - was {len(appid)}"
-            )
 
-        if not isinstance(alerttype, int) or alerttype not in utils.ALERT_TYPES:
-            raise UnknownAlertTypeError(
-                f"alerttype is unknown, got: {type(alerttype)} - {alerttype}"
-            )
+        self.validate_data(
+            {
+                "appid": appid,
+                "alerttype": alerttype,
+            },
+            DELETE_NOTIFICATION_PARAMETERS,
+        )
 
         url, method = utils.URLS["deregisternotification"]
-        # no need to encode parameters, requests library does this
         params = {"appid": appid, "type": alerttype}
         return self._call(endpoint=url, params=params, method=method)

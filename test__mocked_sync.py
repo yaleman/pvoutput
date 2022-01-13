@@ -131,7 +131,7 @@ def test_api_validation_invalid_regexp():
     }
     with pytest.raises(
         pvoutput.exceptions.InvalidRegexpError,
-        match=f"Error for key '.*' with format '.*': .*",
+        match="Error for key '.*' with format '.*': .*",
     ):
         assert good_pvo_with_donation().validate_data(data, api)
 
@@ -195,17 +195,11 @@ def test_delete_status_date_derp(pvo=good_pvo()):
 
 def test_delete_status_invalid_time_val_type(pvo=good_pvo()):
     """if you're doing invalid time types, deletestatus() should fail"""
-    with pytest.raises(
-        ValueError, match=r"time_val should be of time datetime\.time, not .*"
-    ):
+    with pytest.raises(TypeError):
         pvo.delete_status(date_val=datetime.date.today(), time_val="lol")
-    with pytest.raises(
-        ValueError, match=r"time_val should be of time datetime\.time, not .*"
-    ):
+    with pytest.raises(TypeError):
         pvo.delete_status(date_val=datetime.date.today(), time_val=123)
-    with pytest.raises(
-        ValueError, match=r"time_val should be of time datetime\.time, not .*"
-    ):
+    with pytest.raises(TypeError):
         pvo.delete_status(date_val=datetime.date.today(), time_val=True)
 
 

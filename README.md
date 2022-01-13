@@ -27,21 +27,51 @@ Will give you output like this:
 
 ## Prod-ish usage
 
-`python3 -m pip install pvoutput` to install
+`python -m pip install pvoutput` to install from pypi
 
-* `pipenv install -r requirements.txt` or
-* `pip install -r requirements.txt`
+## Dev Install Things
 
-## Dev
+```shell
+python -m venv venv
+source venv/bin/activate
+python -m pip install --upgrade pip flit
+python -m flit install
+```
 
-Either:
+# Input validation
 
-* `pipenv install -r requirements-dev.txt` or
-* `pip install -r requirements-dev.txt`
+This is handled by the `pvoutput.base.PVOutputBase.validate_data` function.
 
-# Testing
+It expects the input data and a dict of configuration parameters, which are described in the table below:
 
-I'm using `pytest` as best I can. `pipenv install --dev; pipenv run pytest` should do it.
+| Field name | Required | Valid Types | Description |
+| --- |  --- | --- | --- |
+| `type` | Yes | `Any` | This is a python type object to match against the field type. |
+| `required` | No | `bool` | This defines if the field is required. |
+| `description` | No | `Any` | This is currently unused, but typically holds the description from the PVOutput API Docs |
+| `donation_required` | No | `bool` | If set to true, and the user's not donated, it'll throw a `DonationRequired` exception if the user tries to use functionality that requires them to have donated. It's a whole thing. |
+| `maxlen` | No | `int` | Maximum length of the field. ie. `if len(field) > maxlen: raise ValueError` |
+| `maxval` | No | `int` | Maximum value of the field. |
+| `minval` | No | `int` | Minimum value of the field. |
+| `additional_validators` | No | `List[function]` | A list of functions to run against the field, which should throw exceptions if something's wrong. |
+
+An example configuration
+
+```
+"date_val": {
+    "required": True,
+    "description": "Date",
+    "type": date,
+    "donation_required": False,
+    "additional_validators" : [
+        validate_delete_status_date
+    ]
+}
+```
+
+# Contributing / Testing
+
+`pylint`, `black` and `mypy` should all pass before submitting a PR.
 
 # License
 
