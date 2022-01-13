@@ -73,14 +73,14 @@ class PVOutput(PVOutputBase):
             response = await self.session.get(
                 kwargs["endpoint"],
                 data=kwargs.get("data"),
-                headers=kwargs.get("headers"),
+                headers=kwargs.get("headers", self._headers()),
                 params=kwargs.get("params"),
             )
         elif kwargs["method"] == "POST":
             response = await self.session.post(
                 kwargs["endpoint"],
                 data=kwargs.get("data"),
-                headers=kwargs.get("headers"),
+                headers=kwargs.get("headers", self._headers()),
             )
         else:
             raise UnknownMethodError(f"unknown method {kwargs['method']}")
@@ -123,9 +123,9 @@ class PVOutput(PVOutputBase):
         :returns: The response object
         :rtype: aiohttp.ClientResponse
         """
+        # if you don't set a time, set it to now
         # can't push this through the validator as it relies on the class config
         if "t" not in data:
-            # if you don't set a time, set it to now
             data["t"] = self.get_time_by_base()
         self.validate_data(data, ADDSTATUS_PARAMETERS)
 

@@ -39,15 +39,13 @@ class PVOutput(PVOutputBase):
         :raises requests.exception: if method throws an exception.
         """
 
-        if "headers" not in kwargs:
-            kwargs["headers"] = self._headers()
         self.validate_data(kwargs, CALL_PARAMETERS)
 
         if kwargs["method"] == "GET":
             response = requests.get(
                 kwargs["endpoint"],
                 data=kwargs.get("data"),
-                headers=kwargs.get("headers"),
+                headers=kwargs.get("headers", self._headers()),
                 params=kwargs.get("params"),
             )
         elif kwargs["method"] == "POST":
@@ -57,9 +55,7 @@ class PVOutput(PVOutputBase):
                 headers=kwargs.get("headers"),
             )
         else:
-            raise UnknownMethodError(
-                f"unknown method {kwargs['method']} ({type(kwargs['method'])})"
-            )
+            raise UnknownMethodError(f"unknown method {kwargs['method']}")
 
         if response.status_code == 400:
             # TODO: work out how to get the specific response and provide useful answers
@@ -97,9 +93,9 @@ class PVOutput(PVOutputBase):
         :returns: The response object
         :rtype: requests.Response
         """
+        # if you don't set a time, set it to now
         # can't push this through the validator as it relies on the class config
         if "t" not in data:
-            # if you don't set a time, set it to now
             data["t"] = self.get_time_by_base()
         self.validate_data(data, ADDSTATUS_PARAMETERS)
 
