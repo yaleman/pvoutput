@@ -14,6 +14,7 @@ def round_to_base(number, base):
     """
     return base * round(floor(number / base))
 
+
 class PVOutputBase:
     """base class for the PVOutput API"""
 
