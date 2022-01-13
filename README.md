@@ -7,6 +7,8 @@ Get your API key from [the account page on PVOutput](https://pvoutput.org/accoun
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 # Example usage
 
+Here's a quick code example:
+
 ```python
     from pvoutput import PVOutput
     import json
@@ -23,6 +25,9 @@ Will give you output like this:
         "X-Rate-Limit-Reset": "1570597200"
     }
 ```
+
+There are more example code snippets in the [examples](examples/) directory.
+
 # Installing
 
 ## Prod-ish usage

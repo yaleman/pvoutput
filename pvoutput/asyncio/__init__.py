@@ -65,8 +65,6 @@ class PVOutput(PVOutputBase):
         :raises requests.exception: if method throws an exception.
         """
 
-        if "headers" not in kwargs:
-            kwargs["headers"] = self._headers()
         self.validate_data(kwargs, CALL_PARAMETERS)
 
         if kwargs["method"] == "GET":
