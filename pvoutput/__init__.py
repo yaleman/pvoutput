@@ -1,4 +1,4 @@
-""" Synchronous interface to the PVOutput API """
+""" Interface to the PVOutput API """
 
 import datetime
 
