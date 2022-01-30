@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="None">
+        
+        
+        <link rel="shortcut icon" href="img/favicon.ico">
+        <title>PVOutput</title>
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/font-awesome.min.css" rel="stylesheet">
+        <link href="css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css">
+        <link href="assets/_mkdocstrings.css" rel="stylesheet">
+
+        <script src="js/jquery-1.10.2.min.js" defer></script>
+        <script src="js/bootstrap.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script> 
+    </head>
+
+    <body class="homepage">
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href=".">PVOutput</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="navitem active">
+                                <a href="." class="nav-link">Home</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="api/" class="nav-link">API Documentation</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" class="nav-link disabled">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="api/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="1"><a href="#pvoutput" class="nav-link">pvoutput</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#example-usage" class="nav-link">Example usage</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#installing" class="nav-link">Installing</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#prod-ish-usage" class="nav-link">Prod-ish usage</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#dev-install-things" class="nav-link">Dev Install Things</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#input-validation" class="nav-link">Input validation</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#contributing-testing" class="nav-link">Contributing / Testing</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#license" class="nav-link">License</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#changelog" class="nav-link">Changelog</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="pvoutput">pvoutput</h1>
+<p>PVOutput.org python API module. Works with the R2 <a href="https://pvoutput.org/help.html#api-spec">API version spec here</a>.</p>
+<p>Get your API key from <a href="https://pvoutput.org/account.jsp">the account page on PVOutput</a></p>
+<p><a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg" /></a></p>
+<h1 id="example-usage">Example usage</h1>
+<p>Here's a quick code example:</p>
+<pre><code class="language-python">    from pvoutput import PVOutput
+    import json
+    apikey = 'aaaaaabbbbbbccccccddddddeeeeeeffffffgggg'
+    systemid = 12345
+    pvo = PVOutput(apikey=apikey, systemid=systemid)
+    print(json.dumps(pvo.check_rate_limit(), indent=2))
+</code></pre>
+<p>Will give you output like this:</p>
+<pre><code>    {
+        &quot;X-Rate-Limit-Remaining&quot;: &quot;271&quot;,
+        &quot;X-Rate-Limit-Limit&quot;: &quot;300&quot;,
+        &quot;X-Rate-Limit-Reset&quot;: &quot;1570597200&quot;
+    }
+</code></pre>
+<p>There are more example code snippets in the <a href="examples/">examples</a> directory.</p>
+<h1 id="installing">Installing</h1>
+<h2 id="prod-ish-usage">Prod-ish usage</h2>
+<p><code>python -m pip install pvoutput</code> to install from pypi</p>
+<h2 id="dev-install-things">Dev Install Things</h2>
+<pre><code class="language-shell">python -m venv venv
+source venv/bin/activate
+python -m pip install --upgrade pip flit
+python -m flit install
+</code></pre>
+<h1 id="input-validation">Input validation</h1>
+<p>This is handled by the <code>pvoutput.base.PVOutputBase.validate_data</code> function.</p>
+<p>It expects the input data and a dict of configuration parameters, which are described in the table below:</p>
+<table>
+<thead>
+<tr>
+<th>Field name</th>
+<th>Required</th>
+<th>Valid Types</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>type</code></td>
+<td>Yes</td>
+<td><code>Any</code></td>
+<td>This is a python type object to match against the field type.</td>
+</tr>
+<tr>
+<td><code>required</code></td>
+<td>No</td>
+<td><code>bool</code></td>
+<td>This defines if the field is required.</td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td>No</td>
+<td><code>Any</code></td>
+<td>This is currently unused, but typically holds the description from the PVOutput API Docs</td>
+</tr>
+<tr>
+<td><code>donation_required</code></td>
+<td>No</td>
+<td><code>bool</code></td>
+<td>If set to true, and the user's not donated, it'll throw a <code>DonationRequired</code> exception if the user tries to use functionality that requires them to have donated. It's a whole thing.</td>
+</tr>
+<tr>
+<td><code>maxlen</code></td>
+<td>No</td>
+<td><code>int</code></td>
+<td>Maximum length of the field. ie. <code>if len(field) &gt; maxlen: raise ValueError</code></td>
+</tr>
+<tr>
+<td><code>maxval</code></td>
+<td>No</td>
+<td><code>int</code></td>
+<td>Maximum value of the field.</td>
+</tr>
+<tr>
+<td><code>minval</code></td>
+<td>No</td>
+<td><code>int</code></td>
+<td>Minimum value of the field.</td>
+</tr>
+<tr>
+<td><code>additional_validators</code></td>
+<td>No</td>
+<td><code>List[function]</code></td>
+<td>A list of functions to run against the field, which should throw exceptions if something's wrong.</td>
+</tr>
+</tbody>
+</table>
+<p>An example configuration</p>
+<pre><code>&quot;date_val&quot;: {
+    &quot;required&quot;: True,
+    &quot;description&quot;: &quot;Date&quot;,
+    &quot;type&quot;: date,
+    &quot;donation_required&quot;: False,
+    &quot;additional_validators&quot; : [
+        validate_delete_status_date
+    ]
+}
+</code></pre>
+<h1 id="contributing-testing">Contributing / Testing</h1>
+<p><code>pylint</code>, <code>black</code> and <code>mypy</code> should all pass before submitting a PR.</p>
+<h1 id="license">License</h1>
+<p>MIT License (see <code>LICENSE</code>), don't use this for anything you care about - I don't provide a warranty at all, and it'll likely steal your socks and underfeed your dog.</p>
+<h1 id="changelog">Changelog</h1>
+<ul>
+<li>0.0.1 Initial version</li>
+<li>0.0.2 2019-10-12 Fixed some bugs</li>
+<li>0.0.3 2019-10-13 Added PVOutput.getstatus() which returns the current status as a dict</li>
+<li>0.0.4 2019-11-05 Code cleanup using sonarqube, added an error check for registernotification</li>
+<li>0.0.5 Asyncio things</li>
+<li>0.0.6 I broke the build when uploading to pypi, fixed in 0.0.7.</li>
+<li>0.0.7 2021-12-27 <a href="https://github.com/yaleman/pvoutput/issues/117">#117</a> fix for getstatus issues</li>
+<li>0.0.8 2022-01-02 @cheops did great work cleaning up a lot of my mess, and testing is much better.</li>
+</ul></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>
+            var base_url = ".",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="js/base.js" defer></script>
+        <script src="search/main.js" defer></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
+
+<!--
+MkDocs version : 1.2.3
+Build Date UTC : 2022-01-30 03:10:05.786936+00:00
+-->
