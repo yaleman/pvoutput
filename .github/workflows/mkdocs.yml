@@ -23,4 +23,3 @@ jobs:
           python -m pip install --quiet --no-cache-dir --upgrade poetry
           poetry install
           poetry run mkdocs gh-deploy -m 'Commit {sha} MkDocs {version}'
-# testing
