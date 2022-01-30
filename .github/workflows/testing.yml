@@ -16,12 +16,10 @@ jobs:
           python-version: '3.8'
 
       - run: |
-            python3 -m venv venv
-            source venv/bin/activate
-            python3 -m pip install --upgrade --quiet pip flit
-            flit install --deps all
-            python3 -m pylint --rcfile=.pylintrc pvoutput
-  flit:
+            python -m pip install --upgrade --quiet pip poetry
+            poetry install
+            poetry run pylint --rcfile=.pylintrc pvoutput
+  poetry:
     runs-on: ubuntu-latest
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
@@ -34,11 +32,8 @@ jobs:
           python-version: '3.8'
 
       - run: |
-            python3 -m venv venv
-            source venv/bin/activate
-            python3 -m pip install --upgrade --quiet pip flit
-            flit install --deps production
-            python3 -m flit build
+            python -m pip install --upgrade --quiet pip poetry
+            poetry build
   mypy:
     runs-on: ubuntu-latest
     concurrency:
@@ -52,8 +47,6 @@ jobs:
           python-version: '3.8'
 
       - run: |
-            python3 -m venv venv
-            source venv/bin/activate
-            python3 -m pip install --upgrade --quiet pip flit
-            flit install --deps all
-            python3 -m mypy pvoutput
+            python -m pip install --upgrade --quiet pip poetry
+            poetry install
+            poetry run mypy pvoutput
