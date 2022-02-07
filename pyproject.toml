@@ -76,7 +76,7 @@ python = "^3.8"
 requests = "^2.27.1"
 aiohttp = "^3.8.1"
 mkdocs = {version = "^1.2.3", extras = ["docs"]}
-mkdocstrings = {version = "^0.17.0", extras = ["docs"]}
+mkdocstrings = {version = "^0.18.0", extras = ["docs"]}
 mkdocs-material = {version = "^8.1.9", extras = ["docs"]}
 
 [tool.poetry.dev-dependencies]
