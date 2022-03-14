@@ -81,7 +81,7 @@ mkdocs-material = {version = "^8.2.5", extras = ["docs"]}
 
 [tool.poetry.dev-dependencies]
 pylint = "^2.12.2"
-mypy = "^0.940"
+mypy = "^0.941"
 black = "^22.1.0"
 pytest = "^7.1.0"
 types-requests = "^2.27.12"
