@@ -1,8 +1,6 @@
-# mkdocs.yml
 site_name: PVOutput
 theme:
- name: "material"
-
+  name: material
 plugins:
 - search:
 - mkdocstrings:
@@ -12,8 +10,10 @@ plugins:
         rendering:
           show_source: true
     watch:
-    - "pvoutput/"
-
+    - pvoutput/
 nav:
-  - "Home": README.md
-  - "API Documentation": api.md
+- Home: README.md
+- API Documentation: api.md
+repo_name: yaleman/pvoutput
+repo_url: https://api.github.com/repos/yaleman/pvoutput
+site_url: https://yaleman.github.io/pvoutput/
