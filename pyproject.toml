@@ -80,7 +80,7 @@ mkdocstrings = {version = "^0.18.1", extras = ["docs"]}
 mkdocs-material = {version = "^8.2.8", extras = ["docs"]}
 
 [tool.poetry.dev-dependencies]
-pylint = "^2.13.4"
+pylint = "^2.13.5"
 mypy = "^0.942"
 black = "^22.3.0"
 pytest = "^7.1.1"
