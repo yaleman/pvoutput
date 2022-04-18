@@ -1,7 +1,0 @@
-[MASTER]
-
-load-plugins=pylint_pytest
-
-max-line-length=200
-
-disable=W0511,R0801
