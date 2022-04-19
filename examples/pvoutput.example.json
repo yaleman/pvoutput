@@ -1,4 +1,5 @@
 {
 	"apikey": "aaaaaabbbbbbccccccddddddeeeeeeffffffgggg",
-	"systemid": 12345
+	"systemid": 12345,
+	"donation_made" : false
 }

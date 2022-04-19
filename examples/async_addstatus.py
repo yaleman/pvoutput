@@ -1,21 +1,15 @@
+""" pvoutput example to add a status entry """
+
 import asyncio
-import json
 
-import aiofiles
 import aiohttp
-
+from utils import get_apikey_systemid
 from pvoutput.asyncio import PVOutput
 
 
-async def get_apikey_systemid():
-    async with aiofiles.open("pvoutput.json", mode="r", encoding="utf8") as f:
-        contents = await f.read()
-    config_data = json.loads(contents)
-    return config_data["apikey"], config_data["systemid"]
-
-
-async def main():
-    apikey, systemid = await get_apikey_systemid()
+async def main() -> None:
+    """main function"""
+    configuration = await get_apikey_systemid()
 
     data = {
         "v2": 500,  # power generation
@@ -26,8 +20,14 @@ async def main():
     }
 
     async with aiohttp.ClientSession() as session:
-        pvo = PVOutput(apikey=apikey, systemid=systemid, session=session)
-        await pvo.addstatus(data)
+        pvo = PVOutput(
+            apikey=configuration["apikey"],
+            systemid=configuration["systemid"],
+            session=session,
+            donation_made=configuration["donation_made"],
+        )
+        response = await pvo.addstatus(data)
+        print(f"{response=}")
 
 
 if __name__ == "__main__":

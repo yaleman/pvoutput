@@ -1,24 +1,24 @@
+""" example pulling a status """
+
 import asyncio
 import json
-
-import aiofiles
 import aiohttp
 
+from utils import get_apikey_systemid
 from pvoutput.asyncio import PVOutput
 
 
-async def get_apikey_systemid():
-    async with aiofiles.open("pvoutput.json", mode="r", encoding="utf8") as f:
-        contents = await f.read()
-    config_data = json.loads(contents)
-    return config_data["apikey"], config_data["systemid"]
-
-
-async def main():
-    apikey, systemid = await get_apikey_systemid()
+async def main() -> None:
+    """main func"""
+    configuration = await get_apikey_systemid()
 
     async with aiohttp.ClientSession() as session:
-        pvo = PVOutput(apikey=apikey, systemid=systemid, session=session)
+        pvo = PVOutput(
+            apikey=configuration["apikey"],
+            systemid=configuration["systemid"],
+            session=session,
+            donation_made=configuration["donation_made"],
+        )
         result = await pvo.getstatus()
     print(json.dumps(result, indent=2))
 
