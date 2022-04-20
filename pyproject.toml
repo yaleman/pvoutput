@@ -23,6 +23,13 @@ keywords = [
 name = "pvoutput"
 readme = "README.md"
 
+[tool.poetry]
+name = "pvoutput"
+version = "0.0.9"
+description = "Interface to the PVOutput API"
+authors = ["yaleman <james@terminaloutcomes.com>"]
+license = "MIT"
+
 [project.optional-dependencies]
 dev = [
     "pylint",
@@ -63,13 +70,6 @@ exclude = [
     "upload_to_pip",
     "docs/*",
 ]
-
-[tool.poetry]
-name = "pvoutput"
-version = "0.0.8"
-description = "Interface to the PVOutput API"
-authors = ["yaleman <james@terminaloutcomes.com>"]
-license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.8"
