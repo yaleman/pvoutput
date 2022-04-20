@@ -29,7 +29,7 @@ def main() -> None:
     try:
         response = pvo.addstatus(data)
         print(response)
-    except Exception as err: #pylint: disable=broad-except
+    except Exception as err:  # pylint: disable=broad-except
         print(f"{err=}")
         # print(response.request.method)
 

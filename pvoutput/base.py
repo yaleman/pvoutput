@@ -3,12 +3,12 @@
 from datetime import datetime, time
 from math import floor
 import re
-from typing import Any, AnyStr
+from typing import Any, AnyStr, Dict, Union
 
 from .exceptions import InvalidRegexpError, DonationRequired
 
 
-def round_to_base(number, base):
+def round_to_base(number: Union[int, float], base: Union[int, float]) -> float:
     """rounds down to a specific base number
     based on answer in https://stackoverflow.com/a/2272174/188774
     """
@@ -24,7 +24,7 @@ class PVOutputBase:
         systemid: int,
         donation_made: bool = False,
         stats_period: int = 5,
-    ):
+    ) -> None:
         if not isinstance(systemid, int):
             raise TypeError("systemid should be int")
         if not isinstance(apikey, str):
@@ -34,7 +34,7 @@ class PVOutputBase:
         self.donation_made = donation_made
         self.stats_period = stats_period
 
-    def _headers(self) -> dict:
+    def _headers(self) -> Dict[str, str]:
         """Relevant documentation: https://pvoutput.org/help/api_specification.html#http-headers
 
         :return: headers for calls to the API
@@ -51,7 +51,7 @@ class PVOutputBase:
         now = datetime.now()
         hour = int(now.strftime("%H"))
         # round the minute to the current stats period
-        minute = round_to_base(now.minute, self.stats_period)
+        minute = int(round_to_base(now.minute, self.stats_period))
         return time(hour=hour, minute=minute).strftime("%H:%M")
 
     @classmethod
@@ -60,7 +60,7 @@ class PVOutputBase:
         format_string: AnyStr,
         key: str,
         value: Any,
-    ):
+    ) -> None:
         """handles the regular expression format checks"""
         try:
             compiled = re.compile(format_string)
@@ -75,7 +75,7 @@ class PVOutputBase:
             ) from error
 
     # pylint: disable=too-many-branches
-    def validate_data(self, data, apiset):
+    def validate_data(self, data: Dict[str, Any], apiset: Dict[str, Any]) -> bool:
         """Does a super-simple validation based on the api def raises errors if it's wrong, returns True if it's OK
 
         This'll only raise an error on the first error it finds

@@ -1,6 +1,7 @@
 """ tests synchronous api things """
 import datetime
 import re
+from typing import Any
 
 import pytest
 import requests_mock
@@ -16,7 +17,7 @@ FAKE_TIME = datetime.datetime(2020, 9, 6, 12, 59, 00)
 
 
 @pytest.fixture
-def patch_datetime_now(monkeypatch):
+def patch_datetime_now(monkeypatch: Any) -> Any:
     """patches datetime.now with a fake time
     based on this https://stackoverflow.com/questions/20503373/how-to-monkeypatch-pythons-datetime-datetime-now-with-py-test
     """
@@ -25,47 +26,47 @@ def patch_datetime_now(monkeypatch):
         """monkeypatched datetime"""
 
         @classmethod
-        def now(cls, tz=None):  # pylint: disable=signature-differs
+        def now(cls, tz: Any = None) -> Any:  # pylint: disable=signature-differs
             return FAKE_TIME
 
     monkeypatch.setattr(datetime, "datetime", PatchedDateTime)
 
 
-def test_patch_datetime(patch_datetime_now):
+def test_patch_datetime(patch_datetime_now: Any) -> None:
     """testing that the monkeypatching works"""
     assert datetime.datetime.now() == FAKE_TIME
 
 
-def good_pvo_no_donation():
+def good_pvo_no_donation() -> pvoutput.PVOutput:
     """returns a valid PVOutput API object"""
     return pvoutput.PVOutput(apikey="helloworld", systemid=1, donation_made=False)
 
 
-def good_pvo_with_donation():
+def good_pvo_with_donation() -> pvoutput.PVOutput:
     """returns a valid PVOutput API object"""
     return pvoutput.PVOutput(apikey="helloworld", systemid=1, donation_made=True)
 
 
-def good_pvo():
+def good_pvo() -> pvoutput.PVOutput:
     """returns a valid PVOutput API object that's not donating"""
     return good_pvo_no_donation()
 
 
-def test_api_inputs():
+def test_api_inputs() -> None:
     """tests basic "this should fail" on API init"""
     with pytest.raises(TypeError, match=r"apikey should be .*"):
-        pvoutput.PVOutput(apikey=1234512345, systemid=1)
+        pvoutput.PVOutput(apikey=1234512345, systemid=1)  # type: ignore
     with pytest.raises(TypeError, match=r"systemid should be .*"):
-        pvoutput.PVOutput(apikey="helloworld", systemid="test")
+        pvoutput.PVOutput(apikey="helloworld", systemid="test")  # type: ignore
 
 
-def test_api_validation():
+def test_api_validation() -> None:
     """tests a basic "this should clearly fail" validation"""
     with pytest.raises(ValueError, match=r"one of .* MUST be set"):
-        pvoutput.PVOutput.validate_data(None, {}, pvoutput.ADDSTATUS_PARAMETERS)
+        pvoutput.PVOutput.validate_data(None, {}, pvoutput.ADDSTATUS_PARAMETERS)  # type: ignore
 
 
-def test_validation_regexp_date():
+def test_validation_regexp_date() -> None:
     """tests the validator for format regexp date"""
     api = {
         "d": {
@@ -88,7 +89,7 @@ def test_validation_regexp_date():
     assert good_pvo_with_donation().validate_data({"d": "20190515"}, api)
 
 
-def test_validation_regexp_time():
+def test_validation_regexp_time() -> None:
     """tests the validator for format regexp date"""
     api = {
         "t": {
@@ -117,7 +118,7 @@ def test_validation_regexp_time():
     assert good_pvo_with_donation().validate_data({"t": "23:59"}, api)
 
 
-def test_api_validation_invalid_regexp():
+def test_api_validation_invalid_regexp() -> None:
     """tests the validator with an invalid regexp"""
     data = {"d": "20190515"}
     api = {
@@ -136,7 +137,7 @@ def test_api_validation_invalid_regexp():
         assert good_pvo_with_donation().validate_data(data, api)
 
 
-def test_headers_gen(pvo=good_pvo()):
+def test_headers_gen(pvo: pvoutput.PVOutput = good_pvo()) -> None:
     """tests that PVOutput._headers() returns a valid dict"""
     # pylint: disable=protected-access
     assert pvo._headers() == {
@@ -145,13 +146,13 @@ def test_headers_gen(pvo=good_pvo()):
     }
 
 
-def test_api_validation_addstatus_shouldwork():
+def test_api_validation_addstatus_shouldwork() -> None:
     """tests the validator for addstatus()"""
     data = {"d": "20190515", "t": "12:34", "v1": 123}
     assert good_pvo_with_donation().validate_data(data, pvoutput.ADDSTATUS_PARAMETERS)
 
 
-def test_api_validation_types(pvo=good_pvo()):
+def test_api_validation_types(pvo: pvoutput.PVOutput = good_pvo()) -> None:
     """tests the type-based validation in addstatus on a fail"""
     data_failtime = {"d": "20190515", "t": 1234, "v1": "123"}
     data_faildate = {"d": 1, "t": "1234", "v1": "123"}
@@ -167,7 +168,7 @@ def test_api_validation_types(pvo=good_pvo()):
         pvo.validate_data(data_faildate, pvoutput.ADDSTATUS_PARAMETERS)
 
 
-def test_delete_status_date_too_early(pvo=good_pvo()):
+def test_delete_status_date_too_early(pvo: pvoutput.PVOutput = good_pvo()) -> None:
     """it should throw an error if you're deleting a status before yesterday"""
     # TODO: check if this is right for donation accounts
     with pytest.raises(
@@ -176,7 +177,7 @@ def test_delete_status_date_too_early(pvo=good_pvo()):
         pvo.delete_status(datetime.date.today() - datetime.timedelta(days=2))
 
 
-def test_delete_status_date_too_late(pvo=good_pvo()):
+def test_delete_status_date_too_late(pvo: pvoutput.PVOutput = good_pvo()) -> None:
     """it should throw an error if you're deleting a far-future status"""
 
     with pytest.raises(
@@ -185,7 +186,7 @@ def test_delete_status_date_too_late(pvo=good_pvo()):
         pvo.delete_status(datetime.date.today() + datetime.timedelta(days=2))
 
 
-def test_delete_status_date_derp(pvo=good_pvo()):
+def test_delete_status_date_derp(pvo: pvoutput.PVOutput = good_pvo()) -> None:
     """it should barf if you're setting it to tomorrow"""
     with pytest.raises(
         ValueError, match=r"date_val can only be yesterday or today, you provided .*"
@@ -193,17 +194,19 @@ def test_delete_status_date_derp(pvo=good_pvo()):
         pvo.delete_status(date_val=datetime.date.today() + datetime.timedelta(1))
 
 
-def test_delete_status_invalid_time_val_type(pvo=good_pvo()):
+def test_delete_status_invalid_time_val_type(
+    pvo: pvoutput.PVOutput = good_pvo(),
+) -> None:
     """if you're doing invalid time types, deletestatus() should fail"""
     with pytest.raises(TypeError):
-        pvo.delete_status(date_val=datetime.date.today(), time_val="lol")
+        pvo.delete_status(date_val=datetime.date.today(), time_val="lol")  # type: ignore
     with pytest.raises(TypeError):
-        pvo.delete_status(date_val=datetime.date.today(), time_val=123)
+        pvo.delete_status(date_val=datetime.date.today(), time_val=123)  # type: ignore
     with pytest.raises(TypeError):
-        pvo.delete_status(date_val=datetime.date.today(), time_val=True)
+        pvo.delete_status(date_val=datetime.date.today(), time_val=True)  # type: ignore
 
 
-def test_delete_status_works(pvo=good_pvo()):
+def test_delete_status_works(pvo: pvoutput.PVOutput = good_pvo()) -> None:
     """if you're doing invalid time types, deletestatus() should fail"""
 
     with requests_mock.mock() as mock:
@@ -216,7 +219,7 @@ def test_delete_status_works(pvo=good_pvo()):
         assert result.text == "Status Deleted"
 
 
-def test_donation_made_keys():
+def test_donation_made_keys() -> None:
     """test an addstatus on a non-donation account with a call that requires donations"""
     pvo = good_pvo_no_donation()
     data = {
@@ -230,7 +233,7 @@ def test_donation_made_keys():
             pvo.addstatus(data=data)
 
 
-def test_addstatus_every_possible_time():
+def test_addstatus_every_possible_time() -> None:
     """this'll test every possible time, because.. why not?"""
     pvo = good_pvo_with_donation()
     for hour in range(24):
@@ -245,7 +248,7 @@ def test_addstatus_every_possible_time():
                 pvo.addstatus(data)
 
 
-def test_getstatus_donation_made_true():
+def test_getstatus_donation_made_true() -> None:
     """test getstatus in donation made"""
     mockdata_donation = (
         "20191012,23:00,15910,0,15973,724,NaN,NaN,239.4,33.000,NaN,NaN,NaN,NaN,NaN"
@@ -279,7 +282,7 @@ def test_getstatus_donation_made_true():
         assert good_pvo_with_donation().getstatus() == expecteddict
 
 
-def test_getstatus_donation_made_false():
+def test_getstatus_donation_made_false() -> None:
     """test addstatus when you haven't made a donation, and you're not trying to do donation things"""
     mockdata_donation = "20191012,23:00,15910,0,15973,724,NaN,NaN,239.4"
 
@@ -304,7 +307,7 @@ def test_getstatus_donation_made_false():
         assert good_pvo_no_donation().getstatus() == expecteddict
 
 
-def test_add_output():
+def test_add_output() -> None:
     """tests the validator for addoutput()"""
     data = {"d": "20190515", "g": 123}
     pvo = good_pvo()
@@ -319,7 +322,7 @@ def test_add_output():
         assert result.text == "Added Output"
 
 
-def test_add_output_float():
+def test_add_output_float() -> None:
     """tests the validator for addoutput()"""
     data = {"d": "20190515", "g": 123.0}
     pvo = good_pvo_no_donation()
@@ -331,7 +334,7 @@ def test_add_output_float():
         pvo.validate_data(data, pvoutput.ADDOUTPUT_PARAMETERS)
 
 
-def test_register_notification_url_maxlength():
+def test_register_notification_url_maxlength() -> None:
 
     """tests a long-url entry fail into register notification"""
     pvo = pvoutput.PVOutput(apikey="helloworld", systemid=1, donation_made=False)
@@ -354,7 +357,7 @@ def test_register_notification_url_maxlength():
             assert response.status_code == 200
 
 
-def test_register_notification_url_validresponse():
+def test_register_notification_url_validresponse() -> None:
     """tests a valid entry into register notification"""
     pvo = pvoutput.PVOutput(apikey="helloworld", systemid=1, donation_made=False)
     with requests_mock.mock() as mock:
@@ -369,7 +372,9 @@ def test_register_notification_url_validresponse():
         assert response.status_code == 200
 
 
-def test_register_notification_appid_maxlength(pvo=good_pvo()):
+def test_register_notification_appid_maxlength(
+    pvo: pvoutput.PVOutput = good_pvo(),
+) -> None:
     """tests the max length of appids"""
     with requests_mock.mock() as mock:
         mock.get(
@@ -393,7 +398,7 @@ def test_register_notification_appid_maxlength(pvo=good_pvo()):
         assert response.text == "OK 200"
 
 
-def test_datetime_fix(patch_datetime_now):
+def test_datetime_fix(patch_datetime_now: Any) -> None:
     """tests issue https://github.com/yaleman/pvoutput/issues/53"""
     pvo = good_pvo()
     test_data = {

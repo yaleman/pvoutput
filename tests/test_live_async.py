@@ -1,7 +1,8 @@
 """ test asyncio things """
 import datetime
-import os
 import json
+import os
+from typing import Any, Dict
 import pytest
 
 try:
@@ -21,7 +22,7 @@ from pvoutput.asyncio import PVOutput
 
 
 @pytest.fixture
-def config():
+def config() -> Dict[str, Any]:
     """configuration fixture"""
     if not os.path.exists(os.path.expanduser("~/.config/pvoutput.json")):
         print("Failed to find config file")
@@ -30,17 +31,17 @@ def config():
     with open(
         os.path.expanduser("~/.config/pvoutput.json"), "r", encoding="utf8"
     ) as config_file:
-        config_data = json.load(config_file)
+        config_data: Dict[str, Any] = json.load(config_file)
     return config_data
 
 
-async def test_check_rate_limit(config):
+async def test_check_rate_limit(config: Dict[str, Any]) -> None:
     """tests check rate limit with the getsystem endpoint"""
 
     async with aiohttp.ClientSession() as session:
         pvo = PVOutput(
-            apikey=config.get("apikey"),
-            systemid=config.get("systemid"),
+            apikey=config["apikey"],
+            systemid=config["systemid"],
             donation_made=True,
             session=session,
         )
@@ -50,7 +51,7 @@ async def test_check_rate_limit(config):
         assert len(result) == 3
 
 
-async def test_configured_async_addstatus(config):
+async def test_configured_async_addstatus(config: Dict[str, Any]) -> None:
     """test the addstatus endpoint"""
 
     testdate = datetime.date.today()
@@ -67,8 +68,8 @@ async def test_configured_async_addstatus(config):
 
     async with aiohttp.ClientSession() as session:
         pvo = PVOutput(
-            apikey=config.get("apikey"),
-            systemid=config.get("systemid"),
+            apikey=config["apikey"],
+            systemid=config["systemid"],
             donation_made=True,
             session=session,
         )
@@ -78,13 +79,13 @@ async def test_configured_async_addstatus(config):
 
 
 # pylint: disable=redefined-outer-name
-async def test_configured_async_getstatus(config):
+async def test_configured_async_getstatus(config: Dict[str, Any]) -> None:
     """tests the getstatus endpoint"""
 
     async with aiohttp.ClientSession() as session:
         pvo = PVOutput(
-            apikey=config.get("apikey"),
-            systemid=config.get("systemid"),
+            apikey=config["apikey"],
+            systemid=config["systemid"],
             donation_made=True,
             session=session,
         )
@@ -93,15 +94,15 @@ async def test_configured_async_getstatus(config):
         assert isinstance(result, dict)
 
 
-async def test_configured_deletestatus(config):
+async def test_configured_deletestatus(config: Dict[str, Any]) -> None:
     """test the deletestatus endpoint"""
     testdate = datetime.date.today()
     testtime = datetime.time(hour=23, minute=45)
 
     async with aiohttp.ClientSession() as session:
         pvo = PVOutput(
-            apikey=config.get("apikey"),
-            systemid=config.get("systemid"),
+            apikey=config["apikey"],
+            systemid=config["systemid"],
             donation_made=True,
             session=session,
         )
@@ -111,7 +112,7 @@ async def test_configured_deletestatus(config):
         assert await delete_result.text() == "OK 200: Deleted Status"
 
 
-async def test_configured_addoutput(config):
+async def test_configured_addoutput(config: Dict[str, Any]) -> None:
     """test the addoutput endpoint"""
 
     testdate = datetime.date.today()
@@ -123,8 +124,8 @@ async def test_configured_addoutput(config):
 
     async with aiohttp.ClientSession() as session:
         pvo = PVOutput(
-            apikey=config.get("apikey"),
-            systemid=config.get("systemid"),
+            apikey=config["apikey"],
+            systemid=config["systemid"],
             donation_made=True,
             session=session,
         )
@@ -133,13 +134,13 @@ async def test_configured_addoutput(config):
         assert await addoutput_response.text() == "OK 200: Added Output"
 
 
-async def test_register_notification(config):
+async def test_register_notification(config: Dict[str, Any]) -> None:
     """tests register notification"""
 
     async with aiohttp.ClientSession() as session:
         pvo = PVOutput(
-            apikey=config.get("apikey"),
-            systemid=config.get("systemid"),
+            apikey=config["apikey"],
+            systemid=config["systemid"],
             donation_made=True,
             session=session,
         )
@@ -152,13 +153,13 @@ async def test_register_notification(config):
         assert await result.text() == "OK 200: Registered Notification"
 
 
-async def test_deregister_notification(config):
+async def test_deregister_notification(config: Dict[str, Any]) -> None:
     """tests deregister notification"""
 
     async with aiohttp.ClientSession() as session:
         pvo = PVOutput(
-            apikey=config.get("apikey"),
-            systemid=config.get("systemid"),
+            apikey=config["apikey"],
+            systemid=config["systemid"],
             donation_made=True,
             session=session,
         )

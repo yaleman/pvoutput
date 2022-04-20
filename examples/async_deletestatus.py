@@ -25,5 +25,6 @@ async def main() -> None:
         response = await pvo.delete_status(date_val=testdate, time_val=testtime)
         print(response)
 
+
 if __name__ == "__main__":
     asyncio.run(main())

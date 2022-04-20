@@ -1,6 +1,7 @@
 """ Interface to the PVOutput API """
 
 import datetime
+from typing import Any, Dict, Optional
 
 import requests
 
@@ -16,7 +17,39 @@ __version__ = "0.0.8"
 class PVOutput(PVOutputBase):
     """This class provides an interface to the pvoutput.org API"""
 
-    def _call(self, **kwargs) -> requests.Response:
+    # pylint: disable=too-many-arguments
+    def __init__(
+        self,
+        apikey: str,
+        systemid: int,
+        donation_made: bool = False,
+        stats_period: int = 5,
+        session: Optional[requests.Session] = None,
+    ):
+        """Setup code
+        :param apikey: API key (read or write)
+        :type apikey: str
+        :param systemid: system ID
+        :type systemid: int
+        :param donation_made: Whether to use the donation-required fields
+        :type donation_made: bool
+        """
+        super().__init__(
+            apikey=apikey,
+            systemid=systemid,
+            donation_made=donation_made,
+            stats_period=stats_period,
+        )
+        self.session = session
+        if session is None:
+            self.session = requests.Session()
+
+    def _call(
+        self,
+        endpoint: str,
+        method: str = "POST",
+        **kwargs: Dict[str, Any],
+    ) -> requests.Response:
         """Makes a call to a URL endpoint with the data/headers/method you require.
 
         :param endpoint: The URL to call
@@ -41,18 +74,18 @@ class PVOutput(PVOutputBase):
 
         self.validate_data(kwargs, CALL_PARAMETERS)
 
-        if kwargs["method"] == "GET":
+        if method == "GET":
             response = requests.get(
-                kwargs["endpoint"],
+                endpoint,
                 data=kwargs.get("data"),
                 headers=kwargs.get("headers", self._headers()),
                 params=kwargs.get("params"),
             )
-        elif kwargs["method"] == "POST":
+        elif method == "POST":
             response = requests.post(
-                kwargs["endpoint"],
+                endpoint,
                 data=kwargs.get("data"),
-                headers=kwargs.get("headers"),
+                headers=kwargs.get("headers", self._headers()),
             )
         else:
             raise UnknownMethodError(f"unknown method {kwargs['method']}")
@@ -64,7 +97,7 @@ class PVOutput(PVOutputBase):
         response.raise_for_status()
         return response
 
-    def check_rate_limit(self) -> dict:
+    def check_rate_limit(self) -> Dict[str, str]:
         """Makes a call to the site, checking if you have hit the rate limit.
 
         API spec: https://pvoutput.org/help/api_specification.html#rate-limits
@@ -81,7 +114,10 @@ class PVOutput(PVOutputBase):
         retval = utils.get_rate_limit_header(response)
         return retval
 
-    def addstatus(self, data: dict) -> requests.Response:
+    def addstatus(
+        self,
+        data: Dict[str, Any],
+    ) -> requests.Response:
         """The Add Status service accepts live output data
         at the Status Interval (5 to 15 minutes) configured for the system.
 
@@ -103,7 +139,10 @@ class PVOutput(PVOutputBase):
 
         return self._call(endpoint=url, data=data, method=method)
 
-    def addoutput(self, data: dict) -> requests.Response:
+    def addoutput(
+        self,
+        data: Dict[str, Any],
+    ) -> requests.Response:
         """The Add Output service uploads end of day output information.
         It allows all of the information provided on the Add Output page to be uploaded.
 
@@ -120,7 +159,7 @@ class PVOutput(PVOutputBase):
         return self._call(endpoint=url, data=data, method=method)
 
     def delete_status(
-        self, date_val: datetime.date, time_val: datetime.time = None
+        self, date_val: datetime.date, time_val: Optional[datetime.time] = None
     ) -> requests.Response:
         """
         Deletes a given status, based on the provided parameters
@@ -147,15 +186,14 @@ class PVOutput(PVOutputBase):
         )
 
         data = {"d": date_val.strftime("%Y%m%d")}
-        if time_val:
+        if time_val is not None:
             data["t"] = time_val.strftime("%H:%M")
 
         url, method = utils.URLS["deletestatus"]
 
         return self._call(endpoint=url, data=data, method=method)
 
-    # pylint: disable=too-many-locals
-    def getstatus(self) -> dict:
+    def getstatus(self) -> Dict[str, Any]:
         """The Get Status service retrieves system status information and live output data.
 
         API spec: https://pvoutput.org/help/api_specification.html#get-status-service

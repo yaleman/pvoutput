@@ -1,6 +1,7 @@
 """ AsyncIO interface to the PVOutput API """
 
 import datetime
+from typing import Any, Dict, Optional
 
 import aiohttp
 
@@ -21,8 +22,8 @@ class PVOutput(PVOutputBase):
         systemid: int,
         donation_made: bool = False,
         stats_period: int = 5,
-        session=None,
-    ):
+        session: Optional[aiohttp.ClientSession] = None,
+    ) -> None:
         """Setup code
 
         :param apikey: API key (read or write)
@@ -38,11 +39,17 @@ class PVOutput(PVOutputBase):
             donation_made=donation_made,
             stats_period=stats_period,
         )
-        self.session = session
-        if not session:
+        if session is None:
             self.session = aiohttp.ClientSession()
+        else:
+            self.session = session
 
-    async def _call(self, **kwargs) -> aiohttp.ClientResponse:
+    async def _call(
+        self,
+        endpoint: str,
+        method: str = "POST",
+        **kwargs: Dict[str, Any],
+    ) -> aiohttp.ClientResponse:
         """Makes a call to a URL endpoint with the data/headers/method you require.
 
         :param endpoint: The URL to call
@@ -67,16 +74,16 @@ class PVOutput(PVOutputBase):
 
         self.validate_data(kwargs, CALL_PARAMETERS)
 
-        if kwargs["method"] == "GET":
+        if method == "GET":
             response = await self.session.get(
-                kwargs["endpoint"],
+                url=endpoint,
                 data=kwargs.get("data"),
                 headers=kwargs.get("headers", self._headers()),
                 params=kwargs.get("params"),
             )
-        elif kwargs["method"] == "POST":
+        elif method == "POST":
             response = await self.session.post(
-                kwargs["endpoint"],
+                url=endpoint,
                 data=kwargs.get("data"),
                 headers=kwargs.get("headers", self._headers()),
             )
@@ -90,7 +97,7 @@ class PVOutput(PVOutputBase):
         response.raise_for_status()
         return response
 
-    async def check_rate_limit(self) -> dict:
+    async def check_rate_limit(self) -> Dict[str, str]:
         """Makes a call to the site, checking if you have hit the rate limit.
 
         API spec: https://pvoutput.org/help/api_specification.html#rate-limits
@@ -109,7 +116,10 @@ class PVOutput(PVOutputBase):
         retval = utils.get_rate_limit_header(response)
         return retval
 
-    async def addstatus(self, data: dict) -> aiohttp.ClientResponse:
+    async def addstatus(
+        self,
+        data: Dict[str, Any],
+    ) -> aiohttp.ClientResponse:
         """The Add Status service accepts live output data
         at the Status Interval (5 to 15 minutes) configured for the system.
 
@@ -131,7 +141,7 @@ class PVOutput(PVOutputBase):
 
         return await self._call(endpoint=url, data=data, method=method)
 
-    async def addoutput(self, data: dict) -> aiohttp.ClientResponse:
+    async def addoutput(self, data: Dict[str, Any]) -> aiohttp.ClientResponse:
         """The Add Output service uploads end of day output information.
         It allows all of the information provided on the Add Output page to be uploaded.
 
@@ -148,7 +158,9 @@ class PVOutput(PVOutputBase):
         return await self._call(endpoint=url, data=data, method=method)
 
     async def delete_status(
-        self, date_val: datetime.date, time_val: datetime.time = None
+        self,
+        date_val: datetime.date,
+        time_val: Optional[datetime.time] = None,
     ) -> aiohttp.ClientResponse:
         """Deletes a given status, based on the provided parameters
         needs a datetime() object
@@ -174,14 +186,14 @@ class PVOutput(PVOutputBase):
         )
 
         data = {"d": date_val.strftime("%Y%m%d")}
-        if time_val:
+        if time_val is not None:
             data["t"] = time_val.strftime("%H:%M")
 
         url, method = utils.URLS["deletestatus"]
 
         return await self._call(endpoint=url, data=data, method=method)
 
-    async def getstatus(self) -> dict:
+    async def getstatus(self) -> Dict[str, Any]:
         """The Get Status service retrieves system status information and live output data.
 
         API spec: https://pvoutput.org/help/api_specification.html#get-status-service

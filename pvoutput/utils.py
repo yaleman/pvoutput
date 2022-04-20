@@ -1,6 +1,7 @@
 """ Utilities """
 
 from datetime import date, datetime, timedelta
+from typing import Any, Dict, List, Tuple
 
 __all__ = [
     "URLS",
@@ -62,7 +63,7 @@ ALERT_TYPES = {
 }
 
 
-def responsedata_to_response(input_data: list):
+def responsedata_to_response(input_data: List[str]) -> Tuple[Dict[str, Any], List[str]]:
     """Turns the status output into a dict"""
     # pylint: disable=invalid-name
     d, t, v1, v2, v3, v4, v5, v6, normalised_output, *extras = input_data
@@ -83,16 +84,16 @@ def responsedata_to_response(input_data: list):
     return responsedata, extras
 
 
-def get_rate_limit_header(response_object) -> dict:
+def get_rate_limit_header(response_object: Any) -> Dict[str, str]:
     """gets the rate limit header from the returned headers"""
     retval = {}
     for key in response_object.headers.keys():
         if key.startswith("X-Rate-Limit"):
-            retval[key] = response_object.headers[key]
+            retval[key] = str(response_object.headers[key])
     return retval
 
 
-def validate_delete_status_date(date_val: date):
+def validate_delete_status_date(date_val: date) -> None:
     """runs the validation for the date_val option of delete_status"""
     yesterday = date.today() - timedelta(days=1)
     tomorrow = date.today() + timedelta(days=1)

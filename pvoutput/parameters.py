@@ -35,11 +35,6 @@ standard_parameters = {
 }
 
 CALL_PARAMETERS = {
-    "endpoint": {
-        "required": True,
-        "type": str,
-        "donation_required": False,
-    },
     "data": {
         "required": False,
         "type": dict,
@@ -55,16 +50,6 @@ CALL_PARAMETERS = {
         "required": False,
         "type": dict,
         "donation_required": False,
-    },
-    "method": {
-        "required": False,
-        "type": str,
-        "donation_required": False,
-        "default": "POST",
-        "choices": [
-            "GET",
-            "POST",
-        ],
     },
 }
 

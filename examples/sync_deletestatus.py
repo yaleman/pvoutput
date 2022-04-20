@@ -26,5 +26,6 @@ def main() -> None:
     response = pvo.delete_status(date_val, time_val)
     print(response)
 
+
 if __name__ == "__main__":
     main()
