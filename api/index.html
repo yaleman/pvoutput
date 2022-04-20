@@ -266,6 +266,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#pvoutput.PVOutput.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#pvoutput.PVOutput.addoutput" class="md-nav__link">
     addoutput()
   </a>
@@ -589,6 +596,13 @@
   
     <nav class="md-nav" aria-label="PVOutput">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pvoutput.PVOutput.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#pvoutput.PVOutput.addoutput" class="md-nav__link">
@@ -928,7 +942,39 @@ PVOutput            (<a title="pvoutput.base.PVOutputBase" href="#pvoutput.base.
           <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">PVOutput</span><span class="p">(</span><span class="n">PVOutputBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;This class provides an interface to the pvoutput.org API&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+    <span class="c1"># pylint: disable=too-many-arguments</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">apikey</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">systemid</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">donation_made</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">stats_period</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Setup code</span>
+<span class="sd">        :param apikey: API key (read or write)</span>
+<span class="sd">        :type apikey: str</span>
+<span class="sd">        :param systemid: system ID</span>
+<span class="sd">        :type systemid: int</span>
+<span class="sd">        :param donation_made: Whether to use the donation-required fields</span>
+<span class="sd">        :type donation_made: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">apikey</span><span class="o">=</span><span class="n">apikey</span><span class="p">,</span>
+            <span class="n">systemid</span><span class="o">=</span><span class="n">systemid</span><span class="p">,</span>
+            <span class="n">donation_made</span><span class="o">=</span><span class="n">donation_made</span><span class="p">,</span>
+            <span class="n">stats_period</span><span class="o">=</span><span class="n">stats_period</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span>
+        <span class="k">if</span> <span class="n">session</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_call</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Makes a call to a URL endpoint with the data/headers/method you require.</span>
 
 <span class="sd">        :param endpoint: The URL to call</span>
@@ -953,18 +999,18 @@ PVOutput            (<a title="pvoutput.base.PVOutputBase" href="#pvoutput.base.
 
         <span class="bp">self</span><span class="o">.</span><span class="n">validate_data</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">CALL_PARAMETERS</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;GET&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;GET&quot;</span><span class="p">:</span>
             <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;endpoint&quot;</span><span class="p">],</span>
+                <span class="n">endpoint</span><span class="p">,</span>
                 <span class="n">data</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">),</span>
                 <span class="n">headers</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;headers&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">()),</span>
                 <span class="n">params</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;params&quot;</span><span class="p">),</span>
             <span class="p">)</span>
-        <span class="k">elif</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;POST&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;POST&quot;</span><span class="p">:</span>
             <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;endpoint&quot;</span><span class="p">],</span>
+                <span class="n">endpoint</span><span class="p">,</span>
                 <span class="n">data</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">),</span>
-                <span class="n">headers</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;headers&quot;</span><span class="p">),</span>
+                <span class="n">headers</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;headers&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">()),</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">UnknownMethodError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unknown method </span><span class="si">{</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;method&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -976,7 +1022,7 @@ PVOutput            (<a title="pvoutput.base.PVOutputBase" href="#pvoutput.base.
         <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">response</span>
 
-    <span class="k">def</span> <span class="nf">check_rate_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">check_rate_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Makes a call to the site, checking if you have hit the rate limit.</span>
 
 <span class="sd">        API spec: https://pvoutput.org/help/api_specification.html#rate-limits</span>
@@ -993,7 +1039,10 @@ PVOutput            (<a title="pvoutput.base.PVOutputBase" href="#pvoutput.base.
         <span class="n">retval</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_rate_limit_header</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">retval</span>
 
-    <span class="k">def</span> <span class="nf">addstatus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">addstatus</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;The Add Status service accepts live output data</span>
 <span class="sd">        at the Status Interval (5 to 15 minutes) configured for the system.</span>
 
@@ -1015,7 +1064,10 @@ PVOutput            (<a title="pvoutput.base.PVOutputBase" href="#pvoutput.base.
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">addoutput</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">addoutput</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;The Add Output service uploads end of day output information.</span>
 <span class="sd">        It allows all of the information provided on the Add Output page to be uploaded.</span>
 
@@ -1032,7 +1084,7 @@ PVOutput            (<a title="pvoutput.base.PVOutputBase" href="#pvoutput.base.
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">delete_status</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">date_val</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">,</span> <span class="n">time_val</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">date_val</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">,</span> <span class="n">time_val</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Deletes a given status, based on the provided parameters</span>
@@ -1059,15 +1111,14 @@ PVOutput            (<a title="pvoutput.base.PVOutputBase" href="#pvoutput.base.
         <span class="p">)</span>
 
         <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;d&quot;</span><span class="p">:</span> <span class="n">date_val</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)}</span>
-        <span class="k">if</span> <span class="n">time_val</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">time_val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">data</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_val</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H:%M&quot;</span><span class="p">)</span>
 
         <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">&quot;deletestatus&quot;</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
 
-    <span class="c1"># pylint: disable=too-many-locals</span>
-    <span class="k">def</span> <span class="nf">getstatus</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">getstatus</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;The Get Status service retrieves system status information and live output data.</span>
 
 <span class="sd">        API spec: https://pvoutput.org/help/api_specification.html#get-status-service</span>
@@ -1226,6 +1277,64 @@ PVOutput            (<a title="pvoutput.base.PVOutputBase" href="#pvoutput.base.
 
 
 
+<h3 id="pvoutput.PVOutput.__init__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">apikey</span><span class="p">,</span> <span class="n">systemid</span><span class="p">,</span> <span class="n">donation_made</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stats_period</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Setup code
+:param apikey: API key (read or write)
+:type apikey: str
+:param systemid: system ID
+:type systemid: int
+:param donation_made: Whether to use the donation-required fields
+:type donation_made: bool</p>
+
+        <details class="quote">
+          <summary>Source code in <code>pvoutput/__init__.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">apikey</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">systemid</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">donation_made</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">stats_period</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Setup code</span>
+<span class="sd">    :param apikey: API key (read or write)</span>
+<span class="sd">    :type apikey: str</span>
+<span class="sd">    :param systemid: system ID</span>
+<span class="sd">    :type systemid: int</span>
+<span class="sd">    :param donation_made: Whether to use the donation-required fields</span>
+<span class="sd">    :type donation_made: bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="n">apikey</span><span class="o">=</span><span class="n">apikey</span><span class="p">,</span>
+        <span class="n">systemid</span><span class="o">=</span><span class="n">systemid</span><span class="p">,</span>
+        <span class="n">donation_made</span><span class="o">=</span><span class="n">donation_made</span><span class="p">,</span>
+        <span class="n">stats_period</span><span class="o">=</span><span class="n">stats_period</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span>
+    <span class="k">if</span> <span class="n">session</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
 <h3 id="pvoutput.PVOutput.addoutput" class="doc doc-heading">
 <code class="highlight language-python"><span class="n">addoutput</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span></code>
 
@@ -1244,7 +1353,10 @@ It allows all of the information provided on the Add Output page to be uploaded.
 
         <details class="quote">
           <summary>Source code in <code>pvoutput/__init__.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">addoutput</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">addoutput</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;The Add Output service uploads end of day output information.</span>
 <span class="sd">    It allows all of the information provided on the Add Output page to be uploaded.</span>
 
@@ -1289,7 +1401,10 @@ at the Status Interval (5 to 15 minutes) configured for the system.</p>
 
         <details class="quote">
           <summary>Source code in <code>pvoutput/__init__.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">addstatus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">addstatus</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;The Add Status service accepts live output data</span>
 <span class="sd">    at the Status Interval (5 to 15 minutes) configured for the system.</span>
 
@@ -1337,7 +1452,7 @@ at the Status Interval (5 to 15 minutes) configured for the system.</p>
 
         <details class="quote">
           <summary>Source code in <code>pvoutput/__init__.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">check_rate_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">check_rate_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Makes a call to the site, checking if you have hit the rate limit.</span>
 
 <span class="sd">    API spec: https://pvoutput.org/help/api_specification.html#rate-limits</span>
@@ -1387,7 +1502,7 @@ set the hours/minutes to non-zero to delete a specific time</p>
         <details class="quote">
           <summary>Source code in <code>pvoutput/__init__.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">delete_status</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span> <span class="n">date_val</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">,</span> <span class="n">time_val</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">date_val</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">,</span> <span class="n">time_val</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Deletes a given status, based on the provided parameters</span>
@@ -1414,7 +1529,7 @@ set the hours/minutes to non-zero to delete a specific time</p>
     <span class="p">)</span>
 
     <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;d&quot;</span><span class="p">:</span> <span class="n">date_val</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)}</span>
-    <span class="k">if</span> <span class="n">time_val</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">time_val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">data</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_val</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H:%M&quot;</span><span class="p">)</span>
 
     <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">&quot;deletestatus&quot;</span><span class="p">]</span>
@@ -1553,7 +1668,7 @@ Value   Type
 
         <details class="quote">
           <summary>Source code in <code>pvoutput/__init__.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">getstatus</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">getstatus</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;The Get Status service retrieves system status information and live output data.</span>
 
 <span class="sd">    API spec: https://pvoutput.org/help/api_specification.html#get-status-service</span>
@@ -1774,8 +1889,8 @@ PVOutput            (<a title="pvoutput.base.PVOutputBase" href="#pvoutput.base.
         <span class="n">systemid</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">donation_made</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">stats_period</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
-        <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="p">):</span>
+        <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Setup code</span>
 
 <span class="sd">        :param apikey: API key (read or write)</span>
@@ -1791,11 +1906,17 @@ PVOutput            (<a title="pvoutput.base.PVOutputBase" href="#pvoutput.base.
             <span class="n">donation_made</span><span class="o">=</span><span class="n">donation_made</span><span class="p">,</span>
             <span class="n">stats_period</span><span class="o">=</span><span class="n">stats_period</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">session</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientSession</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientResponse</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_call</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientResponse</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Makes a call to a URL endpoint with the data/headers/method you require.</span>
 
 <span class="sd">        :param endpoint: The URL to call</span>
@@ -1820,16 +1941,16 @@ PVOutput            (<a title="pvoutput.base.PVOutputBase" href="#pvoutput.base.
 
         <span class="bp">self</span><span class="o">.</span><span class="n">validate_data</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">CALL_PARAMETERS</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;GET&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;GET&quot;</span><span class="p">:</span>
             <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;endpoint&quot;</span><span class="p">],</span>
+                <span class="n">url</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span>
                 <span class="n">data</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">),</span>
                 <span class="n">headers</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;headers&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">()),</span>
                 <span class="n">params</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;params&quot;</span><span class="p">),</span>
             <span class="p">)</span>
-        <span class="k">elif</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;POST&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;POST&quot;</span><span class="p">:</span>
             <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;endpoint&quot;</span><span class="p">],</span>
+                <span class="n">url</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span>
                 <span class="n">data</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">),</span>
                 <span class="n">headers</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;headers&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">()),</span>
             <span class="p">)</span>
@@ -1843,7 +1964,7 @@ PVOutput            (<a title="pvoutput.base.PVOutputBase" href="#pvoutput.base.
         <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">response</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">check_rate_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">check_rate_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Makes a call to the site, checking if you have hit the rate limit.</span>
 
 <span class="sd">        API spec: https://pvoutput.org/help/api_specification.html#rate-limits</span>
@@ -1862,7 +1983,10 @@ PVOutput            (<a title="pvoutput.base.PVOutputBase" href="#pvoutput.base.
         <span class="n">retval</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_rate_limit_header</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">retval</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">addstatus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientResponse</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">addstatus</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientResponse</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;The Add Status service accepts live output data</span>
 <span class="sd">        at the Status Interval (5 to 15 minutes) configured for the system.</span>
 
@@ -1884,7 +2008,7 @@ PVOutput            (<a title="pvoutput.base.PVOutputBase" href="#pvoutput.base.
 
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">addoutput</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientResponse</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">addoutput</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientResponse</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;The Add Output service uploads end of day output information.</span>
 <span class="sd">        It allows all of the information provided on the Add Output page to be uploaded.</span>
 
@@ -1901,7 +2025,9 @@ PVOutput            (<a title="pvoutput.base.PVOutputBase" href="#pvoutput.base.
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">delete_status</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">date_val</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">,</span> <span class="n">time_val</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">date_val</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">,</span>
+        <span class="n">time_val</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientResponse</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Deletes a given status, based on the provided parameters</span>
 <span class="sd">        needs a datetime() object</span>
@@ -1927,14 +2053,14 @@ PVOutput            (<a title="pvoutput.base.PVOutputBase" href="#pvoutput.base.
         <span class="p">)</span>
 
         <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;d&quot;</span><span class="p">:</span> <span class="n">date_val</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)}</span>
-        <span class="k">if</span> <span class="n">time_val</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">time_val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">data</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_val</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H:%M&quot;</span><span class="p">)</span>
 
         <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">&quot;deletestatus&quot;</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">getstatus</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">getstatus</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;The Get Status service retrieves system status information and live output data.</span>
 
 <span class="sd">        API spec: https://pvoutput.org/help/api_specification.html#get-status-service</span>
@@ -2122,8 +2248,8 @@ PVOutput            (<a title="pvoutput.base.PVOutputBase" href="#pvoutput.base.
     <span class="n">systemid</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">donation_made</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">stats_period</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
-    <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-<span class="p">):</span>
+    <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientSession</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Setup code</span>
 
 <span class="sd">    :param apikey: API key (read or write)</span>
@@ -2139,9 +2265,10 @@ PVOutput            (<a title="pvoutput.base.PVOutputBase" href="#pvoutput.base.
         <span class="n">donation_made</span><span class="o">=</span><span class="n">donation_made</span><span class="p">,</span>
         <span class="n">stats_period</span><span class="o">=</span><span class="n">stats_period</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">session</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">session</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientSession</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span>
 </code></pre></div>
         </details>
     </div>
@@ -2175,7 +2302,7 @@ It allows all of the information provided on the Add Output page to be uploaded.
 
         <details class="quote">
           <summary>Source code in <code>pvoutput/asyncio/__init__.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">addoutput</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientResponse</span><span class="p">:</span>
+          <div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">addoutput</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientResponse</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;The Add Output service uploads end of day output information.</span>
 <span class="sd">    It allows all of the information provided on the Add Output page to be uploaded.</span>
 
@@ -2223,7 +2350,10 @@ at the Status Interval (5 to 15 minutes) configured for the system.</p>
 
         <details class="quote">
           <summary>Source code in <code>pvoutput/asyncio/__init__.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">addstatus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientResponse</span><span class="p">:</span>
+          <div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">addstatus</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientResponse</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;The Add Status service accepts live output data</span>
 <span class="sd">    at the Status Interval (5 to 15 minutes) configured for the system.</span>
 
@@ -2274,7 +2404,7 @@ at the Status Interval (5 to 15 minutes) configured for the system.</p>
 
         <details class="quote">
           <summary>Source code in <code>pvoutput/asyncio/__init__.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">check_rate_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+          <div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">check_rate_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Makes a call to the site, checking if you have hit the rate limit.</span>
 
 <span class="sd">    API spec: https://pvoutput.org/help/api_specification.html#rate-limits</span>
@@ -2329,7 +2459,9 @@ set the hours/minutes to non-zero to delete a specific time</p>
         <details class="quote">
           <summary>Source code in <code>pvoutput/asyncio/__init__.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">delete_status</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span> <span class="n">date_val</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">,</span> <span class="n">time_val</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">date_val</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">,</span>
+    <span class="n">time_val</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientResponse</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Deletes a given status, based on the provided parameters</span>
 <span class="sd">    needs a datetime() object</span>
@@ -2355,7 +2487,7 @@ set the hours/minutes to non-zero to delete a specific time</p>
     <span class="p">)</span>
 
     <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;d&quot;</span><span class="p">:</span> <span class="n">date_val</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)}</span>
-    <span class="k">if</span> <span class="n">time_val</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">time_val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">data</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_val</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H:%M&quot;</span><span class="p">)</span>
 
     <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">&quot;deletestatus&quot;</span><span class="p">]</span>
@@ -2502,7 +2634,7 @@ Value   Type
 
         <details class="quote">
           <summary>Source code in <code>pvoutput/asyncio/__init__.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">getstatus</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+          <div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">getstatus</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;The Get Status service retrieves system status information and live output data.</span>
 
 <span class="sd">    API spec: https://pvoutput.org/help/api_specification.html#get-status-service</span>
@@ -2730,7 +2862,7 @@ PVOutputBase        </code>
         <span class="n">systemid</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">donation_made</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">stats_period</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">systemid</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;systemid should be int&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">apikey</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -2740,7 +2872,7 @@ PVOutputBase        </code>
         <span class="bp">self</span><span class="o">.</span><span class="n">donation_made</span> <span class="o">=</span> <span class="n">donation_made</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stats_period</span> <span class="o">=</span> <span class="n">stats_period</span>
 
-    <span class="k">def</span> <span class="nf">_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Relevant documentation: https://pvoutput.org/help/api_specification.html#http-headers</span>
 
 <span class="sd">        :return: headers for calls to the API</span>
@@ -2757,7 +2889,7 @@ PVOutputBase        </code>
         <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
         <span class="n">hour</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H&quot;</span><span class="p">))</span>
         <span class="c1"># round the minute to the current stats period</span>
-        <span class="n">minute</span> <span class="o">=</span> <span class="n">round_to_base</span><span class="p">(</span><span class="n">now</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats_period</span><span class="p">)</span>
+        <span class="n">minute</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">round_to_base</span><span class="p">(</span><span class="n">now</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats_period</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">time</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="n">minute</span><span class="o">=</span><span class="n">minute</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H:%M&quot;</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
@@ -2766,7 +2898,7 @@ PVOutputBase        </code>
         <span class="n">format_string</span><span class="p">:</span> <span class="n">AnyStr</span><span class="p">,</span>
         <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;handles the regular expression format checks&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">compiled</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">format_string</span><span class="p">)</span>
@@ -2781,7 +2913,7 @@ PVOutputBase        </code>
             <span class="p">)</span> <span class="kn">from</span> <span class="nn">error</span>
 
     <span class="c1"># pylint: disable=too-many-branches</span>
-    <span class="k">def</span> <span class="nf">validate_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">apiset</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">validate_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">apiset</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Does a super-simple validation based on the api def raises errors if it&#39;s wrong, returns True if it&#39;s OK</span>
 
 <span class="sd">        This&#39;ll only raise an error on the first error it finds</span>
@@ -2908,7 +3040,7 @@ PVOutputBase        </code>
     <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
     <span class="n">hour</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H&quot;</span><span class="p">))</span>
     <span class="c1"># round the minute to the current stats period</span>
-    <span class="n">minute</span> <span class="o">=</span> <span class="n">round_to_base</span><span class="p">(</span><span class="n">now</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats_period</span><span class="p">)</span>
+    <span class="n">minute</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">round_to_base</span><span class="p">(</span><span class="n">now</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats_period</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">time</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="n">hour</span><span class="p">,</span> <span class="n">minute</span><span class="o">=</span><span class="n">minute</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H:%M&quot;</span><span class="p">)</span>
 </code></pre></div>
         </details>
@@ -2942,7 +3074,7 @@ PVOutputBase        </code>
 
         <details class="quote">
           <summary>Source code in <code>pvoutput/base.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">validate_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">apiset</span><span class="p">):</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">validate_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">apiset</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Does a super-simple validation based on the api def raises errors if it&#39;s wrong, returns True if it&#39;s OK</span>
 
 <span class="sd">    This&#39;ll only raise an error on the first error it finds</span>
@@ -3068,7 +3200,7 @@ based on answer in https://stackoverflow.com/a/2272174/188774</p>
 
         <details class="quote">
           <summary>Source code in <code>pvoutput/base.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">round_to_base</span><span class="p">(</span><span class="n">number</span><span class="p">,</span> <span class="n">base</span><span class="p">):</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">round_to_base</span><span class="p">(</span><span class="n">number</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">base</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;rounds down to a specific base number</span>
 <span class="sd">    based on answer in https://stackoverflow.com/a/2272174/188774</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -3366,12 +3498,12 @@ The following values are valid for the c1 flag.
 
         <details class="quote">
           <summary>Source code in <code>pvoutput/utils.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_rate_limit_header</span><span class="p">(</span><span class="n">response_object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_rate_limit_header</span><span class="p">(</span><span class="n">response_object</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;gets the rate limit header from the returned headers&quot;&quot;&quot;</span>
     <span class="n">retval</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">response_object</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;X-Rate-Limit&quot;</span><span class="p">):</span>
-            <span class="n">retval</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">response_object</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="n">retval</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">response_object</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">retval</span>
 </code></pre></div>
         </details>
@@ -3397,7 +3529,7 @@ The following values are valid for the c1 flag.
 
         <details class="quote">
           <summary>Source code in <code>pvoutput/utils.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">responsedata_to_response</span><span class="p">(</span><span class="n">input_data</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">responsedata_to_response</span><span class="p">(</span><span class="n">input_data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
     <span class="sd">&quot;&quot;&quot;Turns the status output into a dict&quot;&quot;&quot;</span>
     <span class="c1"># pylint: disable=invalid-name</span>
     <span class="n">d</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">v3</span><span class="p">,</span> <span class="n">v4</span><span class="p">,</span> <span class="n">v5</span><span class="p">,</span> <span class="n">v6</span><span class="p">,</span> <span class="n">normalised_output</span><span class="p">,</span> <span class="o">*</span><span class="n">extras</span> <span class="o">=</span> <span class="n">input_data</span>
@@ -3440,7 +3572,7 @@ The following values are valid for the c1 flag.
 
         <details class="quote">
           <summary>Source code in <code>pvoutput/utils.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">validate_delete_status_date</span><span class="p">(</span><span class="n">date_val</span><span class="p">:</span> <span class="n">date</span><span class="p">):</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">validate_delete_status_date</span><span class="p">(</span><span class="n">date_val</span><span class="p">:</span> <span class="n">date</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;runs the validation for the date_val option of delete_status&quot;&quot;&quot;</span>
     <span class="n">yesterday</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">tomorrow</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
