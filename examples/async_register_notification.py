@@ -1,7 +1,7 @@
 """ example registering a callback """
 import asyncio
-import aiohttp
 
+import aiohttp
 from utils import get_apikey_systemid
 from pvoutput.asyncio import PVOutput
 

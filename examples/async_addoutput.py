@@ -4,8 +4,8 @@ import asyncio
 import datetime
 
 import aiohttp
-from utils import get_apikey_systemid
 
+from utils import get_apikey_systemid
 from pvoutput.asyncio import PVOutput
 
 
