@@ -1,3 +1,4 @@
+
 """ example pulling a status """
 
 import asyncio
@@ -20,7 +21,7 @@ async def main() -> None:
             donation_made=configuration["donation_made"],
         )
         result = await pvo.getstatus()
-    print(json.dumps(result, indent=2))
+    print(json.dumps(result, indent=2, default=str))
 
 
 if __name__ == "__main__":
