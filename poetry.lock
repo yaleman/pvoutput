@@ -372,7 +372,7 @@ python-legacy = ["mkdocstrings-python-legacy (>=0.2.1)"]
 
 [[package]]
 name = "mkdocstrings-python"
-version = "0.7.0"
+version = "0.7.1"
 description = "A Python handler for mkdocstrings."
 category = "dev"
 optional = false
@@ -749,7 +749,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "8e3759ba8d020bf933682652e8bfeef08a4b13d58c71794a1ff48feeba38d2d9"
+content-hash = "3b4deb0314c7bef1dad5296fa6f9766e0afc52fc4fae22ffb26e0dda8d9ab6d7"
 
 [metadata.files]
 aiofiles = [
@@ -1127,8 +1127,8 @@ mkdocstrings = [
     {file = "mkdocstrings-0.19.0.tar.gz", hash = "sha256:efa34a67bad11229d532d89f6836a8a215937548623b64f3698a1df62e01cc3e"},
 ]
 mkdocstrings-python = [
-    {file = "mkdocstrings-python-0.7.0.tar.gz", hash = "sha256:e54c67890e8bb7dc4604360c8ef5dd214b23b6924de7706f461e3c998d4ea061"},
-    {file = "mkdocstrings_python-0.7.0-py3-none-any.whl", hash = "sha256:6964bd92f106766e771ac6cd5bc02643a960602b4d921b95362e31d491e9a6db"},
+    {file = "mkdocstrings-python-0.7.1.tar.gz", hash = "sha256:c334b382dca202dfa37071c182418a6df5818356a95d54362a2b24822ca3af71"},
+    {file = "mkdocstrings_python-0.7.1-py3-none-any.whl", hash = "sha256:a22060bfa374697678e9af4e62b020d990dad2711c98f7a9fac5c0345bef93c7"},
 ]
 multidict = [
     {file = "multidict-6.0.2-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:0b9e95a740109c6047602f4db4da9949e6c5945cefbad34a1299775ddc9a62e2"},
