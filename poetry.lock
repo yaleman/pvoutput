@@ -456,8 +456,8 @@ optional = false
 python-versions = ">=3.6"
 
 [package.extras]
-dev = ["pre-commit", "tox"]
-testing = ["pytest", "pytest-benchmark"]
+testing = ["pytest-benchmark", "pytest"]
+dev = ["tox", "pre-commit"]
 
 [[package]]
 name = "py"
@@ -657,7 +657,7 @@ python-versions = ">=3.6,<4.0"
 
 [[package]]
 name = "types-aiofiles"
-version = "0.8.9"
+version = "0.8.10"
 description = "Typing stubs for aiofiles"
 category = "dev"
 optional = false
@@ -749,7 +749,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "3ac5e2c1f32468cb4548e7fc48f7f24a01875d8543995b6460585a349670151f"
+content-hash = "ea859ec0a318706341b0ea6a563543c9b657b17a38dc0a07b5bac6cf81b6af64"
 
 [metadata.files]
 aiofiles = [
@@ -1331,8 +1331,8 @@ tomlkit = [
     {file = "tomlkit-0.11.0.tar.gz", hash = "sha256:71ceb10c0eefd8b8f11fe34e8a51ad07812cb1dc3de23247425fbc9ddc47b9dd"},
 ]
 types-aiofiles = [
-    {file = "types-aiofiles-0.8.9.tar.gz", hash = "sha256:ed4e35cee4cd7b51da6e6764405ff4d7cf3bd83e0db9db85ef09878e16fe3125"},
-    {file = "types_aiofiles-0.8.9-py3-none-any.whl", hash = "sha256:ab1e27ecb3efe73e3c86d22f327ce00587743b900560a5348d321bc91bcd7c21"},
+    {file = "types-aiofiles-0.8.10.tar.gz", hash = "sha256:d006ed6894c1da9ed148325b80f3b13c45332474ec31335e6342493cf134e6d4"},
+    {file = "types_aiofiles-0.8.10-py3-none-any.whl", hash = "sha256:ced29372faf9fe95a5b617c844b3c10db3b288c85f8fabdd8b58f4cdb0101bcd"},
 ]
 types-requests = [
     {file = "types-requests-2.28.1.tar.gz", hash = "sha256:acd8ed78509d27bdf04cddcc05f7066dfde4d30dd7dba67b808cdb1141d62ffe"},
