@@ -80,12 +80,14 @@ class PVOutput(PVOutputBase):
                 data=kwargs.get("data"),
                 headers=kwargs.get("headers", self._headers()),
                 params=kwargs.get("params"),
+                timeout=DEFAULT_REQUEST_TIMEOUT,
             )
         elif method == "POST":
             response = requests.post(
                 endpoint,
                 data=kwargs.get("data"),
                 headers=kwargs.get("headers", self._headers()),
+                timeout=DEFAULT_REQUEST_TIMEOUT,
             )
         else:
             raise UnknownMethodError(f"unknown method {kwargs['method']}")

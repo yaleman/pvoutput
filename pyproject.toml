@@ -25,7 +25,7 @@ readme = "README.md"
 
 [tool.poetry]
 name = "pvoutput"
-version = "0.0.9"
+version = "0.0.10"
 description = "Interface to the PVOutput API"
 authors = ["yaleman <james@terminaloutcomes.com>"]
 license = "MIT"
