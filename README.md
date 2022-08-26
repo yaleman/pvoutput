@@ -92,3 +92,5 @@ MIT License (see `LICENSE`), don't use this for anything you care about - I don'
 * 0.0.6 I broke the build when uploading to pypi, fixed in 0.0.7.
 * 0.0.7 2021-12-27 [#117](https://github.com/yaleman/pvoutput/issues/117) fix for getstatus issues
 * 0.0.8 2022-01-02 @cheops did great work cleaning up a lot of my mess, and testing is much better.
+* 0.0.10 2022-08-27 Added explicit timeouts to HTTP connections in the synchronous client.
+* 0.0.11 2022-08-27 Added explicit timeouts to HTTP connections in the aiohttp client.

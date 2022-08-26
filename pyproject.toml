@@ -1,13 +1,14 @@
 [project]
+name = "pvoutput"
 authors = [
     {name = "James Hodgkinson", email = "james@terminaloutcomes.com"}
 ]
 classifiers = [
-    "License :: OSI Approved :: MIT License"
-]
-dynamic = [
-    "version",
-    "description"
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Operating System :: OS Independent",
 ]
 
 dependencies = [
@@ -20,15 +21,17 @@ keywords = [
     "solar",
     "pvoutput",
 ]
-name = "pvoutput"
 readme = "README.md"
 
 [tool.poetry]
 name = "pvoutput"
-version = "0.0.10"
+version = "0.0.11"
+authors = ["James Hodgkinson <james@terminaloutcomes.com>"]
 description = "Interface to the PVOutput API"
-authors = ["yaleman <james@terminaloutcomes.com>"]
+homepage = "https://yaleman.github.io/pvoutput/"
 license = "MIT"
+readme = "README.md"
+repository = "https://github.com/yaleman/pvoutput/"
 
 [project.optional-dependencies]
 dev = [
@@ -51,24 +54,6 @@ test = [
     "pylint-pytest",
     "pytest-asyncio",
     "requests-mock",
-]
-
-[project.urls]
-Home = "https://github.com/yaleman/pvoutput"
-
-[project.scripts]
-
-[tool.flit.sdist]
-exclude = [
-    "requirements*.txt",
-    ".gitignore",
-    ".pylintrc",
-    "test*",
-    "./.*",
-    "*.sh",
-    "mkdocs.yml",
-    "upload_to_pip",
-    "docs/*",
 ]
 
 [tool.poetry.dependencies]
