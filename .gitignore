@@ -117,3 +117,4 @@ sonarqube-test.sh
 .idea
 /examples/pvoutput.json
 pvoutput.json
+poetry.lock
