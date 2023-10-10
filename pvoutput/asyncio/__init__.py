@@ -168,7 +168,6 @@ class PVOutput(PVOutputBase):
 
         url, method = utils.URLS["addbatchstatus"]
         self.validate_data(payload, ADDBATCHSTATUS_PARAMETERS)
-        url, method = utils.URLS["addstatus"]
         return await self._call(endpoint=url, data=payload, method=method)
 
     async def addstatus(
