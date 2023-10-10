@@ -2,15 +2,22 @@
 
 import datetime
 from typing import Any, Dict, Optional
-from unittest.mock import DEFAULT
 
 import aiohttp
 
-from ..base import PVOutputBase
-from ..exceptions import *
-from ..parameters import *
-
-from .. import utils
+from pvoutput.exceptions import UnknownMethodError
+from pvoutput.base import PVOutputBase
+from pvoutput import utils
+from pvoutput.parameters import (
+    ADDBATCHSTATUS_PARAMETERS,
+    ADDSTATUS_PARAMETERS,
+    CALL_PARAMETERS,
+    DEFAULT_REQUEST_TIMEOUT,
+    ADDOUTPUT_PARAMETERS,
+    DELETE_NOTIFICATION_PARAMETERS,
+    DELETESTATUS_PARAMETERS,
+    REGISTER_NOTIFICATION_PARAMETERS,
+)
 
 
 class PVOutput(PVOutputBase):
@@ -118,6 +125,51 @@ class PVOutput(PVOutputBase):
         )
         retval = utils.get_rate_limit_header(response)
         return retval
+
+    async def addbatchstatus(
+        self, data: str, c1: bool = False, n: bool = False
+    ) -> aiohttp.ClientResponse:
+        """
+        # Add Batch Status Service
+
+        The Add Batch Status service adds up to 30 statuses in a single request.
+        See the documentation on the page for what it means, and what it responds with.
+        This hasn't been tested.
+        <https://pvoutput.org/help/api_specification.html#add-batch-status-service>
+
+        ## Data Structure
+
+        The data parameter consists of up to 30 statuses, each status contains multiple fields.
+
+        Field Delimiter - ,
+        Output Delimiter - ;
+
+        ## Example data
+
+        Send three statuses from 10:00AM to 10:10AM in a single batch request
+
+        `data="20110112,10:00,705,1029;20110112,10:05,775,1320;20110112,10:10,800,800"`
+
+        ## Donation features
+
+        * The d date parameter must be not be older than 90 days from the current date.
+        * Extended parameters v7, v8, v9, v10, v11 and v12
+        * Maximum energy consumption v3 value increased to 9,999,999Wh
+        * Maximum power consumption v4 value increased to 2,000,000W
+        * Increased batch status size to 100 from 30
+        """
+        payload = {
+            "data": data,
+        }
+        if c1:
+            payload["c1"] = "1"
+        if n:
+            payload["n"] = "1"
+
+        url, method = utils.URLS["addbatchstatus"]
+        self.validate_data(payload, ADDBATCHSTATUS_PARAMETERS)
+        url, method = utils.URLS["addstatus"]
+        return await self._call(endpoint=url, data=payload, method=method)
 
     async def addstatus(
         self,

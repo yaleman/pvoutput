@@ -1,14 +1,14 @@
 """ Interface to the PVOutput API """
 
 import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 import requests
 
 from pvoutput.exceptions import UnknownMethodError
 
-from .base import PVOutputBase
-from .parameters import (
+from pvoutput.base import PVOutputBase
+from pvoutput.parameters import (
     ADDBATCHSTATUS_PARAMETERS,
     ADDSTATUS_PARAMETERS,
     CALL_PARAMETERS,
@@ -126,7 +126,9 @@ class PVOutput(PVOutputBase):
         retval = utils.get_rate_limit_header(response)
         return retval
 
-    def addbatchstatus(self, data: List[str], c1: bool = False, n: bool = False):
+    def addbatchstatus(
+        self, data: str, c1: bool = False, n: bool = False
+    ) -> requests.Response:
         """
         # Add Batch Status Service
 

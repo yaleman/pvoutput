@@ -12,7 +12,7 @@ __all__ = [
 BASE_URL = "https://pvoutput.org/service/r2/"
 
 URLS = {
-    "addbatchstatus" : {
+    "addbatchstatus": {
         "url": BASE_URL + "addbatchstatus.jsp",
         "method": "POST",
     },
