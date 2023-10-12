@@ -7,6 +7,7 @@ import pytest
 import requests_mock
 
 import pvoutput
+import pvoutput.parameters
 import pvoutput.exceptions
 
 # because we're testing, just grab everything.
@@ -63,7 +64,7 @@ def test_api_inputs() -> None:
 def test_api_validation() -> None:
     """tests a basic "this should clearly fail" validation"""
     with pytest.raises(ValueError, match=r"one of .* MUST be set"):
-        pvoutput.PVOutput.validate_data(None, {}, pvoutput.ADDSTATUS_PARAMETERS)  # type: ignore
+        pvoutput.PVOutput.validate_data(None, {}, pvoutput.parameters.ADDSTATUS_PARAMETERS)  # type: ignore
 
 
 def test_validation_regexp_date() -> None:
@@ -149,7 +150,9 @@ def test_headers_gen(pvo: pvoutput.PVOutput = good_pvo()) -> None:
 def test_api_validation_addstatus_shouldwork() -> None:
     """tests the validator for addstatus()"""
     data = {"d": "20190515", "t": "12:34", "v1": 123}
-    assert good_pvo_with_donation().validate_data(data, pvoutput.ADDSTATUS_PARAMETERS)
+    assert good_pvo_with_donation().validate_data(
+        data, pvoutput.parameters.ADDSTATUS_PARAMETERS
+    )
 
 
 def test_api_validation_types(pvo: pvoutput.PVOutput = good_pvo()) -> None:
@@ -160,12 +163,12 @@ def test_api_validation_types(pvo: pvoutput.PVOutput = good_pvo()) -> None:
         TypeError,
         match=r"data\[.*\] type \(<class '.*'> is invalid - should be <class '.*'>\)",
     ):
-        pvo.validate_data(data_failtime, pvoutput.ADDSTATUS_PARAMETERS)
+        pvo.validate_data(data_failtime, pvoutput.parameters.ADDSTATUS_PARAMETERS)
     with pytest.raises(
         TypeError,
         match=r"data\[.*\] type \(<class '.*'> is invalid - should be <class '.*'>\)",
     ):
-        pvo.validate_data(data_faildate, pvoutput.ADDSTATUS_PARAMETERS)
+        pvo.validate_data(data_faildate, pvoutput.parameters.ADDSTATUS_PARAMETERS)
 
 
 def test_delete_status_date_too_early(pvo: pvoutput.PVOutput = good_pvo()) -> None:
@@ -331,11 +334,10 @@ def test_add_output_float() -> None:
         TypeError,
         match=r"data\[g\].*<class 'float'> is invalid - should be <class 'int'>",
     ):
-        pvo.validate_data(data, pvoutput.ADDOUTPUT_PARAMETERS)
+        pvo.validate_data(data, pvoutput.parameters.ADDOUTPUT_PARAMETERS)
 
 
 def test_register_notification_url_maxlength() -> None:
-
     """tests a long-url entry fail into register notification"""
     pvo = pvoutput.PVOutput(apikey="helloworld", systemid=1, donation_made=False)
     with pytest.raises(ValueError):

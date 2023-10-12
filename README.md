@@ -5,7 +5,8 @@ PVOutput.org python API module. Works with the R2 [API version spec here](https:
 Get your API key from [the account page on PVOutput](https://pvoutput.org/account.jsp)
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-# Example usage
+
+## Example usage
 
 Here's a quick code example:
 
@@ -17,8 +18,10 @@ Here's a quick code example:
     pvo = PVOutput(apikey=apikey, systemid=systemid)
     print(json.dumps(pvo.check_rate_limit(), indent=2))
 ```
+
 Will give you output like this:
-```
+
+```json
     {
         "X-Rate-Limit-Remaining": "271",
         "X-Rate-Limit-Limit": "300",
@@ -28,13 +31,13 @@ Will give you output like this:
 
 There are more example code snippets in the [examples](examples/) directory.
 
-# Installing
+## Installing
 
-## Prod-ish usage
+### Prod-ish usage
 
 `python -m pip install pvoutput` to install from pypi
 
-## Dev Install Things
+### Dev Install Things
 
 ```shell
 python -m venv venv
@@ -43,7 +46,7 @@ python -m pip install --upgrade pip flit
 python -m flit install
 ```
 
-# Input validation
+## Input validation
 
 This is handled by the `pvoutput.base.PVOutputBase.validate_data` function.
 
@@ -62,7 +65,7 @@ It expects the input data and a dict of configuration parameters, which are desc
 
 An example configuration
 
-```
+```json
 "date_val": {
     "required": True,
     "description": "Date",
@@ -74,15 +77,15 @@ An example configuration
 }
 ```
 
-# Contributing / Testing
+## Contributing / Testing
 
-`pylint`, `black` and `mypy` should all pass before submitting a PR.
+`ruff`, `black` and `mypy` should all pass before submitting a PR.
 
-# License
+## License
 
 MIT License (see `LICENSE`), don't use this for anything you care about - I don't provide a warranty at all, and it'll likely steal your socks and underfeed your dog.
 
-# Changelog
+## Changelog
 
 * 0.0.1 Initial version
 * 0.0.2 2019-10-12 Fixed some bugs
@@ -94,3 +97,4 @@ MIT License (see `LICENSE`), don't use this for anything you care about - I don'
 * 0.0.8 2022-01-02 @cheops did great work cleaning up a lot of my mess, and testing is much better.
 * 0.0.10 2022-08-27 Added explicit timeouts to HTTP connections in the synchronous client.
 * 0.0.11 2022-08-27 Added explicit timeouts to HTTP connections in the aiohttp client.
+* 0.0.12 (pending) 2023-10-10 Adding addbatchstatus

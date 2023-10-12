@@ -1,4 +1,5 @@
 """ test asyncio things """
+
 import datetime
 import json
 import os
@@ -17,8 +18,7 @@ pytestmark = pytest.mark.asyncio
 
 # disabling this, needs to be done because of pytest
 # pylint: disable=wrong-import-position
-
-from pvoutput.asyncio import PVOutput
+from pvoutput.asyncio import PVOutput  # noqa: E402
 
 
 @pytest.fixture

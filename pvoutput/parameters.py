@@ -72,6 +72,23 @@ DELETESTATUS_PARAMETERS = {
     },
 }
 
+# <https://pvoutput.org/help/api_specification.html#add-batch-status-service>
+ADDBATCHSTATUS_PARAMETERS = {
+    "data": {
+        "description": "see https://pvoutput.org/help/api_specification.html#api-add-batch-status-data-structure",
+        "required": True,
+        "type": str,  # this isn't the real format but you'll have to deal until someone patches it
+    },
+    "c1": {
+        "required": False,
+        "type": bool,
+    },
+    "n": {
+        "required": False,
+        "type": bool,
+    },
+}
+
 ADDSTATUS_PARAMETERS = {
     "d": copy(standard_parameters["d"]),
     "t": copy(standard_parameters["t"]),
