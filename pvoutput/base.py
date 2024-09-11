@@ -1,4 +1,4 @@
-""" base class for pvoutput """
+"""base class for pvoutput"""
 
 from datetime import datetime, time
 from math import floor
@@ -66,13 +66,9 @@ class PVOutputBase:
             compiled = re.compile(format_string)
             match = compiled.match(value)
             if match is None:
-                raise ValueError(
-                    f"key '{key}', with value '{value}' does not match '{format_string!r}'"
-                )
+                raise ValueError(f"key '{key}', with value '{value}' does not match '{format_string!r}'")
         except re.error as error:
-            raise InvalidRegexpError(
-                "Error for key '{key}' with format '{format_string!r}': {error}"
-            ) from error
+            raise InvalidRegexpError("Error for key '{key}' with format '{format_string!r}': {error}") from error
 
     # pylint: disable=too-many-branches
     def validate_data(self, data: Dict[str, Any], apiset: Dict[str, Any]) -> bool:
@@ -91,13 +87,8 @@ class PVOutputBase:
         :raises pvoutput.InvalidRegexpError: if value does not match the regexp in format.
         """
         # if you set a 'required_oneof' key in apiset, validation will require at least one of those keys to be set
-        if "required_oneof" in apiset.keys() and (
-            len([key for key in data.keys() if key in apiset["required_oneof"]["keys"]])
-            == 0
-        ):
-            raise ValueError(
-                f"one of {','.join(apiset['required_oneof']['keys'])} MUST be set"
-            )
+        if "required_oneof" in apiset.keys() and (len([key for key in data.keys() if key in apiset["required_oneof"]["keys"]]) == 0):
+            raise ValueError(f"one of {','.join(apiset['required_oneof']['keys'])} MUST be set")
         for key in apiset.keys():
             # check that that required values are set
             if apiset[key].get("required", False) and key not in data.keys():
@@ -110,29 +101,21 @@ class PVOutputBase:
             # check maxlen
             if "maxlen" in apiset[key] and key in data:
                 if len(data[key]) > apiset[key]["maxlen"]:
-                    raise ValueError(
-                        f"Value too long for key {key} {len(data[key])}>{apiset[key]['maxlen']}"
-                    )
+                    raise ValueError(f"Value too long for key {key} {len(data[key])}>{apiset[key]['maxlen']}")
 
             # check the value is in the set of valid choices
             if "choices" in apiset[key] and key in data:
                 if data[key] not in apiset[key]["choices"]:
-                    raise ValueError(
-                        f"Invalid value for key {key}: '{data[key]}', should be in {apiset[key]['choices']} "
-                    )
+                    raise ValueError(f"Invalid value for key {key}: '{data[key]}', should be in {apiset[key]['choices']} ")
 
         # check there's no extra fields in the data
         for key in data:
             if key not in apiset.keys():
                 raise ValueError(f"key {key} isn't valid in the API spec")
 
-            if apiset[key].get("type") and not isinstance(
-                data[key], apiset[key]["type"]
-            ):
+            if apiset[key].get("type") and not isinstance(data[key], apiset[key]["type"]):
                 if data[key] is not None:
-                    raise TypeError(
-                        f"data[{key}] type ({type(data[key])} is invalid - should be {str(apiset[key]['type'])})"
-                    )
+                    raise TypeError(f"data[{key}] type ({type(data[key])} is invalid - should be {str(apiset[key]['type'])})")
 
         for key in data:
             if "format" in apiset[key]:
@@ -151,17 +134,11 @@ class PVOutputBase:
 
             # check for donation-only keys
             if apiset[key].get("donation_required") and not self.donation_made:
-                raise DonationRequired(
-                    f"key {key} requires an account which has donated"
-                )
+                raise DonationRequired(f"key {key} requires an account which has donated")
             # check if you're outside max/min values
             if apiset[key].get("maxval") and data.get(key) > apiset[key].get("maxval"):
-                raise ValueError(
-                    f"{key} cannot be higher than {apiset[key]['maxval']}, is {data[key]}"
-                )
+                raise ValueError(f"{key} cannot be higher than {apiset[key]['maxval']}, is {data[key]}")
             if apiset[key].get("minval") and data.get(key) < apiset[key].get("minval"):
-                raise ValueError(
-                    f"{key} cannot be lower than {apiset[key]['minval']}, is {data[key]}"
-                )
+                raise ValueError(f"{key} cannot be lower than {apiset[key]['minval']}, is {data[key]}")
 
         return True

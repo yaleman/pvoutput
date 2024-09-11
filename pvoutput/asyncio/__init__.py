@@ -1,4 +1,4 @@
-""" AsyncIO interface to the PVOutput API """
+"""AsyncIO interface to the PVOutput API"""
 
 import datetime
 from typing import Any, Dict, Optional
@@ -120,15 +120,11 @@ class PVOutput(PVOutputBase):
 
         url, method = utils.URLS["getsystem"]
 
-        response = await self._call(
-            endpoint=url, params={}, headers=headers, method=method
-        )
+        response = await self._call(endpoint=url, params={}, headers=headers, method=method)
         retval = utils.get_rate_limit_header(response)
         return retval
 
-    async def addbatchstatus(
-        self, data: str, c1: bool = False, n: bool = False
-    ) -> aiohttp.ClientResponse:
+    async def addbatchstatus(self, data: str, c1: bool = False, n: bool = False) -> aiohttp.ClientResponse:
         """
         # Add Batch Status Service
 
@@ -270,14 +266,10 @@ class PVOutput(PVOutputBase):
         # if we're fancy, we get more data
         if extras:
             for i in range(1, 7):
-                responsedata[f"v{i+6}"] = (
-                    None if extras[i - 1] == "NaN" else float(extras[i - 1])
-                )
+                responsedata[f"v{i+6}"] = None if extras[i - 1] == "NaN" else float(extras[i - 1])
         return responsedata
 
-    async def register_notification(
-        self, appid: str, url: str, alerttype: int
-    ) -> aiohttp.ClientResponse:
+    async def register_notification(self, appid: str, url: str, alerttype: int) -> aiohttp.ClientResponse:
         """The Register Notification Service allows a third party application
         to receive PVOutput alert callbacks via a HTTP end point.
 
@@ -335,9 +327,7 @@ class PVOutput(PVOutputBase):
         params = {"appid": appid, "type": alerttype, "url": url}
         return await self._call(endpoint=call_url, params=params, method=method)
 
-    async def deregister_notification(
-        self, appid: str, alerttype: int
-    ) -> aiohttp.ClientResponse:
+    async def deregister_notification(self, appid: str, alerttype: int) -> aiohttp.ClientResponse:
         """The Deregister Notification Service removes registered notifications under an application id for a system.
 
         API spec: https://pvoutput.org/help/api_specification.html#deregister-notification-service

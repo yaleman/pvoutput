@@ -1,4 +1,4 @@
-""" Utilities """
+"""Utilities"""
 
 from datetime import date, datetime, timedelta
 from typing import Any, Dict, List, Tuple
@@ -103,11 +103,7 @@ def validate_delete_status_date(date_val: date) -> None:
     tomorrow = date.today() + timedelta(days=1)
     # you can't delete back past yesterday
     if date_val < yesterday:
-        raise ValueError(
-            f"date_val can only be yesterday or today, you provided {date_val}"
-        )
+        raise ValueError(f"date_val can only be yesterday or today, you provided {date_val}")
     # you can't delete forward of today
     if date_val >= tomorrow:
-        raise ValueError(
-            f"date_val can only be yesterday or today, you provided {date_val}"
-        )
+        raise ValueError(f"date_val can only be yesterday or today, you provided {date_val}")

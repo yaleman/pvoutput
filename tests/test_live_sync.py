@@ -1,4 +1,4 @@
-""" test sync things """
+"""test sync things"""
 
 import datetime
 import json
@@ -17,9 +17,7 @@ def config() -> Dict[str, Any]:
         print("Failed to find config file")
         pytest.skip()
 
-    with open(
-        os.path.expanduser("~/.config/pvoutput.json"), "r", encoding="utf8"
-    ) as config_file:
+    with open(os.path.expanduser("~/.config/pvoutput.json"), "r", encoding="utf8") as config_file:
         config_data: Dict[str, Any] = json.load(config_file)
     return config_data
 
@@ -95,9 +93,7 @@ def test_addoutput(pvo: PVOutput) -> None:
 
 def test_register_notification(pvo: PVOutput) -> None:
     """tests register notification"""
-    result = pvo.register_notification(
-        "my.application.id", "http://my.application.com/api/alert.php", 0
-    )
+    result = pvo.register_notification("my.application.id", "http://my.application.com/api/alert.php", 0)
     assert result
     assert result.status_code == 200
     assert result.text == "OK 200: Registered Notification"

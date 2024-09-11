@@ -1,4 +1,4 @@
-""" test asyncio things """
+"""test asyncio things"""
 
 import datetime
 import json
@@ -11,7 +11,6 @@ try:
 except ImportError as error_message:
     print(f"Failed to import aiohttp: {error_message}")
     pytest.fail()
-
 
 # All test coroutines will be treated as marked.
 pytestmark = pytest.mark.asyncio
@@ -28,9 +27,7 @@ def config() -> Dict[str, Any]:
         print("Failed to find config file")
         pytest.skip()
 
-    with open(
-        os.path.expanduser("~/.config/pvoutput.json"), "r", encoding="utf8"
-    ) as config_file:
+    with open(os.path.expanduser("~/.config/pvoutput.json"), "r", encoding="utf8") as config_file:
         config_data: Dict[str, Any] = json.load(config_file)
     return config_data
 
@@ -77,10 +74,7 @@ async def test_configured_async_addstatus(config: Dict[str, Any]) -> None:
         assert addstatus_response.status == 200
         assert await addstatus_response.text() == "OK 200: Added Status"
 
-
-# pylint: disable=redefined-outer-name
-async def test_configured_async_getstatus(config: Dict[str, Any]) -> None:
-    """tests the getstatus endpoint"""
+    # testing getstatus after addstatus, so there's something there!
 
     async with aiohttp.ClientSession() as session:
         pvo = PVOutput(
@@ -145,9 +139,7 @@ async def test_register_notification(config: Dict[str, Any]) -> None:
             session=session,
         )
 
-        result = await pvo.register_notification(
-            "my.application.id.async", "http://my.application.com/api/alert.php", 0
-        )
+        result = await pvo.register_notification("my.application.id.async", "http://my.application.com/api/alert.php", 0)
         assert result
         assert result.status == 200
         assert await result.text() == "OK 200: Registered Notification"

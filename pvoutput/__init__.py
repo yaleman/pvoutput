@@ -1,4 +1,4 @@
-""" Interface to the PVOutput API """
+"""Interface to the PVOutput API"""
 
 import datetime
 from typing import Any, Dict, Optional
@@ -126,9 +126,7 @@ class PVOutput(PVOutputBase):
         retval = utils.get_rate_limit_header(response)
         return retval
 
-    def addbatchstatus(
-        self, data: str, c1: bool = False, n: bool = False
-    ) -> requests.Response:
+    def addbatchstatus(self, data: str, c1: bool = False, n: bool = False) -> requests.Response:
         """
         # Add Batch Status Service
 
@@ -215,9 +213,7 @@ class PVOutput(PVOutputBase):
         url, method = utils.URLS["addoutput"]
         return self._call(endpoint=url, data=data, method=method)
 
-    def delete_status(
-        self, date_val: datetime.date, time_val: Optional[datetime.time] = None
-    ) -> requests.Response:
+    def delete_status(self, date_val: datetime.date, time_val: Optional[datetime.time] = None) -> requests.Response:
         """
         Deletes a given status, based on the provided parameters
         needs a datetime() object
@@ -273,14 +269,10 @@ class PVOutput(PVOutputBase):
         # if we're fancy, we get more data
         if extras:
             for i in range(1, 7):
-                responsedata[f"v{i+6}"] = (
-                    None if extras[i - 1] == "NaN" else float(extras[i - 1])
-                )
+                responsedata[f"v{i+6}"] = None if extras[i - 1] == "NaN" else float(extras[i - 1])
         return responsedata
 
-    def register_notification(
-        self, appid: str, url: str, alerttype: int
-    ) -> requests.Response:
+    def register_notification(self, appid: str, url: str, alerttype: int) -> requests.Response:
         """The Register Notification Service allows a third party application
         to receive PVOutput alert callbacks via a HTTP end point.
 

@@ -25,7 +25,7 @@
 
 [tool.poetry]
 name = "pvoutput"
-version = "0.0.11"
+version = "0.0.12"
 authors = ["James Hodgkinson <james@terminaloutcomes.com>"]
 description = "Interface to the PVOutput API"
 homepage = "https://yaleman.github.io/pvoutput/"

@@ -1,4 +1,5 @@
-""" tests synchronous api things """
+"""tests synchronous api things"""
+
 import datetime
 import re
 from typing import Any
@@ -74,17 +75,11 @@ def test_validation_regexp_date() -> None:
             "format": r"^(20\d{2})(\d{2})(\d{2})$",
         }
     }
-    with pytest.raises(
-        ValueError, match=r"key '.*', with value '.*' does not match '.*'"
-    ):
+    with pytest.raises(ValueError, match=r"key '.*', with value '.*' does not match '.*'"):
         assert good_pvo_with_donation().validate_data({"d": "19000515"}, api)
-    with pytest.raises(
-        ValueError, match=r"key '.*', with value '.*' does not match '.*'"
-    ):
+    with pytest.raises(ValueError, match=r"key '.*', with value '.*' does not match '.*'"):
         assert good_pvo_with_donation().validate_data({"d": "201905150"}, api)
-    with pytest.raises(
-        ValueError, match=r"key '.*', with value '.*' does not match '.*'"
-    ):
+    with pytest.raises(ValueError, match=r"key '.*', with value '.*' does not match '.*'"):
         assert good_pvo_with_donation().validate_data({"d": "2019515"}, api)
 
     assert good_pvo_with_donation().validate_data({"d": "20190515"}, api)
@@ -97,21 +92,13 @@ def test_validation_regexp_time() -> None:
             "format": r"^([0-1][0-9]|2[0-3]):[0-5][0-9]$",
         }
     }
-    with pytest.raises(
-        ValueError, match=r"key '.*', with value '.*' does not match '.*'"
-    ):
+    with pytest.raises(ValueError, match=r"key '.*', with value '.*' does not match '.*'"):
         assert good_pvo_with_donation().validate_data({"t": "0:00"}, api)
-    with pytest.raises(
-        ValueError, match=r"key '.*', with value '.*' does not match '.*'"
-    ):
+    with pytest.raises(ValueError, match=r"key '.*', with value '.*' does not match '.*'"):
         assert good_pvo_with_donation().validate_data({"t": "00:0"}, api)
-    with pytest.raises(
-        ValueError, match=r"key '.*', with value '.*' does not match '.*'"
-    ):
+    with pytest.raises(ValueError, match=r"key '.*', with value '.*' does not match '.*'"):
         assert good_pvo_with_donation().validate_data({"t": "24:00"}, api)
-    with pytest.raises(
-        ValueError, match=r"key '.*', with value '.*' does not match '.*'"
-    ):
+    with pytest.raises(ValueError, match=r"key '.*', with value '.*' does not match '.*'"):
         assert good_pvo_with_donation().validate_data({"t": "23:60"}, api)
 
     assert good_pvo_with_donation().validate_data({"t": "00:00"}, api)
@@ -150,9 +137,7 @@ def test_headers_gen(pvo: pvoutput.PVOutput = good_pvo()) -> None:
 def test_api_validation_addstatus_shouldwork() -> None:
     """tests the validator for addstatus()"""
     data = {"d": "20190515", "t": "12:34", "v1": 123}
-    assert good_pvo_with_donation().validate_data(
-        data, pvoutput.parameters.ADDSTATUS_PARAMETERS
-    )
+    assert good_pvo_with_donation().validate_data(data, pvoutput.parameters.ADDSTATUS_PARAMETERS)
 
 
 def test_api_validation_types(pvo: pvoutput.PVOutput = good_pvo()) -> None:
@@ -174,26 +159,20 @@ def test_api_validation_types(pvo: pvoutput.PVOutput = good_pvo()) -> None:
 def test_delete_status_date_too_early(pvo: pvoutput.PVOutput = good_pvo()) -> None:
     """it should throw an error if you're deleting a status before yesterday"""
     # TODO: check if this is right for donation accounts
-    with pytest.raises(
-        ValueError, match=r"date_val can only be yesterday or today, you provided .*"
-    ):
+    with pytest.raises(ValueError, match=r"date_val can only be yesterday or today, you provided .*"):
         pvo.delete_status(datetime.date.today() - datetime.timedelta(days=2))
 
 
 def test_delete_status_date_too_late(pvo: pvoutput.PVOutput = good_pvo()) -> None:
     """it should throw an error if you're deleting a far-future status"""
 
-    with pytest.raises(
-        ValueError, match=r"date_val can only be yesterday or today, you provided .*"
-    ):
+    with pytest.raises(ValueError, match=r"date_val can only be yesterday or today, you provided .*"):
         pvo.delete_status(datetime.date.today() + datetime.timedelta(days=2))
 
 
 def test_delete_status_date_derp(pvo: pvoutput.PVOutput = good_pvo()) -> None:
     """it should barf if you're setting it to tomorrow"""
-    with pytest.raises(
-        ValueError, match=r"date_val can only be yesterday or today, you provided .*"
-    ):
+    with pytest.raises(ValueError, match=r"date_val can only be yesterday or today, you provided .*"):
         pvo.delete_status(date_val=datetime.date.today() + datetime.timedelta(1))
 
 
@@ -214,9 +193,7 @@ def test_delete_status_works(pvo: pvoutput.PVOutput = good_pvo()) -> None:
 
     with requests_mock.mock() as mock:
         mock.post(URLMATCHER, text="Status Deleted", status_code=200)
-        result = pvo.delete_status(
-            date_val=datetime.date.today(), time_val=datetime.time(hour=23, minute=59)
-        )
+        result = pvo.delete_status(date_val=datetime.date.today(), time_val=datetime.time(hour=23, minute=59))
         assert result
         assert result.status_code == 200
         assert result.text == "Status Deleted"
@@ -253,9 +230,7 @@ def test_addstatus_every_possible_time() -> None:
 
 def test_getstatus_donation_made_true() -> None:
     """test getstatus in donation made"""
-    mockdata_donation = (
-        "20191012,23:00,15910,0,15973,724,NaN,NaN,239.4,33.000,NaN,NaN,NaN,NaN,NaN"
-    )
+    mockdata_donation = "20191012,23:00,15910,0,15973,724,NaN,NaN,239.4,33.000,NaN,NaN,NaN,NaN,NaN"
 
     expecteddict = {
         "d": "20191012",
@@ -368,9 +343,7 @@ def test_register_notification_url_validresponse() -> None:
             text="OK 200",
             status_code=200,
         )
-        response = pvo.register_notification(
-            appid="test", url="http://example.com", alerttype=1
-        )
+        response = pvo.register_notification(appid="test", url="http://example.com", alerttype=1)
         assert response.status_code == 200
 
 
@@ -393,9 +366,7 @@ def test_register_notification_appid_maxlength(
         with pytest.raises(ValueError):
             pvo.register_notification(appid="#" * 151, url="#" * 100, alerttype=1)
 
-        response = pvo.register_notification(
-            appid="test", url="http://example.com", alerttype=1
-        )
+        response = pvo.register_notification(appid="test", url="http://example.com", alerttype=1)
         assert response.status_code == 200
         assert response.text == "OK 200"
 

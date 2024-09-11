@@ -1,4 +1,4 @@
-""" Standard parameter things. """
+"""Standard parameter things."""
 
 from copy import copy
 from datetime import date, datetime, time
