@@ -138,9 +138,10 @@ class PVOutputBase:
             # check for donation-only keys
             if apiset[key].get("donation_required") and not self.donation_made:
                 raise DonationRequired(f"key {key} requires an account which has donated")
-            # check if you're outside max/min values
-            if apiset[key].get("maxval") and data.get(key) > apiset[key].get("maxval"):
-                raise ValueError(f"{key} cannot be higher than {apiset[key]['maxval']}, is {data[key]}")
+            # check if you're outside max/min values, check max for v3 only if c1 is not set
+            if not (data.get("c1") is not None and key == "v3"):
+                if apiset[key].get("maxval") and data.get(key) > apiset[key].get("maxval"):
+                    raise ValueError(f"{key} cannot be higher than {apiset[key]['maxval']}, is {data[key]}")
             if apiset[key].get("minval") and data.get(key) < apiset[key].get("minval"):
                 raise ValueError(f"{key} cannot be lower than {apiset[key]['minval']}, is {data[key]}")
 
