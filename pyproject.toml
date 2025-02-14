@@ -40,7 +40,7 @@ aiohttp = "^3.8.1"
 mkdocs = { version = "^1.3.0", extras = ["docs"] }
 mkdocstrings = { version = ">=0.18.1,<0.27.0", extras = ["docs"] }
 mkdocs-material = { version = ">=8.2.9,<10.0.0", extras = ["docs"] }
-ruff = ">=0.5.1,<0.9.6"
+ruff = ">=0.5.1,<0.9.7"
 
 [tool.poetry.dev-dependencies]
 mypy = "^1.0"
