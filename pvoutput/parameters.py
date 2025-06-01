@@ -1,7 +1,7 @@
 """Standard parameter things."""
 
 from copy import copy
-from datetime import date, time
+from datetime import date, datetime, time
 
 
 from .utils import ALERT_TYPES, validate_delete_status_date
@@ -25,6 +25,7 @@ standard_parameters = {
         "format": r"^(20\d{2})(\d{2})(\d{2})$",
         "type": str,
         "donation_required": False,
+        "default": lambda: datetime.today().strftime("%Y%m%d"),
     },
     "t": {
         "required": True,

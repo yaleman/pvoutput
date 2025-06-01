@@ -186,8 +186,6 @@ class PVOutput(PVOutputBase):
         """
         # if you don't set a date or time, set it to now
         # can't push this through the validator as it relies on the class config
-        if "d" not in data:
-            data["d"] = datetime.datetime.today().strftime("%Y%m%d")
         if "t" not in data:
             data["t"] = self.get_time_by_base()
         self.validate_data(data, ADDSTATUS_PARAMETERS)
@@ -211,10 +209,6 @@ class PVOutput(PVOutputBase):
         :returns: The response object
         :rtype: requests.Response
         """
-        # if you don't set a date, set it to now
-        # can't push this through the validator as it relies on the class config
-        if "d" not in data:
-            data["d"] = datetime.datetime.today().strftime("%Y%m%d")    
         self.validate_data(data, ADDOUTPUT_PARAMETERS)
         url, method = utils.URLS["addoutput"]
         return self._call(endpoint=url, data=data, method=method)
@@ -275,7 +269,7 @@ class PVOutput(PVOutputBase):
         # if we're fancy, we get more data
         if extras:
             for i in range(1, 7):
-                responsedata[f"v{i+6}"] = None if extras[i - 1] == "NaN" else float(extras[i - 1])
+                responsedata[f"v{i + 6}"] = None if extras[i - 1] == "NaN" else float(extras[i - 1])
         return responsedata
 
     def register_notification(self, appid: str, url: str, alerttype: int) -> requests.Response:
