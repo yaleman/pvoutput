@@ -63,8 +63,7 @@ class PVOutputBase:
     ) -> None:
         """handles the regular expression format checks"""
         try:
-            compiled = re.compile(format_string)
-            match = compiled.match(str(value))
+            match = re.match(str(format_string), str(value))
             if match is None:
                 raise ValueError(f"key '{key}', with value '{value}' does not match '{format_string!r}'")
         except re.error as error:
