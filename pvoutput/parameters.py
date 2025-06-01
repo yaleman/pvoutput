@@ -33,7 +33,8 @@ standard_parameters = {
         "format": r"^([0-1][0-9]|2[0-3]):[0-5][0-9]$",
         "type": str,
         "donation_required": False,
-    },  # TODO: the validator is terrible
+        "default": lambda: datetime.now().strftime("%H:%M"),
+    },
 }
 
 CALL_PARAMETERS = {

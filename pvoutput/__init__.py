@@ -184,7 +184,7 @@ class PVOutput(PVOutputBase):
         :returns: The response object
         :rtype: requests.Response
         """
-        # if you don't set a date or time, set it to now
+        # if you don't set a time, set it to now
         # can't push this through the validator as it relies on the class config
         if "t" not in data:
             data["t"] = self.get_time_by_base()
