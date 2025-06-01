@@ -1,3 +1,4 @@
+---
 name: pytest
 
 "on":
@@ -13,13 +14,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
-      - name: Set up Python 3.9
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: '3.12'
       - name: Running pytest
         run: |
-          python --version
           python -m pip install --quiet --no-cache-dir --upgrade poetry
           poetry install
           poetry run python -m pytest
