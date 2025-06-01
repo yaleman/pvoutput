@@ -93,8 +93,12 @@ class PVOutputBase:
             # check that that required values are set
             if apiset[key].get("required", False) and key not in data.keys():
                 if "default" in apiset[key]:
-                    # set a default value
-                    data[key] = apiset[key]["default"]
+                    if callable(apiset[key]["default"]):
+                        # if the default is a callable, call it to get the value
+                        data[key] = apiset[key]["default"]()
+                    else:
+                        # set a default value
+                        data[key] = apiset[key]["default"]
                 else:
                     raise ValueError(f"key {key} required in data")
 
