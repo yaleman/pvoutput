@@ -25,7 +25,7 @@ standard_parameters = {
         "format": r"^(20\d{2})(\d{2})(\d{2})$",
         "type": str,
         "donation_required": False,
-        "default": datetime.today().strftime("%Y%m%d"),
+        "default": lambda: datetime.today().strftime("%Y%m%d"),
     },
     "t": {
         "required": True,
@@ -33,8 +33,8 @@ standard_parameters = {
         "format": r"^([0-1][0-9]|2[0-3]):[0-5][0-9]$",
         "type": str,
         "donation_required": False,
-        "default": datetime.now().strftime("%H:%M"),
-    },  # TODO: the validator is terrible
+        "default": lambda: datetime.now().strftime("%H:%M"),
+    },
 }
 
 CALL_PARAMETERS = {

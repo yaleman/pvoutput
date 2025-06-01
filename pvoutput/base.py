@@ -63,8 +63,7 @@ class PVOutputBase:
     ) -> None:
         """handles the regular expression format checks"""
         try:
-            compiled = re.compile(format_string)
-            match = compiled.match(str(value))
+            match = re.match(str(format_string), str(value))
             if match is None:
                 raise ValueError(f"key '{key}', with value '{value}' does not match '{format_string!r}'")
         except re.error as error:
@@ -93,8 +92,12 @@ class PVOutputBase:
             # check that that required values are set
             if apiset[key].get("required", False) and key not in data.keys():
                 if "default" in apiset[key]:
-                    # set a default value
-                    data[key] = apiset[key]["default"]
+                    if callable(apiset[key]["default"]):
+                        # if the default is a callable, call it to get the value
+                        data[key] = apiset[key]["default"]()
+                    else:
+                        # set a default value
+                        data[key] = apiset[key]["default"]
                 else:
                     raise ValueError(f"key {key} required in data")
 

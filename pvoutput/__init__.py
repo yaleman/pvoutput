@@ -269,7 +269,7 @@ class PVOutput(PVOutputBase):
         # if we're fancy, we get more data
         if extras:
             for i in range(1, 7):
-                responsedata[f"v{i+6}"] = None if extras[i - 1] == "NaN" else float(extras[i - 1])
+                responsedata[f"v{i + 6}"] = None if extras[i - 1] == "NaN" else float(extras[i - 1])
         return responsedata
 
     def register_notification(self, appid: str, url: str, alerttype: int) -> requests.Response:
