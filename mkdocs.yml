@@ -2,18 +2,18 @@ site_name: PVOutput
 theme:
   name: material
 plugins:
-- search:
-- mkdocstrings:
-    default_handler: python
-    handlers:
-      python:
-        rendering:
-          show_source: true
-    watch:
-    - pvoutput/
+  - search:
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        # python:
+        # rendering:
+        # show_source: true
+      watch:
+        - "pvoutput/"
 nav:
-- Home: README.md
-- API Documentation: api.md
+  - Home: README.md
+  - API Documentation: api.md
 repo_name: yaleman/pvoutput
 repo_url: https://github.com/yaleman/pvoutput
 site_url: https://yaleman.github.io/pvoutput/

@@ -4,8 +4,6 @@ PVOutput.org python API module. Works with the R2 [API version spec here](https:
 
 Get your API key from [the account page on PVOutput](https://pvoutput.org/account.jsp)
 
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-
 ## Example usage
 
 Here's a quick code example:
@@ -29,21 +27,21 @@ Will give you output like this:
     }
 ```
 
-There are more example code snippets in the [examples](examples/) directory.
+There are more example code snippets in the examples directory.
 
 ## Installing
 
 ### Prod-ish usage
 
-`python -m pip install pvoutput` to install from pypi
+`pip install pvoutput` to install from pypi
 
 ### Dev Install Things
 
 ```shell
-python -m venv venv
-source venv/bin/activate
-python -m pip install --upgrade pip flit
-python -m flit install
+python -m virtualenv .venv
+source .venv/bin/activate
+pip install uv
+uv venv
 ```
 
 ## Input validation
@@ -79,7 +77,7 @@ An example configuration
 
 ## Contributing / Testing
 
-`ruff`, `black` and `mypy` should all pass before submitting a PR.
+`ruff`, and `mypy` should all pass before submitting a PR.
 
 ## License
 

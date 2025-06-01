@@ -20,6 +20,5 @@ jobs:
           python-version: '3.12'
       - name: Running ruff
         run: |
-            python -m pip install --quiet --no-cache-dir --upgrade poetry
-            poetry install
-            poetry run ruff check pvoutput tests
+            python -m pip install --quiet --no-cache-dir --upgrade uv
+            uv run ruff check pvoutput tests

@@ -1,63 +1,32 @@
-# [project]
-# name = "pvoutput"
-# authors = [
-#     {name = "James Hodgkinson", email = "james@terminaloutcomes.com"}
-# ]
-# classifiers = [
-#     "License :: OSI Approved :: MIT License",
-#     "Programming Language :: Python :: 3.8",
-#     "Programming Language :: Python :: 3.9",
-#     "Programming Language :: Python :: 3.10",
-#     "Operating System :: OS Independent",
-# ]
-
-# dependencies = [
-#     "requests",
-#     "aiohttp"
-# ]
-
-# keywords = [
-#     "api",
-#     "solar",
-#     "pvoutput",
-# ]
-# readme = "README.md"
-
-[tool.poetry]
+[project]
 name = "pvoutput"
-version = "0.0.12"
-authors = ["James Hodgkinson <james@terminaloutcomes.com>"]
+authors = [{ name = "James Hodgkinson", email = "james@terminaloutcomes.com" }]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Operating System :: OS Independent",
+]
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dependencies = [
+    "requests>=2.27.1",
+ "aiohttp>=3.8.1",
+]
+version = "0.1.0"
 description = "Interface to the PVOutput API"
-homepage = "https://yaleman.github.io/pvoutput/"
-license = "MIT"
 readme = "README.md"
+
+[project.urls]
+homepage = "https://yaleman.github.io/pvoutput/"
 repository = "https://github.com/yaleman/pvoutput/"
 
-[tool.poetry.dependencies]
-python = "^3.8"
-requests = "^2.27.1"
-aiohttp = "^3.8.1"
-mkdocs = { version = "^1.3.0", extras = ["docs"] }
-mkdocstrings = { version = ">=0.18.1,<0.27.0", extras = ["docs"] }
-mkdocs-material = { version = ">=8.2.9,<10.0.0", extras = ["docs"] }
-ruff = ">=0.5.1,<0.11.13"
-
-[tool.poetry.group.dev.dependencies]
-mypy = "^1.0"
-black = "^24.1.0"
-pytest = "^8.0.0"
-types-requests = "^2.28.11"
-aiofiles = "^24.1.0"
-pylint-pytest = "^1.1.2"
-pytest-asyncio = "^0.24.0"
-requests-mock = "^1.10.0"
-types-aiofiles = "^24.1.0"
-mkdocstrings-python = "^1.0.0"
-freezegun = "^1.5.2"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
 
 [tool.pylint.MASTER]
 load-plugins = "pylint_pytest"
@@ -70,3 +39,21 @@ asyncio_default_fixture_loop_scope = "function"
 
 [tool.ruff]
 line-length = 200
+
+[dependency-groups]
+dev = [
+    "mypy==1.16.0",
+    "pytest>=8.0.0",
+    "types-requests>=2.32.0.20250515",
+    "aiofiles>=24.1.0",
+    "pylint-pytest>=1.1.8",
+    "pytest-asyncio>=1.0.0",
+    "requests-mock>=1.10.0",
+    "types-aiofiles>=24.1.0",
+    "mkdocstrings-python>=1.16.11",
+    "freezegun>=1.5.2",
+    "mkdocs>=1.3.0",
+    "mkdocstrings>=0.29.1",
+    "mkdocs-material>=9.6.14",
+    "ruff>=0.11.12",
+]

@@ -1,3 +1,3 @@
 #!/bin/bash
 
-python -m mkdocs serve --livereload
+uv run mkdocs serve --livereload

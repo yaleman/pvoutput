@@ -328,7 +328,7 @@ def test_register_notification_url_maxlength() -> None:
 
             response = pvo.register_notification(
                 appid="test",
-                url=f"http://example.com/{'#'*1000}",
+                url=f"http://example.com/{'#' * 1000}",
                 alerttype=1,
             )
             assert response.status_code == 200
