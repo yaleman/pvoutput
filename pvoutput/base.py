@@ -3,7 +3,7 @@
 from datetime import datetime, time
 from math import floor
 import re
-from typing import Any, AnyStr, Dict, Union
+from typing import Any, Dict, Union
 
 from .exceptions import InvalidRegexpError, DonationRequired
 
@@ -57,7 +57,7 @@ class PVOutputBase:
     @classmethod
     def _validate_format(
         cls,
-        format_string: AnyStr,
+        format_string: str,
         key: str,
         value: Any,
     ) -> None:
@@ -138,11 +138,17 @@ class PVOutputBase:
             # check for donation-only keys
             if apiset[key].get("donation_required") and not self.donation_made:
                 raise DonationRequired(f"key {key} requires an account which has donated")
-            # check if you're outside max/min values, check max for v3 only if c1 is not set
-            if not (data.get("c1") is not None and key == "v3"):
-                if apiset[key].get("maxval") and data.get(key) > apiset[key].get("maxval"):
+
+            # check max/min value constraints
+            # Special case: When c1 flag is set, v3 represents cumulative lifetime energy values
+            # which can exceed the normal maximum validation limit of 200000 Wh
+            should_skip_maxval_check = key == "v3" and data.get("c1") is not None
+
+            if not should_skip_maxval_check:
+                if apiset[key].get("maxval") is not None and data.get(key) > apiset[key].get("maxval"):
                     raise ValueError(f"{key} cannot be higher than {apiset[key]['maxval']}, is {data[key]}")
-            if apiset[key].get("minval") and data.get(key) < apiset[key].get("minval"):
+
+            if apiset[key].get("minval") is not None and data.get(key) < apiset[key].get("minval"):
                 raise ValueError(f"{key} cannot be lower than {apiset[key]['minval']}, is {data[key]}")
 
         return True
