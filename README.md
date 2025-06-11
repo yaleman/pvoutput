@@ -77,7 +77,7 @@ An example configuration
 
 ## Contributing / Testing
 
-`ruff`, and `mypy` should all pass before submitting a PR.
+`ruff`, `pytest` and `mypy` should all pass before submitting a PR.
 
 ## License
 

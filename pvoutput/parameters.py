@@ -107,7 +107,7 @@ ADDSTATUS_PARAMETERS = {
         "required": False,
         "description": "Energy Consumption (Wh)",
         "donation_required": False,
-        "maxval": 200000,
+        "maxval": 200000,  # Note: maxval validation is bypassed when c1 flag is set for cumulative values
     },
     "v4": {
         "required": False,
@@ -178,11 +178,18 @@ ADDSTATUS_PARAMETERS = {
     "required_oneof": {"keys": ["v1", "v2", "v3", "v4"]},
 }
 """
-Cumulative Energy
-The following values are valid for the c1 flag.
+Cumulative Energy Flag (c1)
+
+The c1 flag indicates when energy values represent cumulative lifetime totals rather than 
+daily incremental values. The following values are valid for the c1 flag:
+
     1 Both v1 and v3 values are lifetime energy values. Consumption and generation energy is reset to 0 at the start of the day.
     2 Only v1 generation is a lifetime energy value.
     3 Only v3 consumption is a lifetime energy value.
+
+Important: When c1 is set (any value 1-3), the normal maximum validation limit for v3 
+(200,000 Wh) is bypassed, as cumulative lifetime energy values can exceed this threshold.
+This is handled automatically in the validation logic in base.py.
 """
 
 ADDOUTPUT_PARAMETERS = {

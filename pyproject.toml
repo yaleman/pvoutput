@@ -11,10 +11,7 @@ classifiers = [
 ]
 license = { text = "MIT" }
 requires-python = ">=3.10"
-dependencies = [
-    "requests>=2.27.1",
- "aiohttp>=3.8.1",
-]
+dependencies = ["requests>=2.27.1", "aiohttp>=3.8.1"]
 version = "0.1.0"
 description = "Interface to the PVOutput API"
 readme = "README.md"
@@ -22,7 +19,6 @@ readme = "README.md"
 [project.urls]
 homepage = "https://yaleman.github.io/pvoutput/"
 repository = "https://github.com/yaleman/pvoutput/"
-
 
 [build-system]
 requires = ["pdm-backend"]
