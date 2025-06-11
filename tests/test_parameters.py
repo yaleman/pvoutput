@@ -28,6 +28,7 @@ def test_addstatus_default_date() -> None:
 
     testit(test)
 
+
 def test_parameters_copying() -> None:
     """checks if the copied values are different"""
     # This test is commented out but kept for reference
