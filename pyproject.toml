@@ -20,7 +20,6 @@ readme = "README.md"
 homepage = "https://yaleman.github.io/pvoutput/"
 repository = "https://github.com/yaleman/pvoutput/"
 
-
 [build-system]
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"
