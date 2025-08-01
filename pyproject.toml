@@ -38,7 +38,7 @@ line-length = 200
 
 [dependency-groups]
 dev = [
-    "mypy==1.16.0",
+    "mypy==1.17.1",
     "pytest>=8.0.0",
     "types-requests>=2.32.0.20250515",
     "aiofiles>=24.1.0",
