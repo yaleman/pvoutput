@@ -25,7 +25,6 @@ requires = ["pdm-backend"]
 build-backend = "pdm.backend"
 
 [tool.pylint.MASTER]
-load-plugins = "pylint_pytest"
 max-line-length = 200
 disable = "W0511,R0801"
 
@@ -38,11 +37,10 @@ line-length = 200
 
 [dependency-groups]
 dev = [
-    "mypy==2.0.0",
-    "pytest>=8.0.0",
+    "mypy>=2.0.0",
+    "pytest>=9.0.3",
     "types-requests>=2.32.0.20250515",
     "aiofiles>=24.1.0",
-    "pylint-pytest>=1.1.8",
     "pytest-asyncio>=1.0.0",
     "requests-mock>=1.10.0",
     "types-aiofiles>=24.1.0",
@@ -52,4 +50,5 @@ dev = [
     "mkdocstrings>=0.29.1",
     "mkdocs-material>=9.6.14",
     "ruff>=0.11.12",
+    "ty>=0.0.34",
 ]
