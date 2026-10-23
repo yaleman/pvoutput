@@ -1,9 +1,11 @@
 """tests parameters things"""
 
 import copy
-from datetime import datetime
-from typing import Any, Dict
+from datetime import datetime, timezone
+from typing import Any
+
 import pytest
+
 from pvoutput import PVOutput
 from pvoutput.base import PVOutputBase
 from pvoutput.parameters import ADDSTATUS_PARAMETERS
@@ -11,10 +13,10 @@ from pvoutput.parameters import ADDSTATUS_PARAMETERS
 
 def test_addstatus_default_date() -> None:
     """tests if the default date is set correctly"""
-    assert ADDSTATUS_PARAMETERS["d"]["default"]() == datetime.today().strftime("%Y%m%d")  # type: ignore[index]
+    assert ADDSTATUS_PARAMETERS["d"]["default"]() == datetime.now(tz=timezone.utc).strftime("%Y%m%d")  # type: ignore[index]  # ty: ignore[call-non-callable]
 
     test = PVOutput(apikey="helloworld", systemid=1, donation_made=False)
-    assert test._validate_format(ADDSTATUS_PARAMETERS["d"]["format"], "d", ADDSTATUS_PARAMETERS["d"]["default"]()) is None  # type: ignore[index]
+    assert test._validate_format(ADDSTATUS_PARAMETERS["d"]["format"], "d", ADDSTATUS_PARAMETERS["d"]["default"]()) is None  # type: ignore[index]  # ty: ignore[call-non-callable, invalid-argument-type]
     from freezegun import freeze_time
 
     # freeze the time to a specific date that ISN'T the start date for testing
@@ -33,7 +35,6 @@ def test_parameters_copying() -> None:
     """checks if the copied values are different"""
     # This test is commented out but kept for reference
     # assert pvoutput.ADDSTATUS_PARAMETERS["t"] != pvoutput.DELETESTATUS_PARAMETERS["t"]
-    pass
 
 
 class TestC1V3Validation:
@@ -89,7 +90,7 @@ class TestC1V3Validation:
     def test_other_fields_maxval_validation_unaffected_by_c1(self) -> None:
         """Test that c1 flag doesn't affect maxval validation of other fields"""
         # Create a modified parameter set with maxval for testing
-        test_params: Dict[str, Any] = copy.deepcopy(ADDSTATUS_PARAMETERS)
+        test_params: dict[str, Any] = copy.deepcopy(ADDSTATUS_PARAMETERS)
         test_params["v2"] = {"maxval": 1000, "type": int}
 
         data = {"v2": 1500, "c1": 1}  # v2 exceeds maxval, c1 set
@@ -100,7 +101,7 @@ class TestC1V3Validation:
     def test_v3_minval_validation_still_applies_with_c1(self) -> None:
         """Test that minval validation for v3 still applies even when c1 is set"""
         # Create a deep copy of parameters and modify v3 to have minval
-        test_params: Dict[str, Any] = copy.deepcopy(ADDSTATUS_PARAMETERS)
+        test_params: dict[str, Any] = copy.deepcopy(ADDSTATUS_PARAMETERS)
         test_params["v3"]["minval"] = 0
 
         data = {"v3": -100, "c1": 1}  # Negative value, c1 set

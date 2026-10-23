@@ -1,8 +1,7 @@
 """Standard parameter things."""
 
 from copy import copy
-from datetime import date, datetime, time
-
+from datetime import date, datetime, time, timezone
 
 from .utils import ALERT_TYPES, validate_delete_status_date
 
@@ -10,10 +9,10 @@ __all__ = [
     "ADDOUTPUT_PARAMETERS",
     "ADDSTATUS_PARAMETERS",
     "CALL_PARAMETERS",
+    "DEFAULT_REQUEST_TIMEOUT",
     "DELETESTATUS_PARAMETERS",
     "DELETE_NOTIFICATION_PARAMETERS",
     "REGISTER_NOTIFICATION_PARAMETERS",
-    "DEFAULT_REQUEST_TIMEOUT",
 ]
 
 DEFAULT_REQUEST_TIMEOUT = 30
@@ -25,7 +24,7 @@ standard_parameters = {
         "format": r"^(20\d{2})(\d{2})(\d{2})$",
         "type": str,
         "donation_required": False,
-        "default": lambda: datetime.today().strftime("%Y%m%d"),
+        "default": lambda: datetime.now(tz=timezone.utc).strftime("%Y%m%d"),
     },
     "t": {
         "required": True,

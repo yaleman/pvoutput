@@ -3,7 +3,7 @@
 import datetime
 import json
 import os
-from typing import Any, Dict
+from typing import Any
 
 import pytest
 
@@ -11,19 +11,19 @@ from pvoutput import PVOutput
 
 
 @pytest.fixture
-def config() -> Dict[str, Any]:
+def config() -> dict[str, Any]:
     """configuration fixture"""
     if not os.path.exists(os.path.expanduser("~/.config/pvoutput.json")):
         print("Failed to find config file")
         pytest.skip()
 
     with open(os.path.expanduser("~/.config/pvoutput.json"), "r", encoding="utf8") as config_file:
-        config_data: Dict[str, Any] = json.load(config_file)
+        config_data: dict[str, Any] = json.load(config_file)
     return config_data
 
 
 @pytest.fixture
-def pvo(config: Dict[str, Any]) -> PVOutput:
+def pvo(config: dict[str, Any]) -> PVOutput:
     """fixture for testing"""
     return PVOutput(
         apikey=config["apikey"],

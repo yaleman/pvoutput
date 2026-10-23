@@ -1,13 +1,15 @@
-""" addstatus example """
+"""addstatus example"""
+
 import json
-from typing import Any, Dict
+from typing import Any
+
 from pvoutput import PVOutput
 
 
-def get_apikey_systemid_sync() -> Dict[str, Any]:
+def get_apikey_systemid_sync() -> dict[str, Any]:
     """non-asyncio config loader"""
     with open("pvoutput.json", encoding="utf8") as config_file:
-        config_data: Dict[str, Any] = json.load(config_file)
+        config_data: dict[str, Any] = json.load(config_file)
     return config_data
 
 
@@ -29,7 +31,7 @@ def main() -> None:
     try:
         response = pvo.addstatus(data)
         print(response)
-    except Exception as err:  # pylint: disable=broad-except
+    except Exception as err:  # pylint: disable=broad-except  # noqa: BLE001
         print(f"{err=}")
         # print(response.request.method)
 

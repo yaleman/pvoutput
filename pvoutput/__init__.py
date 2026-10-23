@@ -1,19 +1,18 @@
 """Interface to the PVOutput API"""
 
 import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
 import requests
 
-from pvoutput.exceptions import UnknownMethodError
-
 from pvoutput.base import PVOutputBase
+from pvoutput.exceptions import UnknownMethodError
 from pvoutput.parameters import (
     ADDBATCHSTATUS_PARAMETERS,
+    ADDOUTPUT_PARAMETERS,
     ADDSTATUS_PARAMETERS,
     CALL_PARAMETERS,
     DEFAULT_REQUEST_TIMEOUT,
-    ADDOUTPUT_PARAMETERS,
     DELETE_NOTIFICATION_PARAMETERS,
     DELETESTATUS_PARAMETERS,
     REGISTER_NOTIFICATION_PARAMETERS,
@@ -34,7 +33,7 @@ class PVOutput(PVOutputBase):
         systemid: int,
         donation_made: bool = False,
         stats_period: int = 5,
-        session: Optional[requests.Session] = None,
+        session: requests.Session | None = None,
     ):
         """Setup code
         :param apikey: API key (read or write)
@@ -58,7 +57,7 @@ class PVOutput(PVOutputBase):
         self,
         endpoint: str,
         method: str = "POST",
-        **kwargs: Dict[str, Any],
+        **kwargs: dict[str, Any],
     ) -> requests.Response:
         """Makes a call to a URL endpoint with the data/headers/method you require.
 
@@ -109,7 +108,7 @@ class PVOutput(PVOutputBase):
         response.raise_for_status()
         return response
 
-    def check_rate_limit(self) -> Dict[str, str]:
+    def check_rate_limit(self) -> dict[str, str]:
         """Makes a call to the site, checking if you have hit the rate limit.
 
         API spec: https://pvoutput.org/help/api_specification.html#rate-limits
@@ -171,7 +170,7 @@ class PVOutput(PVOutputBase):
 
     def addstatus(
         self,
-        data: Dict[str, Any],
+        data: dict[str, Any],
     ) -> requests.Response:
         """The Add Status service accepts live output data
         at the Status Interval (5 to 15 minutes) configured for the system.
@@ -196,7 +195,7 @@ class PVOutput(PVOutputBase):
 
     def addoutput(
         self,
-        data: Dict[str, Any],
+        data: dict[str, Any],
     ) -> requests.Response:
         """The Add Output service uploads end of day output information.
         It allows all of the information provided on the Add Output page to be uploaded.
@@ -213,7 +212,7 @@ class PVOutput(PVOutputBase):
         url, method = utils.URLS["addoutput"]
         return self._call(endpoint=url, data=data, method=method)
 
-    def delete_status(self, date_val: datetime.date, time_val: Optional[datetime.time] = None) -> requests.Response:
+    def delete_status(self, date_val: datetime.date, time_val: datetime.time | None = None) -> requests.Response:
         """
         Deletes a given status, based on the provided parameters
         needs a datetime() object
@@ -246,7 +245,7 @@ class PVOutput(PVOutputBase):
 
         return self._call(endpoint=url, data=data, method=method)
 
-    def getstatus(self) -> Dict[str, Any]:
+    def getstatus(self) -> dict[str, Any]:
         """The Get Status service retrieves system status information and live output data.
 
         API spec: https://pvoutput.org/help/api_specification.html#get-status-service
