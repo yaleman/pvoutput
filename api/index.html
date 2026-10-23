@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
       
 
@@ -780,7 +780,8 @@
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>pvoutput/__init__.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 27</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 26</span>
+<span class="normal"> 27</span>
 <span class="normal"> 28</span>
 <span class="normal"> 29</span>
 <span class="normal"> 30</span>
@@ -1136,9 +1137,8 @@
 <span class="normal">380</span>
 <span class="normal">381</span>
 <span class="normal">382</span>
-<span class="normal">383</span>
-<span class="normal">384</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PVOutput</span><span class="p">(</span><span class="n">PVOutputBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;This class provides an interface to the pvoutput.org API&quot;&quot;&quot;</span>
+<span class="normal">383</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PVOutput</span><span class="p">(</span><span class="n">PVOutputBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""This class provides an interface to the pvoutput.org API"""</span>
 
     <span class="c1"># pylint: disable=too-many-arguments</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -1147,16 +1147,16 @@
         <span class="n">systemid</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">donation_made</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">stats_period</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
-        <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">session</span><span class="p">:</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Setup code</span>
+<span class="w">        </span><span class="sd">"""Setup code</span>
 <span class="sd">        :param apikey: API key (read or write)</span>
 <span class="sd">        :type apikey: str</span>
 <span class="sd">        :param systemid: system ID</span>
 <span class="sd">        :type systemid: int</span>
 <span class="sd">        :param donation_made: Whether to use the donation-required fields</span>
 <span class="sd">        :type donation_made: bool</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">apikey</span><span class="o">=</span><span class="n">apikey</span><span class="p">,</span>
             <span class="n">systemid</span><span class="o">=</span><span class="n">systemid</span><span class="p">,</span>
@@ -1170,10 +1170,10 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_call</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;POST&quot;</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"POST"</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Makes a call to a URL endpoint with the data/headers/method you require.</span>
+<span class="w">        </span><span class="sd">"""Makes a call to a URL endpoint with the data/headers/method you require.</span>
 
 <span class="sd">        :param endpoint: The URL to call</span>
 <span class="sd">        :type endpoint: str</span>
@@ -1181,7 +1181,7 @@
 <span class="sd">        :param data: Data to send</span>
 <span class="sd">        :type data: dict</span>
 
-<span class="sd">        :param headers: Additional headers, if unset it&#39;ll use self._headers() which is the standard API key / systemid set (eg, self.check_rate_limit)</span>
+<span class="sd">        :param headers: Additional headers, if unset it'll use self._headers() which is the standard API key / systemid set (eg, self.check_rate_limit)</span>
 <span class="sd">        :type headers: dict</span>
 
 <span class="sd">        :param method: specify a method if you want to use something other than POST</span>
@@ -1193,59 +1193,59 @@
 <span class="sd">        :raises TypeError: if the data you pass is of the wrong format.</span>
 <span class="sd">        :raises ValueError: if the call throws a HTTP 400 error.</span>
 <span class="sd">        :raises requests.exception: if method throws an exception.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">validate_data</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">CALL_PARAMETERS</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;GET&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"GET"</span><span class="p">:</span>
             <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
                 <span class="n">endpoint</span><span class="p">,</span>
-                <span class="n">data</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">),</span>
-                <span class="n">headers</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;headers&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">()),</span>
-                <span class="n">params</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;params&quot;</span><span class="p">),</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"data"</span><span class="p">),</span>
+                <span class="n">headers</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"headers"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">()),</span>
+                <span class="n">params</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"params"</span><span class="p">),</span>
                 <span class="n">timeout</span><span class="o">=</span><span class="n">DEFAULT_REQUEST_TIMEOUT</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;POST&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"POST"</span><span class="p">:</span>
             <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
                 <span class="n">endpoint</span><span class="p">,</span>
-                <span class="n">data</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">),</span>
-                <span class="n">headers</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;headers&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">()),</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"data"</span><span class="p">),</span>
+                <span class="n">headers</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"headers"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">()),</span>
                 <span class="n">timeout</span><span class="o">=</span><span class="n">DEFAULT_REQUEST_TIMEOUT</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">UnknownMethodError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unknown method </span><span class="si">{</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;method&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">UnknownMethodError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"unknown method </span><span class="si">{</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">'method'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">400</span><span class="p">:</span>
             <span class="c1"># TODO: work out how to get the specific response and provide useful answers</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;HTTP400: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"HTTP400: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="c1"># likely errors - https://pvoutput.org/help/api_specification.html#error-messages</span>
         <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">response</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">check_rate_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Makes a call to the site, checking if you have hit the rate limit.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_rate_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Makes a call to the site, checking if you have hit the rate limit.</span>
 
 <span class="sd">        API spec: https://pvoutput.org/help/api_specification.html#rate-limits</span>
 
 <span class="sd">        :returns: the headers relating to the rate limit.</span>
 <span class="sd">        :rtype: dict</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">()</span>
-        <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;X-Rate-Limit&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span>
+        <span class="n">headers</span><span class="p">[</span><span class="s2">"X-Rate-Limit"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"1"</span>
 
-        <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">&quot;getsystem&quot;</span><span class="p">]</span>
+        <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">"getsystem"</span><span class="p">]</span>
 
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{},</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
         <span class="n">retval</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_rate_limit_header</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">retval</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">addbatchstatus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">c1</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        # Add Batch Status Service</span>
 
 <span class="sd">        The Add Batch Status service adds up to 30 statuses in a single request.</span>
 <span class="sd">        See the documentation on the page for what it means, and what it responds with.</span>
-<span class="sd">        This hasn&#39;t been tested.</span>
+<span class="sd">        This hasn't been tested.</span>
 <span class="sd">        &lt;https://pvoutput.org/help/api_specification.html#add-batch-status-service&gt;</span>
 
 <span class="sd">        ## Data Structure</span>
@@ -1259,7 +1259,7 @@
 
 <span class="sd">        Send three statuses from 10:00AM to 10:10AM in a single batch request</span>
 
-<span class="sd">        `data=&quot;20110112,10:00,705,1029;20110112,10:05,775,1320;20110112,10:10,800,800&quot;`</span>
+<span class="sd">        `data="20110112,10:00,705,1029;20110112,10:05,775,1320;20110112,10:10,800,800"`</span>
 
 <span class="sd">        ## Donation features</span>
 
@@ -1268,25 +1268,25 @@
 <span class="sd">        * Maximum energy consumption v3 value increased to 9,999,999Wh</span>
 <span class="sd">        * Maximum power consumption v4 value increased to 2,000,000W</span>
 <span class="sd">        * Increased batch status size to 100 from 30</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">,</span>
+            <span class="s2">"data"</span><span class="p">:</span> <span class="n">data</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="k">if</span> <span class="n">c1</span><span class="p">:</span>
-            <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;c1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span>
+            <span class="n">payload</span><span class="p">[</span><span class="s2">"c1"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"1"</span>
         <span class="k">if</span> <span class="n">n</span><span class="p">:</span>
-            <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;n&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span>
+            <span class="n">payload</span><span class="p">[</span><span class="s2">"n"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"1"</span>
 
-        <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">&quot;addbatchstatus&quot;</span><span class="p">]</span>
+        <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">"addbatchstatus"</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">validate_data</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">ADDBATCHSTATUS_PARAMETERS</span><span class="p">)</span>
-        <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">&quot;addstatus&quot;</span><span class="p">]</span>
+        <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">"addstatus"</span><span class="p">]</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">addstatus</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The Add Status service accepts live output data</span>
+<span class="w">        </span><span class="sd">"""The Add Status service accepts live output data</span>
 <span class="sd">        at the Status Interval (5 to 15 minutes) configured for the system.</span>
 
 <span class="sd">        API Spec: https://pvoutput.org/help/api_specification.html#add-status-service</span>
@@ -1296,22 +1296,22 @@
 
 <span class="sd">        :returns: The response object</span>
 <span class="sd">        :rtype: requests.Response</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># if you don&#39;t set a time, set it to now</span>
-        <span class="c1"># can&#39;t push this through the validator as it relies on the class config</span>
-        <span class="k">if</span> <span class="s2">&quot;t&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
-            <span class="n">data</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_time_by_base</span><span class="p">()</span>
+<span class="sd">        """</span>
+        <span class="c1"># if you don't set a time, set it to now</span>
+        <span class="c1"># can't push this through the validator as it relies on the class config</span>
+        <span class="k">if</span> <span class="s2">"t"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">[</span><span class="s2">"t"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_time_by_base</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">validate_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ADDSTATUS_PARAMETERS</span><span class="p">)</span>
 
-        <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">&quot;addstatus&quot;</span><span class="p">]</span>
+        <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">"addstatus"</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">addoutput</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The Add Output service uploads end of day output information.</span>
+<span class="w">        </span><span class="sd">"""The Add Output service uploads end of day output information.</span>
 <span class="sd">        It allows all of the information provided on the Add Output page to be uploaded.</span>
 
 <span class="sd">        API Spec: https://pvoutput.org/help/api_specification.html#add-output-service</span>
@@ -1321,13 +1321,13 @@
 
 <span class="sd">        :returns: The response object</span>
 <span class="sd">        :rtype: requests.Response</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">validate_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ADDOUTPUT_PARAMETERS</span><span class="p">)</span>
-        <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">&quot;addoutput&quot;</span><span class="p">]</span>
+        <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">"addoutput"</span><span class="p">]</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">delete_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date_val</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">,</span> <span class="n">time_val</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date_val</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">,</span> <span class="n">time_val</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Deletes a given status, based on the provided parameters</span>
 <span class="sd">        needs a datetime() object</span>
 <span class="sd">        set the hours/minutes to non-zero to delete a specific time</span>
@@ -1342,51 +1342,51 @@
 
 <span class="sd">        :returns: The response object</span>
 <span class="sd">        :rtype: requests.Response</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">validate_data</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="s2">&quot;date_val&quot;</span><span class="p">:</span> <span class="n">date_val</span><span class="p">,</span>
-                <span class="s2">&quot;time_val&quot;</span><span class="p">:</span> <span class="n">time_val</span><span class="p">,</span>
+                <span class="s2">"date_val"</span><span class="p">:</span> <span class="n">date_val</span><span class="p">,</span>
+                <span class="s2">"time_val"</span><span class="p">:</span> <span class="n">time_val</span><span class="p">,</span>
             <span class="p">},</span>
             <span class="n">DELETESTATUS_PARAMETERS</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;d&quot;</span><span class="p">:</span> <span class="n">date_val</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)}</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"d"</span><span class="p">:</span> <span class="n">date_val</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">"%Y%m</span><span class="si">%d</span><span class="s2">"</span><span class="p">)}</span>
         <span class="k">if</span> <span class="n">time_val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">data</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_val</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H:%M&quot;</span><span class="p">)</span>
+            <span class="n">data</span><span class="p">[</span><span class="s2">"t"</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_val</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">"%H:%M"</span><span class="p">)</span>
 
-        <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">&quot;deletestatus&quot;</span><span class="p">]</span>
+        <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">"deletestatus"</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">getstatus</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The Get Status service retrieves system status information and live output data.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getstatus</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""The Get Status service retrieves system status information and live output data.</span>
 
 <span class="sd">        API spec: https://pvoutput.org/help/api_specification.html#get-status-service</span>
 
 <span class="sd">        :returns: the last updated data</span>
 <span class="sd">        :rtype: dict</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># TODO: extend this, you can do history searches and all sorts with this endpoint</span>
 
         <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">donation_made</span><span class="p">:</span>
-            <span class="n">params</span><span class="p">[</span><span class="s2">&quot;ext&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="n">params</span><span class="p">[</span><span class="s2">&quot;sid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">systemid</span>
-        <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">&quot;getstatus&quot;</span><span class="p">]</span>
+            <span class="n">params</span><span class="p">[</span><span class="s2">"ext"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">params</span><span class="p">[</span><span class="s2">"sid"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">systemid</span>
+        <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">"getstatus"</span><span class="p">]</span>
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
         <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
         <span class="c1"># grab all the things</span>
-        <span class="n">responsedata</span><span class="p">,</span> <span class="n">extras</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">responsedata_to_response</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">))</span>
+        <span class="n">responsedata</span><span class="p">,</span> <span class="n">extras</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">responsedata_to_response</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">","</span><span class="p">))</span>
 
-        <span class="c1"># if we&#39;re fancy, we get more data</span>
+        <span class="c1"># if we're fancy, we get more data</span>
         <span class="k">if</span> <span class="n">extras</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">):</span>
-                <span class="n">responsedata</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;v</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">6</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">extras</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;NaN&quot;</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">extras</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
+                <span class="n">responsedata</span><span class="p">[</span><span class="sa">f</span><span class="s2">"v</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">6</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">extras</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"NaN"</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">extras</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">responsedata</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">register_notification</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">appid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">alerttype</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The Register Notification Service allows a third party application</span>
+<span class="w">        </span><span class="sd">"""The Register Notification Service allows a third party application</span>
 <span class="sd">        to receive PVOutput alert callbacks via a HTTP end point.</span>
 
 <span class="sd">        API spec: https://pvoutput.org/help/api_specification.html#register-notification-service</span>
@@ -1428,23 +1428,23 @@
 <span class="sd">        23      High Net Power Alert</span>
 <span class="sd">        24      Low Net Power Alert</span>
 <span class="sd">        =====   ====</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">validate_data</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="s2">&quot;appid&quot;</span><span class="p">:</span> <span class="n">appid</span><span class="p">,</span>
-                <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="n">url</span><span class="p">,</span>
-                <span class="s2">&quot;alerttype&quot;</span><span class="p">:</span> <span class="n">alerttype</span><span class="p">,</span>
+                <span class="s2">"appid"</span><span class="p">:</span> <span class="n">appid</span><span class="p">,</span>
+                <span class="s2">"url"</span><span class="p">:</span> <span class="n">url</span><span class="p">,</span>
+                <span class="s2">"alerttype"</span><span class="p">:</span> <span class="n">alerttype</span><span class="p">,</span>
             <span class="p">},</span>
             <span class="n">REGISTER_NOTIFICATION_PARAMETERS</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="n">call_url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">&quot;registernotification&quot;</span><span class="p">]</span>
-        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;appid&quot;</span><span class="p">:</span> <span class="n">appid</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">alerttype</span><span class="p">,</span> <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="n">url</span><span class="p">}</span>
+        <span class="n">call_url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">"registernotification"</span><span class="p">]</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"appid"</span><span class="p">:</span> <span class="n">appid</span><span class="p">,</span> <span class="s2">"type"</span><span class="p">:</span> <span class="n">alerttype</span><span class="p">,</span> <span class="s2">"url"</span><span class="p">:</span> <span class="n">url</span><span class="p">}</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">call_url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">deregister_notification</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">appid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">alerttype</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The Deregister Notification Service removes registered notifications under an application id for a system.</span>
+<span class="w">        </span><span class="sd">"""The Deregister Notification Service removes registered notifications under an application id for a system.</span>
 
 <span class="sd">        API spec: https://pvoutput.org/help/api_specification.html#deregister-notification-service</span>
 
@@ -1482,18 +1482,18 @@
 <span class="sd">        23      High Net Power Alert</span>
 <span class="sd">        24      Low Net Power Alert</span>
 <span class="sd">        =====   ====</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">validate_data</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="s2">&quot;appid&quot;</span><span class="p">:</span> <span class="n">appid</span><span class="p">,</span>
-                <span class="s2">&quot;alerttype&quot;</span><span class="p">:</span> <span class="n">alerttype</span><span class="p">,</span>
+                <span class="s2">"appid"</span><span class="p">:</span> <span class="n">appid</span><span class="p">,</span>
+                <span class="s2">"alerttype"</span><span class="p">:</span> <span class="n">alerttype</span><span class="p">,</span>
             <span class="p">},</span>
             <span class="n">DELETE_NOTIFICATION_PARAMETERS</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">&quot;deregisternotification&quot;</span><span class="p">]</span>
-        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;appid&quot;</span><span class="p">:</span> <span class="n">appid</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">alerttype</span><span class="p">}</span>
+        <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">"deregisternotification"</span><span class="p">]</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"appid"</span><span class="p">:</span> <span class="n">appid</span><span class="p">,</span> <span class="s2">"type"</span><span class="p">:</span> <span class="n">alerttype</span><span class="p">}</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -1533,7 +1533,8 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>pvoutput/__init__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">31</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">30</span>
+<span class="normal">31</span>
 <span class="normal">32</span>
 <span class="normal">33</span>
 <span class="normal">34</span>
@@ -1556,23 +1557,22 @@
 <span class="normal">51</span>
 <span class="normal">52</span>
 <span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">apikey</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">systemid</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">donation_made</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">stats_period</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
-    <span class="n">session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">session</span><span class="p">:</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Setup code</span>
+<span class="w">    </span><span class="sd">"""Setup code</span>
 <span class="sd">    :param apikey: API key (read or write)</span>
 <span class="sd">    :type apikey: str</span>
 <span class="sd">    :param systemid: system ID</span>
 <span class="sd">    :type systemid: int</span>
 <span class="sd">    :param donation_made: Whether to use the donation-required fields</span>
 <span class="sd">    :type donation_made: bool</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
         <span class="n">apikey</span><span class="o">=</span><span class="n">apikey</span><span class="p">,</span>
         <span class="n">systemid</span><span class="o">=</span><span class="n">systemid</span><span class="p">,</span>
@@ -1623,7 +1623,8 @@ Output Delimiter - ;</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>pvoutput/__init__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">129</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">128</span>
+<span class="normal">129</span>
 <span class="normal">130</span>
 <span class="normal">131</span>
 <span class="normal">132</span>
@@ -1663,14 +1664,13 @@ Output Delimiter - ;</p>
 <span class="normal">166</span>
 <span class="normal">167</span>
 <span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">addbatchstatus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">c1</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="normal">169</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">addbatchstatus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">c1</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    # Add Batch Status Service</span>
 
 <span class="sd">    The Add Batch Status service adds up to 30 statuses in a single request.</span>
 <span class="sd">    See the documentation on the page for what it means, and what it responds with.</span>
-<span class="sd">    This hasn&#39;t been tested.</span>
+<span class="sd">    This hasn't been tested.</span>
 <span class="sd">    &lt;https://pvoutput.org/help/api_specification.html#add-batch-status-service&gt;</span>
 
 <span class="sd">    ## Data Structure</span>
@@ -1684,7 +1684,7 @@ Output Delimiter - ;</p>
 
 <span class="sd">    Send three statuses from 10:00AM to 10:10AM in a single batch request</span>
 
-<span class="sd">    `data=&quot;20110112,10:00,705,1029;20110112,10:05,775,1320;20110112,10:10,800,800&quot;`</span>
+<span class="sd">    `data="20110112,10:00,705,1029;20110112,10:05,775,1320;20110112,10:10,800,800"`</span>
 
 <span class="sd">    ## Donation features</span>
 
@@ -1693,18 +1693,18 @@ Output Delimiter - ;</p>
 <span class="sd">    * Maximum energy consumption v3 value increased to 9,999,999Wh</span>
 <span class="sd">    * Maximum power consumption v4 value increased to 2,000,000W</span>
 <span class="sd">    * Increased batch status size to 100 from 30</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">,</span>
+        <span class="s2">"data"</span><span class="p">:</span> <span class="n">data</span><span class="p">,</span>
     <span class="p">}</span>
     <span class="k">if</span> <span class="n">c1</span><span class="p">:</span>
-        <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;c1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span>
+        <span class="n">payload</span><span class="p">[</span><span class="s2">"c1"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"1"</span>
     <span class="k">if</span> <span class="n">n</span><span class="p">:</span>
-        <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;n&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span>
+        <span class="n">payload</span><span class="p">[</span><span class="s2">"n"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"1"</span>
 
-    <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">&quot;addbatchstatus&quot;</span><span class="p">]</span>
+    <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">"addbatchstatus"</span><span class="p">]</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">validate_data</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">ADDBATCHSTATUS_PARAMETERS</span><span class="p">)</span>
-    <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">&quot;addstatus&quot;</span><span class="p">]</span>
+    <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">"addstatus"</span><span class="p">]</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -1734,7 +1734,8 @@ It allows all of the information provided on the Add Output page to be uploaded.
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>pvoutput/__init__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">197</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">196</span>
+<span class="normal">197</span>
 <span class="normal">198</span>
 <span class="normal">199</span>
 <span class="normal">200</span>
@@ -1750,12 +1751,11 @@ It allows all of the information provided on the Add Output page to be uploaded.
 <span class="normal">210</span>
 <span class="normal">211</span>
 <span class="normal">212</span>
-<span class="normal">213</span>
-<span class="normal">214</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">addoutput</span><span class="p">(</span>
+<span class="normal">213</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">addoutput</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The Add Output service uploads end of day output information.</span>
+<span class="w">    </span><span class="sd">"""The Add Output service uploads end of day output information.</span>
 <span class="sd">    It allows all of the information provided on the Add Output page to be uploaded.</span>
 
 <span class="sd">    API Spec: https://pvoutput.org/help/api_specification.html#add-output-service</span>
@@ -1765,9 +1765,9 @@ It allows all of the information provided on the Add Output page to be uploaded.
 
 <span class="sd">    :returns: The response object</span>
 <span class="sd">    :rtype: requests.Response</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">validate_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ADDOUTPUT_PARAMETERS</span><span class="p">)</span>
-    <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">&quot;addoutput&quot;</span><span class="p">]</span>
+    <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">"addoutput"</span><span class="p">]</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -1797,7 +1797,8 @@ at the Status Interval (5 to 15 minutes) configured for the system.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>pvoutput/__init__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">172</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">171</span>
+<span class="normal">172</span>
 <span class="normal">173</span>
 <span class="normal">174</span>
 <span class="normal">175</span>
@@ -1819,12 +1820,11 @@ at the Status Interval (5 to 15 minutes) configured for the system.</p>
 <span class="normal">191</span>
 <span class="normal">192</span>
 <span class="normal">193</span>
-<span class="normal">194</span>
-<span class="normal">195</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">addstatus</span><span class="p">(</span>
+<span class="normal">194</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">addstatus</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-    <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The Add Status service accepts live output data</span>
+<span class="w">    </span><span class="sd">"""The Add Status service accepts live output data</span>
 <span class="sd">    at the Status Interval (5 to 15 minutes) configured for the system.</span>
 
 <span class="sd">    API Spec: https://pvoutput.org/help/api_specification.html#add-status-service</span>
@@ -1834,14 +1834,14 @@ at the Status Interval (5 to 15 minutes) configured for the system.</p>
 
 <span class="sd">    :returns: The response object</span>
 <span class="sd">    :rtype: requests.Response</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># if you don&#39;t set a time, set it to now</span>
-    <span class="c1"># can&#39;t push this through the validator as it relies on the class config</span>
-    <span class="k">if</span> <span class="s2">&quot;t&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
-        <span class="n">data</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_time_by_base</span><span class="p">()</span>
+<span class="sd">    """</span>
+    <span class="c1"># if you don't set a time, set it to now</span>
+    <span class="c1"># can't push this through the validator as it relies on the class config</span>
+    <span class="k">if</span> <span class="s2">"t"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="n">data</span><span class="p">[</span><span class="s2">"t"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_time_by_base</span><span class="p">()</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">validate_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ADDSTATUS_PARAMETERS</span><span class="p">)</span>
 
-    <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">&quot;addstatus&quot;</span><span class="p">]</span>
+    <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">"addstatus"</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -1869,7 +1869,8 @@ at the Status Interval (5 to 15 minutes) configured for the system.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>pvoutput/__init__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">112</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">111</span>
+<span class="normal">112</span>
 <span class="normal">113</span>
 <span class="normal">114</span>
 <span class="normal">115</span>
@@ -1883,19 +1884,18 @@ at the Status Interval (5 to 15 minutes) configured for the system.</p>
 <span class="normal">123</span>
 <span class="normal">124</span>
 <span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">check_rate_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Makes a call to the site, checking if you have hit the rate limit.</span>
+<span class="normal">126</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">check_rate_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Makes a call to the site, checking if you have hit the rate limit.</span>
 
 <span class="sd">    API spec: https://pvoutput.org/help/api_specification.html#rate-limits</span>
 
 <span class="sd">    :returns: the headers relating to the rate limit.</span>
 <span class="sd">    :rtype: dict</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">()</span>
-    <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;X-Rate-Limit&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span>
+    <span class="n">headers</span><span class="p">[</span><span class="s2">"X-Rate-Limit"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"1"</span>
 
-    <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">&quot;getsystem&quot;</span><span class="p">]</span>
+    <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">"getsystem"</span><span class="p">]</span>
 
     <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{},</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
     <span class="n">retval</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_rate_limit_header</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
@@ -1931,7 +1931,8 @@ set the hours/minutes to non-zero to delete a specific time</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>pvoutput/__init__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">216</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">215</span>
+<span class="normal">216</span>
 <span class="normal">217</span>
 <span class="normal">218</span>
 <span class="normal">219</span>
@@ -1961,9 +1962,8 @@ set the hours/minutes to non-zero to delete a specific time</p>
 <span class="normal">243</span>
 <span class="normal">244</span>
 <span class="normal">245</span>
-<span class="normal">246</span>
-<span class="normal">247</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">delete_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date_val</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">,</span> <span class="n">time_val</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="normal">246</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">delete_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date_val</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">,</span> <span class="n">time_val</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Deletes a given status, based on the provided parameters</span>
 <span class="sd">    needs a datetime() object</span>
 <span class="sd">    set the hours/minutes to non-zero to delete a specific time</span>
@@ -1978,20 +1978,20 @@ set the hours/minutes to non-zero to delete a specific time</p>
 
 <span class="sd">    :returns: The response object</span>
 <span class="sd">    :rtype: requests.Response</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">validate_data</span><span class="p">(</span>
         <span class="p">{</span>
-            <span class="s2">&quot;date_val&quot;</span><span class="p">:</span> <span class="n">date_val</span><span class="p">,</span>
-            <span class="s2">&quot;time_val&quot;</span><span class="p">:</span> <span class="n">time_val</span><span class="p">,</span>
+            <span class="s2">"date_val"</span><span class="p">:</span> <span class="n">date_val</span><span class="p">,</span>
+            <span class="s2">"time_val"</span><span class="p">:</span> <span class="n">time_val</span><span class="p">,</span>
         <span class="p">},</span>
         <span class="n">DELETESTATUS_PARAMETERS</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;d&quot;</span><span class="p">:</span> <span class="n">date_val</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)}</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"d"</span><span class="p">:</span> <span class="n">date_val</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">"%Y%m</span><span class="si">%d</span><span class="s2">"</span><span class="p">)}</span>
     <span class="k">if</span> <span class="n">time_val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">data</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_val</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H:%M&quot;</span><span class="p">)</span>
+        <span class="n">data</span><span class="p">[</span><span class="s2">"t"</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_val</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">"%H:%M"</span><span class="p">)</span>
 
-    <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">&quot;deletestatus&quot;</span><span class="p">]</span>
+    <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">"deletestatus"</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -2046,7 +2046,8 @@ Value   Type
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>pvoutput/__init__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">333</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">332</span>
+<span class="normal">333</span>
 <span class="normal">334</span>
 <span class="normal">335</span>
 <span class="normal">336</span>
@@ -2096,9 +2097,8 @@ Value   Type
 <span class="normal">380</span>
 <span class="normal">381</span>
 <span class="normal">382</span>
-<span class="normal">383</span>
-<span class="normal">384</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">deregister_notification</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">appid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">alerttype</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The Deregister Notification Service removes registered notifications under an application id for a system.</span>
+<span class="normal">383</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">deregister_notification</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">appid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">alerttype</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""The Deregister Notification Service removes registered notifications under an application id for a system.</span>
 
 <span class="sd">    API spec: https://pvoutput.org/help/api_specification.html#deregister-notification-service</span>
 
@@ -2136,18 +2136,18 @@ Value   Type
 <span class="sd">    23      High Net Power Alert</span>
 <span class="sd">    24      Low Net Power Alert</span>
 <span class="sd">    =====   ====</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">validate_data</span><span class="p">(</span>
         <span class="p">{</span>
-            <span class="s2">&quot;appid&quot;</span><span class="p">:</span> <span class="n">appid</span><span class="p">,</span>
-            <span class="s2">&quot;alerttype&quot;</span><span class="p">:</span> <span class="n">alerttype</span><span class="p">,</span>
+            <span class="s2">"appid"</span><span class="p">:</span> <span class="n">appid</span><span class="p">,</span>
+            <span class="s2">"alerttype"</span><span class="p">:</span> <span class="n">alerttype</span><span class="p">,</span>
         <span class="p">},</span>
         <span class="n">DELETE_NOTIFICATION_PARAMETERS</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">&quot;deregisternotification&quot;</span><span class="p">]</span>
-    <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;appid&quot;</span><span class="p">:</span> <span class="n">appid</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">alerttype</span><span class="p">}</span>
+    <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">"deregisternotification"</span><span class="p">]</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"appid"</span><span class="p">:</span> <span class="n">appid</span><span class="p">,</span> <span class="s2">"type"</span><span class="p">:</span> <span class="n">alerttype</span><span class="p">}</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -2174,7 +2174,8 @@ Value   Type
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>pvoutput/__init__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">249</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">248</span>
+<span class="normal">249</span>
 <span class="normal">250</span>
 <span class="normal">251</span>
 <span class="normal">252</span>
@@ -2197,31 +2198,30 @@ Value   Type
 <span class="normal">269</span>
 <span class="normal">270</span>
 <span class="normal">271</span>
-<span class="normal">272</span>
-<span class="normal">273</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">getstatus</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The Get Status service retrieves system status information and live output data.</span>
+<span class="normal">272</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">getstatus</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""The Get Status service retrieves system status information and live output data.</span>
 
 <span class="sd">    API spec: https://pvoutput.org/help/api_specification.html#get-status-service</span>
 
 <span class="sd">    :returns: the last updated data</span>
 <span class="sd">    :rtype: dict</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># TODO: extend this, you can do history searches and all sorts with this endpoint</span>
 
     <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">donation_made</span><span class="p">:</span>
-        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;ext&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;sid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">systemid</span>
-    <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">&quot;getstatus&quot;</span><span class="p">]</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">"ext"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">"sid"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">systemid</span>
+    <span class="n">url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">"getstatus"</span><span class="p">]</span>
     <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
     <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
     <span class="c1"># grab all the things</span>
-    <span class="n">responsedata</span><span class="p">,</span> <span class="n">extras</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">responsedata_to_response</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">))</span>
+    <span class="n">responsedata</span><span class="p">,</span> <span class="n">extras</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">responsedata_to_response</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">","</span><span class="p">))</span>
 
-    <span class="c1"># if we&#39;re fancy, we get more data</span>
+    <span class="c1"># if we're fancy, we get more data</span>
     <span class="k">if</span> <span class="n">extras</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">):</span>
-            <span class="n">responsedata</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;v</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">6</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">extras</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;NaN&quot;</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">extras</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="n">responsedata</span><span class="p">[</span><span class="sa">f</span><span class="s2">"v</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">6</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">extras</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"NaN"</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">extras</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">responsedata</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -2278,7 +2278,8 @@ Value   Type
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>pvoutput/__init__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">275</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">274</span>
+<span class="normal">275</span>
 <span class="normal">276</span>
 <span class="normal">277</span>
 <span class="normal">278</span>
@@ -2333,9 +2334,8 @@ Value   Type
 <span class="normal">327</span>
 <span class="normal">328</span>
 <span class="normal">329</span>
-<span class="normal">330</span>
-<span class="normal">331</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">register_notification</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">appid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">alerttype</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The Register Notification Service allows a third party application</span>
+<span class="normal">330</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">register_notification</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">appid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">alerttype</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""The Register Notification Service allows a third party application</span>
 <span class="sd">    to receive PVOutput alert callbacks via a HTTP end point.</span>
 
 <span class="sd">    API spec: https://pvoutput.org/help/api_specification.html#register-notification-service</span>
@@ -2377,19 +2377,19 @@ Value   Type
 <span class="sd">    23      High Net Power Alert</span>
 <span class="sd">    24      Low Net Power Alert</span>
 <span class="sd">    =====   ====</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">validate_data</span><span class="p">(</span>
         <span class="p">{</span>
-            <span class="s2">&quot;appid&quot;</span><span class="p">:</span> <span class="n">appid</span><span class="p">,</span>
-            <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="n">url</span><span class="p">,</span>
-            <span class="s2">&quot;alerttype&quot;</span><span class="p">:</span> <span class="n">alerttype</span><span class="p">,</span>
+            <span class="s2">"appid"</span><span class="p">:</span> <span class="n">appid</span><span class="p">,</span>
+            <span class="s2">"url"</span><span class="p">:</span> <span class="n">url</span><span class="p">,</span>
+            <span class="s2">"alerttype"</span><span class="p">:</span> <span class="n">alerttype</span><span class="p">,</span>
         <span class="p">},</span>
         <span class="n">REGISTER_NOTIFICATION_PARAMETERS</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="n">call_url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">&quot;registernotification&quot;</span><span class="p">]</span>
-    <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;appid&quot;</span><span class="p">:</span> <span class="n">appid</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">alerttype</span><span class="p">,</span> <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="n">url</span><span class="p">}</span>
+    <span class="n">call_url</span><span class="p">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">URLS</span><span class="p">[</span><span class="s2">"registernotification"</span><span class="p">]</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"appid"</span><span class="p">:</span> <span class="n">appid</span><span class="p">,</span> <span class="s2">"type"</span><span class="p">:</span> <span class="n">alerttype</span><span class="p">,</span> <span class="s2">"url"</span><span class="p">:</span> <span class="n">url</span><span class="p">}</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">call_url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -2465,7 +2465,7 @@ Value   Type
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>
