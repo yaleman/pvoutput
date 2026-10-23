@@ -1,11 +1,11 @@
-""" example to push an output value """
+"""example to push an output value"""
 
 import asyncio
 import datetime
 
 import aiohttp
-
 from utils import get_apikey_systemid
+
 from pvoutput.asyncio import PVOutput
 
 
@@ -13,7 +13,7 @@ async def main() -> None:
     """main function"""
     configuration = await get_apikey_systemid()
 
-    testdate = datetime.date.today()
+    testdate = datetime.datetime.now(tz=datetime.timezone.utc)
     data = {
         "d": testdate.strftime("%Y%m%d"),
         "g": 500,  # Generated (Wh)

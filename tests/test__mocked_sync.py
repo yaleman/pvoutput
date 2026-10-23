@@ -8,8 +8,8 @@ import pytest
 import requests_mock
 
 import pvoutput
-import pvoutput.parameters
 import pvoutput.exceptions
+import pvoutput.parameters
 
 # because we're testing, just grab everything.
 URLMATCHER = re.compile(".*")
@@ -32,6 +32,12 @@ def patch_datetime_now(monkeypatch: Any) -> Any:
             return FAKE_TIME
 
     monkeypatch.setattr(datetime, "datetime", PatchedDateTime)
+
+
+@pytest.fixture
+def pvo() -> pvoutput.PVOutput:
+    """returns a good PVOutput instance for testing"""
+    return good_pvo()
 
 
 def test_patch_datetime(patch_datetime_now: Any) -> None:
@@ -125,7 +131,7 @@ def test_api_validation_invalid_regexp() -> None:
         assert good_pvo_with_donation().validate_data(data, api)
 
 
-def test_headers_gen(pvo: pvoutput.PVOutput = good_pvo()) -> None:
+def test_headers_gen(pvo: pvoutput.PVOutput) -> None:
     """tests that PVOutput._headers() returns a valid dict"""
     # pylint: disable=protected-access
     assert pvo._headers() == {
@@ -140,7 +146,7 @@ def test_api_validation_addstatus_shouldwork() -> None:
     assert good_pvo_with_donation().validate_data(data, pvoutput.parameters.ADDSTATUS_PARAMETERS)
 
 
-def test_api_validation_types(pvo: pvoutput.PVOutput = good_pvo()) -> None:
+def test_api_validation_types(pvo: pvoutput.PVOutput) -> None:
     """tests the type-based validation in addstatus on a fail"""
     data_failtime = {"d": "20190515", "t": 1234, "v1": "123"}
     data_faildate = {"d": 1, "t": "1234", "v1": "123"}
@@ -156,28 +162,28 @@ def test_api_validation_types(pvo: pvoutput.PVOutput = good_pvo()) -> None:
         pvo.validate_data(data_faildate, pvoutput.parameters.ADDSTATUS_PARAMETERS)
 
 
-def test_delete_status_date_too_early(pvo: pvoutput.PVOutput = good_pvo()) -> None:
+def test_delete_status_date_too_early(pvo: pvoutput.PVOutput) -> None:
     """it should throw an error if you're deleting a status before yesterday"""
     # TODO: check if this is right for donation accounts
     with pytest.raises(ValueError, match=r"date_val can only be yesterday or today, you provided .*"):
         pvo.delete_status(datetime.date.today() - datetime.timedelta(days=2))
 
 
-def test_delete_status_date_too_late(pvo: pvoutput.PVOutput = good_pvo()) -> None:
+def test_delete_status_date_too_late(pvo: pvoutput.PVOutput) -> None:
     """it should throw an error if you're deleting a far-future status"""
 
     with pytest.raises(ValueError, match=r"date_val can only be yesterday or today, you provided .*"):
         pvo.delete_status(datetime.date.today() + datetime.timedelta(days=2))
 
 
-def test_delete_status_date_derp(pvo: pvoutput.PVOutput = good_pvo()) -> None:
+def test_delete_status_date_derp(pvo: pvoutput.PVOutput) -> None:
     """it should barf if you're setting it to tomorrow"""
     with pytest.raises(ValueError, match=r"date_val can only be yesterday or today, you provided .*"):
         pvo.delete_status(date_val=datetime.date.today() + datetime.timedelta(1))
 
 
 def test_delete_status_invalid_time_val_type(
-    pvo: pvoutput.PVOutput = good_pvo(),
+    pvo: pvoutput.PVOutput,
 ) -> None:
     """if you're doing invalid time types, deletestatus() should fail"""
     with pytest.raises(TypeError):
@@ -188,7 +194,7 @@ def test_delete_status_invalid_time_val_type(
         pvo.delete_status(date_val=datetime.date.today(), time_val=True)  # type: ignore
 
 
-def test_delete_status_works(pvo: pvoutput.PVOutput = good_pvo()) -> None:
+def test_delete_status_works(pvo: pvoutput.PVOutput) -> None:
     """if you're doing invalid time types, deletestatus() should fail"""
 
     with requests_mock.mock() as mock:
@@ -285,10 +291,10 @@ def test_getstatus_donation_made_false() -> None:
         assert good_pvo_no_donation().getstatus() == expecteddict
 
 
-def test_add_output() -> None:
+def test_add_output(pvo: pvoutput.PVOutput) -> None:
     """tests the validator for addoutput()"""
     data = {"d": "20190515", "g": 123}
-    pvo = good_pvo()
+
     with requests_mock.mock() as mock:
         mock.post(
             url=URLMATCHER,
@@ -318,20 +324,19 @@ def test_register_notification_url_maxlength() -> None:
     with pytest.raises(ValueError):
         pvo.register_notification(appid="test", url="#" * 1000, alerttype=1)
 
-    with pytest.raises(ValueError):
-        with requests_mock.mock() as mock:
-            mock.get(
-                url=URLMATCHER,
-                text="OK 200",
-                status_code=200,
-            )
+    with pytest.raises(ValueError), requests_mock.mock() as mock:
+        mock.get(
+            url=URLMATCHER,
+            text="OK 200",
+            status_code=200,
+        )
 
-            response = pvo.register_notification(
-                appid="test",
-                url=f"http://example.com/{'#' * 1000}",
-                alerttype=1,
-            )
-            assert response.status_code == 200
+        response = pvo.register_notification(
+            appid="test",
+            url=f"http://example.com/{'#' * 1000}",
+            alerttype=1,
+        )
+        assert response.status_code == 200
 
 
 def test_register_notification_url_validresponse() -> None:
@@ -348,7 +353,7 @@ def test_register_notification_url_validresponse() -> None:
 
 
 def test_register_notification_appid_maxlength(
-    pvo: pvoutput.PVOutput = good_pvo(),
+    pvo: pvoutput.PVOutput,
 ) -> None:
     """tests the max length of appids"""
     with requests_mock.mock() as mock:
@@ -371,9 +376,9 @@ def test_register_notification_appid_maxlength(
         assert response.text == "OK 200"
 
 
-def test_datetime_fix(patch_datetime_now: Any) -> None:
+def test_datetime_fix(patch_datetime_now: Any, pvo: pvoutput.PVOutput) -> None:
     """tests issue https://github.com/yaleman/pvoutput/issues/53"""
-    pvo = good_pvo()
+    assert pvo is not None
     test_data = {
         "d": "20200905",
         "v1": 12345,

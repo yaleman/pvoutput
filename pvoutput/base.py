@@ -1,14 +1,14 @@
 """base class for pvoutput"""
 
+import re
 from datetime import datetime, time
 from math import floor
-import re
-from typing import Any, Dict, Union
+from typing import Any
 
-from .exceptions import InvalidRegexpError, DonationRequired
+from .exceptions import DonationRequired, InvalidRegexpError
 
 
-def round_to_base(number: Union[int, float], base: Union[int, float]) -> float:
+def round_to_base(number: float, base: float) -> float:
     """rounds down to a specific base number
     based on answer in https://stackoverflow.com/a/2272174/188774
     """
@@ -34,7 +34,7 @@ class PVOutputBase:
         self.donation_made = donation_made
         self.stats_period = stats_period
 
-    def _headers(self) -> Dict[str, str]:
+    def _headers(self) -> dict[str, str]:
         """Relevant documentation: https://pvoutput.org/help/api_specification.html#http-headers
 
         :return: headers for calls to the API
@@ -70,7 +70,7 @@ class PVOutputBase:
             raise InvalidRegexpError("Error for key '{key}' with format '{format_string!r}': {error}") from error
 
     # pylint: disable=too-many-branches
-    def validate_data(self, data: Dict[str, Any], apiset: Dict[str, Any]) -> bool:
+    def validate_data(self, data: dict[str, Any], apiset: dict[str, Any]) -> bool:
         """Does a super-simple validation based on the api def raises errors if it's wrong, returns True if it's OK
 
         This'll only raise an error on the first error it finds
@@ -86,47 +86,44 @@ class PVOutputBase:
         :raises pvoutput.InvalidRegexpError: if value does not match the regexp in format.
         """
         # if you set a 'required_oneof' key in apiset, validation will require at least one of those keys to be set
-        if "required_oneof" in apiset.keys() and (len([key for key in data.keys() if key in apiset["required_oneof"]["keys"]]) == 0):
+        if "required_oneof" in apiset and (len([key for key in data if key in apiset["required_oneof"]["keys"]]) == 0):
             raise ValueError(f"one of {','.join(apiset['required_oneof']['keys'])} MUST be set")
-        for key in apiset.keys():
+        for key, value in apiset.items():
             # check that that required values are set
-            if apiset[key].get("required", False) and key not in data.keys():
-                if "default" in apiset[key]:
-                    if callable(apiset[key]["default"]):
+            if value.get("required", False) and key not in data:
+                if "default" in value:
+                    if callable(value["default"]):
                         # if the default is a callable, call it to get the value
-                        data[key] = apiset[key]["default"]()
+                        data[key] = value["default"]()
                     else:
                         # set a default value
-                        data[key] = apiset[key]["default"]
+                        data[key] = value["default"]
                 else:
                     raise ValueError(f"key {key} required in data")
 
             # check maxlen
-            if "maxlen" in apiset[key] and key in data:
-                if len(data[key]) > apiset[key]["maxlen"]:
-                    raise ValueError(f"Value too long for key {key} {len(data[key])}>{apiset[key]['maxlen']}")
+            if "maxlen" in value and key in data and len(data[key]) > value["maxlen"]:
+                raise ValueError(f"Value too long for key {key} {len(data[key])}>{value['maxlen']}")
 
             # check the value is in the set of valid choices
-            if "choices" in apiset[key] and key in data:
-                if data[key] not in apiset[key]["choices"]:
-                    raise ValueError(f"Invalid value for key {key}: '{data[key]}', should be in {apiset[key]['choices']} ")
+            if "choices" in value and key in data and data[key] not in value["choices"]:
+                raise ValueError(f"Invalid value for key {key}: '{data[key]}', should be in {value['choices']} ")
 
         # check there's no extra fields in the data
-        for key in data:
-            if key not in apiset.keys():
+        for key, value in data.items():
+            if key not in apiset:
                 raise ValueError(f"key {key} isn't valid in the API spec")
 
-            if apiset[key].get("type") and not isinstance(data[key], apiset[key]["type"]):
-                if data[key] is not None:
-                    raise TypeError(f"data[{key}] type ({type(data[key])} is invalid - should be {str(apiset[key]['type'])})")
+            if apiset[key].get("type") and not isinstance(value, apiset[key]["type"]) and value is not None:
+                raise TypeError(f"data[{key}] type ({type(value)} is invalid - should be {apiset[key]['type']!s})")
 
-        for key in data:
+        for key, value in data.items():
             if "format" in apiset[key]:
-                self._validate_format(apiset[key]["format"], key, data[key])
+                self._validate_format(apiset[key]["format"], key, value)
             # can run additional functions over the data
             if "additional_validators" in apiset[key]:
                 for validator in apiset[key]["additional_validators"]:
-                    validator(data[key])
+                    validator(value)
 
             # TODO: 'd' can't be more than 14 days ago, if a donator, goes out to 90
             # check if donation_made == True and age of thing
@@ -142,13 +139,12 @@ class PVOutputBase:
             # check max/min value constraints
             # Special case: When c1 flag is set, v3 represents cumulative lifetime energy values
             # which can exceed the normal maximum validation limit of 200000 Wh
-            should_skip_maxval_check = key == "v3" and data.get("c1") is not None
+            should_skip_maxval_check = key == "v3" and data.get("c1") is True
 
-            if not should_skip_maxval_check:
-                if apiset[key].get("maxval") is not None and data.get(key) > apiset[key].get("maxval"):
-                    raise ValueError(f"{key} cannot be higher than {apiset[key]['maxval']}, is {data[key]}")
+            if not should_skip_maxval_check and apiset[key].get("maxval") is not None and data.get(key) > apiset[key].get("maxval"):
+                raise ValueError(f"{key} cannot be higher than {apiset[key]['maxval']}, is {value}")
 
             if apiset[key].get("minval") is not None and data.get(key) < apiset[key].get("minval"):
-                raise ValueError(f"{key} cannot be lower than {apiset[key]['minval']}, is {data[key]}")
+                raise ValueError(f"{key} cannot be lower than {apiset[key]['minval']}, is {value}")
 
         return True

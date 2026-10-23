@@ -3,7 +3,8 @@
 import datetime
 import json
 import os
-from typing import Any, Dict
+from typing import Any
+
 import pytest
 
 try:
@@ -17,22 +18,22 @@ pytestmark = pytest.mark.asyncio
 
 # disabling this, needs to be done because of pytest
 # pylint: disable=wrong-import-position
-from pvoutput.asyncio import PVOutput  # noqa: E402
+from pvoutput.asyncio import PVOutput
 
 
 @pytest.fixture
-def config() -> Dict[str, Any]:
+def config() -> dict[str, Any]:
     """configuration fixture"""
     if not os.path.exists(os.path.expanduser("~/.config/pvoutput.json")):
         print("Failed to find config file")
         pytest.skip()
 
     with open(os.path.expanduser("~/.config/pvoutput.json"), "r", encoding="utf8") as config_file:
-        config_data: Dict[str, Any] = json.load(config_file)
+        config_data: dict[str, Any] = json.load(config_file)
     return config_data
 
 
-async def test_check_rate_limit(config: Dict[str, Any]) -> None:
+async def test_check_rate_limit(config: dict[str, Any]) -> None:
     """tests check rate limit with the getsystem endpoint"""
 
     async with aiohttp.ClientSession() as session:
@@ -48,7 +49,7 @@ async def test_check_rate_limit(config: Dict[str, Any]) -> None:
         assert len(result) == 3
 
 
-async def test_configured_async_addstatus(config: Dict[str, Any]) -> None:
+async def test_configured_async_addstatus(config: dict[str, Any]) -> None:
     """test the addstatus endpoint"""
 
     testdate = datetime.date.today()
@@ -88,7 +89,7 @@ async def test_configured_async_addstatus(config: Dict[str, Any]) -> None:
         assert isinstance(result, dict)
 
 
-async def test_configured_deletestatus(config: Dict[str, Any]) -> None:
+async def test_configured_deletestatus(config: dict[str, Any]) -> None:
     """test the deletestatus endpoint"""
     testdate = datetime.date.today()
     testtime = datetime.time(hour=23, minute=45)
@@ -106,7 +107,7 @@ async def test_configured_deletestatus(config: Dict[str, Any]) -> None:
         assert await delete_result.text() == "OK 200: Deleted Status"
 
 
-async def test_configured_addoutput(config: Dict[str, Any]) -> None:
+async def test_configured_addoutput(config: dict[str, Any]) -> None:
     """test the addoutput endpoint"""
 
     testdate = datetime.date.today()
@@ -128,7 +129,7 @@ async def test_configured_addoutput(config: Dict[str, Any]) -> None:
         assert await addoutput_response.text() == "OK 200: Added Output"
 
 
-async def test_register_notification(config: Dict[str, Any]) -> None:
+async def test_register_notification(config: dict[str, Any]) -> None:
     """tests register notification"""
 
     async with aiohttp.ClientSession() as session:
@@ -145,7 +146,7 @@ async def test_register_notification(config: Dict[str, Any]) -> None:
         assert await result.text() == "OK 200: Registered Notification"
 
 
-async def test_deregister_notification(config: Dict[str, Any]) -> None:
+async def test_deregister_notification(config: dict[str, Any]) -> None:
     """tests deregister notification"""
 
     async with aiohttp.ClientSession() as session:

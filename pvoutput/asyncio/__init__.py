@@ -1,19 +1,19 @@
 """AsyncIO interface to the PVOutput API"""
 
 import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
 import aiohttp
 
-from pvoutput.exceptions import UnknownMethodError
-from pvoutput.base import PVOutputBase
 from pvoutput import utils
+from pvoutput.base import PVOutputBase
+from pvoutput.exceptions import UnknownMethodError
 from pvoutput.parameters import (
     ADDBATCHSTATUS_PARAMETERS,
+    ADDOUTPUT_PARAMETERS,
     ADDSTATUS_PARAMETERS,
     CALL_PARAMETERS,
     DEFAULT_REQUEST_TIMEOUT,
-    ADDOUTPUT_PARAMETERS,
     DELETE_NOTIFICATION_PARAMETERS,
     DELETESTATUS_PARAMETERS,
     REGISTER_NOTIFICATION_PARAMETERS,
@@ -30,7 +30,7 @@ class PVOutput(PVOutputBase):
         systemid: int,
         donation_made: bool = False,
         stats_period: int = 5,
-        session: Optional[aiohttp.ClientSession] = None,
+        session: aiohttp.ClientSession | None = None,
     ) -> None:
         """Setup code
 
@@ -56,7 +56,7 @@ class PVOutput(PVOutputBase):
         self,
         endpoint: str,
         method: str = "POST",
-        **kwargs: Dict[str, Any],
+        **kwargs: dict[str, Any],
     ) -> aiohttp.ClientResponse:
         """Makes a call to a URL endpoint with the data/headers/method you require.
 
@@ -107,7 +107,7 @@ class PVOutput(PVOutputBase):
         response.raise_for_status()
         return response
 
-    async def check_rate_limit(self) -> Dict[str, str]:
+    async def check_rate_limit(self) -> dict[str, str]:
         """Makes a call to the site, checking if you have hit the rate limit.
 
         API spec: https://pvoutput.org/help/api_specification.html#rate-limits
@@ -168,7 +168,7 @@ class PVOutput(PVOutputBase):
 
     async def addstatus(
         self,
-        data: Dict[str, Any],
+        data: dict[str, Any],
     ) -> aiohttp.ClientResponse:
         """The Add Status service accepts live output data
         at the Status Interval (5 to 15 minutes) configured for the system.
@@ -191,7 +191,7 @@ class PVOutput(PVOutputBase):
 
         return await self._call(endpoint=url, data=data, method=method)
 
-    async def addoutput(self, data: Dict[str, Any]) -> aiohttp.ClientResponse:
+    async def addoutput(self, data: dict[str, Any]) -> aiohttp.ClientResponse:
         """The Add Output service uploads end of day output information.
         It allows all of the information provided on the Add Output page to be uploaded.
 
@@ -210,7 +210,7 @@ class PVOutput(PVOutputBase):
     async def delete_status(
         self,
         date_val: datetime.date,
-        time_val: Optional[datetime.time] = None,
+        time_val: datetime.time | None = None,
     ) -> aiohttp.ClientResponse:
         """Deletes a given status, based on the provided parameters
         needs a datetime() object
@@ -243,7 +243,7 @@ class PVOutput(PVOutputBase):
 
         return await self._call(endpoint=url, data=data, method=method)
 
-    async def getstatus(self) -> Dict[str, Any]:
+    async def getstatus(self) -> dict[str, Any]:
         """The Get Status service retrieves system status information and live output data.
 
         API spec: https://pvoutput.org/help/api_specification.html#get-status-service
